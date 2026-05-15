@@ -1,0 +1,15 @@
+{
+  "name": "sui-functions",
+  "mode": "vendored",
+  "dependencies": {
+    "Dokhacgiakhoa/antigravity-ide": {
+      "version": "332e58bc9f56088a98b544ad77211b1b62afc466",
+      "source": "https://github.com/Dokhacgiakhoa/antigravity-ide",
+      "include": {
+        "skills": [
+          "blockchain-developer"
+        ]
+      }
+    }
+  }
+}
