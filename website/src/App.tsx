@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
-import { Button, Card, Steps, Layout, Typography, Space, Tag, List } from 'antd';
-import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, ArrowRight } from 'lucide-react';
+import { Button, Card, Layout, Typography, Space, Tag } from 'antd';
+import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
+import Dashboard from './Dashboard';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
 
 const App: React.FC = () => {
+  const account = useCurrentAccount();
   const [demoStatus, setDemoStatus] = useState<'idle' | 'running' | 'success'>('idle');
   const [logs, setLogs] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
+
+  // If connected, show Dashboard
+  if (account) {
+    return <Dashboard />;
+  }
 
   const runDemo = () => {
     setDemoStatus('running');
@@ -46,7 +54,10 @@ const App: React.FC = () => {
         <Space size="large" className="hidden md:flex">
           <Button type="text" className="text-gray-600 font-medium hover:text-slate-pro">Benefits</Button>
           <Button type="text" className="text-gray-600 font-medium hover:text-slate-pro">Demo</Button>
-          <Button type="primary" className="bg-slate-pro hover:!bg-gray-800 border-none px-6 rounded-full font-semibold">Get Started</Button>
+          <ConnectButton 
+            className="!bg-slate-pro !text-white !rounded-full !font-bold !border-none px-4" 
+            connectText="Get Started"
+          />
         </Space>
       </Header>
 
@@ -192,15 +203,6 @@ const App: React.FC = () => {
                       <Text type="secondary" className="opacity-30">Waiting for trigger...</Text>
                     )}
                   </AnimatePresence>
-                  {demoStatus === 'success' && (
-                    <motion.div 
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="mt-6 pt-6 border-t border-white/5"
-                    >
-                      <Tag color="success" className="rounded-full px-4 py-1 border-none bg-green-500/20 text-green-400 font-bold">COMPLETED</Tag>
-                    </motion.div>
-                  )}
                 </div>
               </div>
             </Card>
