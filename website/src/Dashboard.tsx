@@ -404,22 +404,22 @@ const Dashboard: React.FC = () => {
                     className="rounded-[32px] border-none shadow-sm h-full overflow-hidden"
                     title={<div className="flex items-center gap-2 py-1"><Terminal size={18} className="text-slate-400" /> <Text className="font-bold">Live Execution Logs</Text></div>}
                   >
-                    <div className="bg-slate-950 rounded-2xl p-6 min-h-[400px] font-mono text-sm shadow-inner relative">
-                      <div className="absolute top-4 right-4 flex gap-1.5">
+                    <div className="bg-slate-950 rounded-2xl p-6 h-[550px] flex flex-col font-mono text-sm shadow-inner relative">
+                      <div className="absolute top-4 right-4 flex gap-1.5 z-10 bg-slate-950 pl-2 pb-2">
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
                       </div>
-                      <div className="mt-4">
+                      <div className="flex-1 overflow-y-auto pr-2 mt-4 scrollbar-thin scrollbar-thumb-slate-800">
                         {logs.map((log, i) => (
                           <div key={i} className="mb-2.5 flex gap-4 animate-in fade-in slide-in-from-left-2">
-                            <span className="text-slate-700 select-none w-4">{logs.length - i}</span>
+                            <span className="text-slate-700 select-none w-6 text-right">{logs.length - i}</span>
                             <span className={log.includes('Event') ? 'text-blue-400' : 'text-slate-400'}>{log}</span>
                           </div>
                         ))}
                         {logs.length === 0 && (
-                          <div className="flex flex-col items-center justify-center min-h-[300px] opacity-20">
-                            <Activity size={32} className="mb-4" />
+                          <div className="flex flex-col items-center justify-center h-full opacity-20 py-20">
+                            <Activity size={32} className="mb-4 animate-pulse" />
                             <Text className="text-slate-400 font-mono">Awaiting blockchain events...</Text>
                           </div>
                         )}

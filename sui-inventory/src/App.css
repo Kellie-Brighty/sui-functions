@@ -1,0 +1,24 @@
+/* Custom app layout components */
+.inventory-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  color: var(--accent-sui);
+  filter: drop-shadow(0 0 10px rgba(69, 140, 245, 0.4));
+}

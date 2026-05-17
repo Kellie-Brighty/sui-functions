@@ -14,18 +14,35 @@ export async function executeInSandbox(code: string): Promise<any> {
     // Get a Reference{} to the global object within the context
     const jail = context.global;
 
-    // This is the critical step: Inject a global 'log' function
-    // that maps back to the host's console.log
+    // 1. Inject console.log mapping
     await jail.set('log', new ivm.Reference(function(...args: any[]) {
         console.log('[VM]', ...args);
     }));
 
-    // Prepend a small shim to map console.log to our injected log function
+    // 2. Inject async fetch shim mapping
+    await jail.set('fetchShim', new ivm.Reference(async function(url: string) {
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            return text;
+        } catch (e: any) {
+            return JSON.stringify({ error: e.message });
+        }
+    }));
+
+    // Prepend shims for console.log and async fetch
     const shimmedCode = `
         globalThis.console = {
             log: (...args) => log.applySync(undefined, args, { arguments: { copy: true } })
         };
-        (function() {
+        globalThis.fetch = async (url) => {
+            const text = await fetchShim.apply(undefined, [url], { result: { promise: true, copy: true } });
+            return {
+                text: async () => text,
+                json: async () => JSON.parse(text)
+            };
+        };
+        (async function() {
             ${code}
         })()
     `;
@@ -34,8 +51,8 @@ export async function executeInSandbox(code: string): Promise<any> {
         // Compile the code
         const script = await isolate.compileScript(shimmedCode);
 
-        // Execute with a 5 second timeout and copy the result from the sandbox
-        const result = await script.run(context, { timeout: 5000, copy: true });
+        // Execute with a 5 second timeout, copying the result, and supporting async/Promise resolution
+        const result = await script.run(context, { timeout: 5000, copy: true, promise: true });
         
         return result;
     } catch (error: any) {
