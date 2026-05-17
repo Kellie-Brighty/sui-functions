@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Typography, Card, Space, Button, notification, Tag } from 'antd';
+import { Layout, Menu, Typography, Card, Space, Button, notification, Tag, Modal, Form, Input } from 'antd';
 import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
@@ -17,6 +17,9 @@ const Dashboard: React.FC = () => {
   const [executionCount, setExecutionCount] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [form] = Form.useForm();
 
   // Polling for events (more reliable than subscribeEvent on public RPCs)
   useEffect(() => {
@@ -79,6 +82,42 @@ const Dashboard: React.FC = () => {
         onError: (err) => {
           notification.error({ message: 'Execution Failed', description: err.message });
           setIsExecuting(false);
+        }
+      }
+    );
+  };
+
+  const handleRegister = (values: { functionName: string; blobId: string }) => {
+    if (!account) return;
+    
+    setIsRegistering(true);
+    const tx = new Transaction();
+    
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::register_function`,
+      arguments: [
+        tx.object(REGISTRY_ID),
+        tx.pure.string(values.functionName),
+        tx.pure.string(values.blobId)
+      ],
+    });
+
+    signAndExecute(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          notification.success({ 
+            message: 'Registration Successful', 
+            description: `Function ${values.functionName} has been registered.` 
+          });
+          setLogs(prev => [`[Transaction] Register Submitted: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setIsRegistering(false);
+          setIsRegisterModalOpen(false);
+          form.resetFields();
+        },
+        onError: (err) => {
+          notification.error({ message: 'Registration Failed', description: err.message });
+          setIsRegistering(false);
         }
       }
     );
@@ -147,6 +186,7 @@ const Dashboard: React.FC = () => {
             <Button 
               type="primary" 
               icon={<Plus size={18} />} 
+              onClick={() => setIsRegisterModalOpen(true)}
               className="bg-slate-900 hover:!bg-slate-800 border-none rounded-2xl font-bold h-14 px-8 shadow-xl shadow-slate-900/10"
             >
               Register Function
@@ -232,6 +272,68 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </Content>
+
+      <Modal
+        title={
+          <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-6">
+            <Plus size={20} className="text-blue-500" />
+            <Text className="text-xl font-extrabold tracking-tight">Register New Function</Text>
+          </div>
+        }
+        open={isRegisterModalOpen}
+        onCancel={() => {
+          setIsRegisterModalOpen(false);
+          form.resetFields();
+        }}
+        footer={null}
+        closeIcon={null}
+        className="rounded-[32px] overflow-hidden"
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleRegister}
+          requiredMark={false}
+        >
+          <Form.Item
+            name="functionName"
+            label={<Text className="font-bold text-slate-700">Function Name</Text>}
+            rules={[{ required: true, message: 'Please input a function name' }]}
+            extra="e.g., my_price_oracle"
+          >
+            <Input 
+              size="large" 
+              placeholder="Enter unique function name"
+              className="rounded-xl border-gray-200 bg-gray-50 h-12" 
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="blobId"
+            label={<Text className="font-bold text-slate-700">Walrus Blob ID</Text>}
+            rules={[{ required: true, message: 'Please input the Walrus Blob ID' }]}
+            extra="The unique identifier from your Walrus upload."
+          >
+            <Input 
+              size="large" 
+              placeholder="e.g., W7VwX2jrIH..." 
+              className="rounded-xl border-gray-200 bg-gray-50 h-12 font-mono"
+            />
+          </Form.Item>
+
+          <Button 
+            type="primary" 
+            htmlType="submit" 
+            loading={isRegistering}
+            size="large"
+            block
+            className="mt-4 h-14 rounded-2xl bg-slate-900 hover:!bg-slate-800 border-none font-bold text-lg shadow-lg shadow-slate-900/20"
+          >
+            Confirm Registration
+          </Button>
+        </Form>
+      </Modal>
+
     </Layout>
   );
 };
