@@ -132,57 +132,68 @@ const Dashboard: React.FC = () => {
     );
   };
 
-  const handleWalrusUpload = async (options: any) => {
+  const handleWalrusUpload = (options: any) => {
     const { file, onSuccess, onError, onProgress } = options;
     setIsUploading(true);
+    setUploadPercentage(0);
 
-    try {
-      // Simulate progress since fetch doesn't natively expose upload progress
-      let percent = 0;
-      setUploadPercentage(0);
-      const progressInterval = setInterval(() => {
-        percent += 5;
-        if (percent > 99) percent = 99;
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', WALRUS_PUBLISHER, true);
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        // Prevent it from hitting 100% until we actually process the response
+        let percent = Math.floor((e.loaded / e.total) * 99);
         setUploadPercentage(percent);
         onProgress({ percent });
-      }, 50);
-
-      const response = await fetch(WALRUS_PUBLISHER, {
-        method: 'PUT',
-        body: file,
-      });
-
-      clearInterval(progressInterval);
-      setUploadPercentage(100);
-      onProgress({ percent: 100 });
-
-      if (!response.ok) {
-        throw new Error(`Upload failed with status ${response.status}`);
       }
+    };
 
-      const result = await response.json();
-      
-      // Walrus returns either newlyCreated or alreadyCertified
-      const blobId = result.newlyCreated?.blobObject?.blobId || result.alreadyCertified?.blobId;
-      
-      if (!blobId) {
-        throw new Error("Could not extract Blob ID from Walrus response");
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          setUploadPercentage(100);
+          onProgress({ percent: 100 });
+          
+          const result = JSON.parse(xhr.responseText);
+          
+          // Walrus returns either newlyCreated or alreadyCertified
+          const blobId = result.newlyCreated?.blobObject?.blobId || result.alreadyCertified?.blobId;
+          
+          if (!blobId) {
+            throw new Error("Could not extract Blob ID from Walrus response");
+          }
+
+          // Auto-fill the form and lock it
+          form.setFieldsValue({ blobId });
+          setIsBlobIdLocked(true);
+          setUploadedFileName(file.name);
+          
+          message.success(`${file.name} uploaded successfully to Walrus!`);
+          onSuccess(result, file);
+        } catch (error: any) {
+          console.error("Walrus response parsing error:", error);
+          message.error(`${file.name} upload failed: ${error.message}`);
+          onError(error);
+        }
+      } else {
+        const error = new Error(`Upload failed with status ${xhr.status}`);
+        console.error("Walrus upload HTTP error:", error);
+        message.error(`${file.name} upload failed: ${error.message}`);
+        onError(error);
       }
-
-      // Auto-fill the form and lock it
-      form.setFieldsValue({ blobId });
-      setIsBlobIdLocked(true);
-      setUploadedFileName(file.name);
-      
-      message.success(`${file.name} uploaded successfully to Walrus!`);
-      onSuccess(result, file);
-    } catch (error: any) {
-      console.error("Walrus upload error:", error);
-      message.error(`${file.name} upload failed: ${error.message}`);
-      onError(error);
-    } finally {
       setIsUploading(false);
-    }
+    };
+
+    xhr.onerror = () => {
+      const error = new Error("Network error occurred during upload.");
+      console.error("Walrus upload Network error:", error);
+      message.error(`${file.name} upload failed: Network Error`);
+      onError(error);
+      setIsUploading(false);
+    };
+
+    xhr.send(file);
   };
 
   return (
