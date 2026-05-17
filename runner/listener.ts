@@ -1,7 +1,15 @@
 import * as dotenv from 'dotenv';
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
+});
 import { SuiJsonRpcClient, getJsonRpcFullnodeUrl } from '@mysten/sui/jsonRpc';
 import { fetchFunctionCode } from './aggregator.js';
 import { executeInSandbox } from './vm_manager.js';
+import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
+import { Transaction } from '@mysten/sui/transactions';
 
 dotenv.config();
 
@@ -10,6 +18,10 @@ const client = new SuiJsonRpcClient({
     url: getJsonRpcFullnodeUrl('testnet'),
     network: 'testnet'
 });
+
+// Load operator private key
+const secretKey = process.env.ADMIN_SECRET_KEY;
+const keypair = secretKey ? Ed25519Keypair.fromSecretKey(secretKey) : null;
 
 /**
  * Polls for ExecutionTriggered events from the specified package.
@@ -54,6 +66,31 @@ export async function startPolling(packageId: string) {
                             const executionResult = await executeInSandbox(code);
                             
                             console.log("Execution Result:", executionResult);
+
+                            // 3. Submit result back to Sui
+                            if (keypair) {
+                                console.log(`Submitting result back to Sui...`);
+                                const tx = new Transaction();
+                                const registryId = process.env.REGISTRY_ID || "0x0";
+                                const packageId = process.env.PACKAGE_ID || "0x0";
+                                
+                                tx.moveCall({
+                                    target: `${packageId}::trigger::submit_result`,
+                                    arguments: [
+                                        tx.object(registryId),
+                                        tx.pure.string(function_name),
+                                        tx.pure.string(JSON.stringify(executionResult) || "null")
+                                    ]
+                                });
+
+                                const writeResult = await client.signAndExecuteTransaction({
+                                    signer: keypair,
+                                    transaction: tx
+                                });
+                                console.log(`Result submitted successfully! Tx Digest: ${writeResult.digest}`);
+                            } else {
+                                console.warn("WARNING: ADMIN_SECRET_KEY is not set. Skipping on-chain submission.");
+                            }
                         } catch (error: any) {
                             console.error("Error processing execution:", error.message);
                         }
@@ -79,7 +116,7 @@ export async function startPolling(packageId: string) {
 }
 
 // If this script is run directly
-const isMain = process.argv[1].endsWith('listener.ts');
+const isMain = process.argv[1].endsWith('listener.ts') || process.argv[1].endsWith('listener.js');
 if (isMain) {
     const packageId = process.env.PACKAGE_ID || "0x0";
     if (packageId === "0x0") {

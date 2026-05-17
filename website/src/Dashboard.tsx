@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Typography, Card, Space, Button, notification, Tag, Modal, Form, Input, Upload, message } from 'antd';
-import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play, UploadCloud, Trash2 } from 'lucide-react';
+import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play, UploadCloud, Trash2, CheckCircle } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID, REGISTRY_ID, HELLO_WORLD_BLOB_ID } from './constants';
+import { PACKAGE_ID, REGISTRY_ID } from './constants';
 
 const { Content, Sider } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -62,20 +62,33 @@ const Dashboard: React.FC = () => {
           const newLogs: string[] = [];
           
           data.forEach(event => {
-            if (event.type.includes('ExecutionTriggered') && !seenDigests.has(event.id.txDigest)) {
+            if (!seenDigests.has(event.id.txDigest)) {
               seenDigests.add(event.id.txDigest);
               const funcName = (event.parsedJson as any).function_name;
-              
-              newLogs.push(`[Blockchain] Event detected: ${event.id.txDigest.slice(0, 10)}... (${funcName})`);
-              
-              // Only notify if it's a new event (not historical from first load)
-              if (!isInitialLoad) {
-                notification.success({
-                  message: 'New Execution',
-                  description: `Function "${funcName}" triggered.`,
-                  placement: 'bottomRight',
-                  icon: <Zap size={18} className="text-amber-500" />,
-                });
+
+              if (event.type.includes('ExecutionTriggered')) {
+                newLogs.push(`[Blockchain] Event detected: ${event.id.txDigest.slice(0, 10)}... (${funcName})`);
+                
+                if (!isInitialLoad) {
+                  notification.success({
+                    message: 'New Execution',
+                    description: `Function "${funcName}" triggered.`,
+                    placement: 'bottomRight',
+                    icon: <Zap size={18} className="text-amber-500" />,
+                  });
+                }
+              } else if (event.type.includes('ExecutionCompleted')) {
+                const result = (event.parsedJson as any).result_data;
+                newLogs.push(`[Blockchain] Success: ${funcName} -> ${result.slice(0, 30)}${result.length > 30 ? '...' : ''}`);
+                
+                if (!isInitialLoad) {
+                  notification.info({
+                    message: 'Execution Completed',
+                    description: `Function "${funcName}" returned: ${result}`,
+                    placement: 'bottomRight',
+                    icon: <CheckCircle size={18} className="text-emerald-500" />,
+                  });
+                }
               }
             }
           });

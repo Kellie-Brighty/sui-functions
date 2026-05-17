@@ -30,6 +30,13 @@ module sui_functions::trigger {
         input_data: String
     }
 
+    /// Event emitted when the backend runner completes execution and submits the result
+    public struct ExecutionCompleted has copy, drop {
+        function_name: String,
+        runner: address,
+        result_data: String
+    }
+
     /// Initialize the registry
     fun init(ctx: &mut TxContext) {
         let registry = Registry {
@@ -88,5 +95,21 @@ module sui_functions::trigger {
         
         metadata.walrus_blob_id = new_walrus_blob_id;
         metadata.version = metadata.version + 1;
+    }
+
+    /// Submit the result of a function execution back to the blockchain
+    public entry fun submit_result(
+        registry: &Registry,
+        name: String,
+        result_data: String,
+        ctx: &mut TxContext
+    ) {
+        assert!(table::contains(&registry.functions, name), EFunctionNotFound);
+        
+        event::emit(ExecutionCompleted {
+            function_name: name,
+            runner: tx_context::sender(ctx),
+            result_data
+        });
     }
 }

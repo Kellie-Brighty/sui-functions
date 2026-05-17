@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --loader ts-node/esm main.ts",
-    "listen": "node --loader ts-node/esm listener.ts",
+    "listen": "tsc && node dist/listener.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
