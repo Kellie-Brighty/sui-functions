@@ -31,9 +31,13 @@ export async function startPolling(packageId: string) {
     console.log(`Starting Sui-Functions Polling Listener for package: ${packageId}...`);
     
     let cursor: any = null;
+    let isPolling = false;
 
-    // Simple polling loop (every 3 seconds)
-    const pollInterval = setInterval(async () => {
+    // Recursive timeout polling to prevent race conditions
+    async function poll() {
+        if (isPolling) return;
+        isPolling = true;
+        
         try {
             // Query for events from the package
             const result = await client.queryEvents({
@@ -48,6 +52,9 @@ export async function startPolling(packageId: string) {
             });
 
             if (result.data.length > 0) {
+                // Capture nextCursor immediately to advance polling state
+                const nextCursor = result.nextCursor;
+
                 for (const event of result.data) {
                     console.log("\n--- New Execution Triggered ---");
                     
@@ -79,7 +86,7 @@ export async function startPolling(packageId: string) {
                                     arguments: [
                                         tx.object(registryId),
                                         tx.pure.string(function_name),
-                                        tx.pure.string(JSON.stringify(executionResult) || "null")
+                                        tx.pure.string(JSON.stringify(executionResult) ?? "null")
                                     ]
                                 });
 
@@ -97,20 +104,26 @@ export async function startPolling(packageId: string) {
                     }
                 }
 
-                // Update cursor to the next page to avoid duplicates
-                cursor = result.nextCursor;
+                // Update cursor
+                cursor = nextCursor;
             }
         } catch (error: any) {
             console.error("Polling error:", error.message);
+        } finally {
+            isPolling = false;
+            // Schedule the next poll tick 3 seconds AFTER the current one completely finishes
+            setTimeout(poll, 3000);
         }
-    }, 3000);
+    }
+
+    // Start first poll tick
+    setTimeout(poll, 1000);
 
     console.log("Polling started... (Press Ctrl+C to stop)");
     
     // Handle process termination
     process.on('SIGINT', () => {
         console.log("\nStopping listener...");
-        clearInterval(pollInterval);
         process.exit(0);
     });
 }
