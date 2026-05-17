@@ -20,6 +20,7 @@ const Dashboard: React.FC = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
   const [form] = Form.useForm();
 
   const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=1";
@@ -116,6 +117,7 @@ const Dashboard: React.FC = () => {
           setLogs(prev => [`[Transaction] Register Submitted: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsRegistering(false);
           setIsRegisterModalOpen(false);
+          setIsBlobIdLocked(false);
           form.resetFields();
         },
         onError: (err) => {
@@ -149,8 +151,9 @@ const Dashboard: React.FC = () => {
         throw new Error("Could not extract Blob ID from Walrus response");
       }
 
-      // Auto-fill the form
+      // Auto-fill the form and lock it
       form.setFieldsValue({ blobId });
+      setIsBlobIdLocked(true);
       
       message.success(`${file.name} uploaded successfully to Walrus!`);
       onSuccess(result, file);
@@ -323,6 +326,7 @@ const Dashboard: React.FC = () => {
         open={isRegisterModalOpen}
         onCancel={() => {
           setIsRegisterModalOpen(false);
+          setIsBlobIdLocked(false);
           form.resetFields();
         }}
         footer={null}
@@ -378,7 +382,8 @@ const Dashboard: React.FC = () => {
             <Input 
               size="large" 
               placeholder="e.g., W7VwX2jrIH..." 
-              className="rounded-xl border-gray-200 bg-gray-50 h-12 font-mono"
+              readOnly={isBlobIdLocked}
+              className={`rounded-xl border-gray-200 h-12 font-mono ${isBlobIdLocked ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-50'}`}
             />
           </Form.Item>
 
