@@ -348,19 +348,6 @@ const Dashboard: React.FC = () => {
             />
           </Form.Item>
 
-          <Form.Item
-            name="blobId"
-            label={<Text className="font-bold text-slate-700">Walrus Blob ID</Text>}
-            rules={[{ required: true, message: 'Please input the Walrus Blob ID' }]}
-            extra="You can paste an existing ID, or upload a .js file above to generate one."
-          >
-            <Input 
-              size="large" 
-              placeholder="e.g., W7VwX2jrIH..." 
-              className="rounded-xl border-gray-200 bg-gray-50 h-12 font-mono"
-            />
-          </Form.Item>
-
           <div className="mb-6">
             <Upload.Dragger
               name="file"
@@ -381,6 +368,19 @@ const Dashboard: React.FC = () => {
               </div>
             </Upload.Dragger>
           </div>
+
+          <Form.Item
+            name="blobId"
+            label={<Text className="font-bold text-slate-700">Walrus Blob ID</Text>}
+            rules={[{ required: true, message: 'Please input the Walrus Blob ID' }]}
+            extra="You can paste an existing ID, or upload a .js file above to generate one."
+          >
+            <Input 
+              size="large" 
+              placeholder="e.g., W7VwX2jrIH..." 
+              className="rounded-xl border-gray-200 bg-gray-50 h-12 font-mono"
+            />
+          </Form.Item>
 
           <Button 
             type="primary" 
