@@ -22,6 +22,7 @@ const Dashboard: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadPercentage, setUploadPercentage] = useState(0);
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
   const [activeMenu, setActiveMenu] = useState('1');
   const [triggerFunctionName, setTriggerFunctionName] = useState("hello_world");
   const [form] = Form.useForm();
