@@ -21,6 +21,7 @@ const Dashboard: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
+  const [triggerFunctionName, setTriggerFunctionName] = useState("hello_world");
   const [form] = Form.useForm();
 
   const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=1";
@@ -61,7 +62,7 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(pollInterval);
   }, [client]);
 
-  const handleTrigger = (blobId: string, functionName: string) => {
+  const handleTrigger = (functionName: string) => {
     if (!account) return;
     
     setIsExecuting(true);
@@ -284,19 +285,16 @@ const Dashboard: React.FC = () => {
                     Fire a manual execution request to verify your logic across the Walrus storage network.
                   </Paragraph>
                   
-                  <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 mb-8">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                        <Code size={20} className="text-slate-400" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 leading-none">hello_world.js</div>
-                        <Tag className="mt-1.5 border-none bg-blue-100 text-blue-600 text-[9px] font-black uppercase tracking-widest px-2">Active</Tag>
-                      </div>
-                    </div>
-                    <div className="text-[10px] font-mono text-slate-400 bg-white p-3 rounded-lg border border-slate-100 break-all">
-                      {HELLO_WORLD_BLOB_ID}
-                    </div>
+                  <div className="mb-8">
+                    <Text className="font-bold text-slate-700 block mb-2">Target Function</Text>
+                    <Input 
+                      size="large" 
+                      value={triggerFunctionName}
+                      onChange={(e) => setTriggerFunctionName(e.target.value)}
+                      placeholder="e.g., my_test_upload"
+                      prefix={<Code size={16} className="text-slate-400 mr-2" />}
+                      className="rounded-xl border-gray-200 bg-gray-50 h-12 font-mono"
+                    />
                   </div>
 
                   <Button 
@@ -304,7 +302,7 @@ const Dashboard: React.FC = () => {
                     size="large" 
                     block
                     loading={isExecuting}
-                    onClick={() => handleTrigger(HELLO_WORLD_BLOB_ID, "hello_world")}
+                    onClick={() => handleTrigger(triggerFunctionName)}
                     className="h-16 rounded-2xl bg-slate-900 hover:!bg-slate-800 border-none font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-slate-900/20"
                   >
                     <Play size={20} fill="currentColor" /> Execute Now
