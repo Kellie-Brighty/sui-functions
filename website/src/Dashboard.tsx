@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Typography, Card, Space, Button, notification, Tag, Modal, Form, Input, Upload, message } from 'antd';
 import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play, UploadCloud, Trash2 } from 'lucide-react';
-import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
+import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { PACKAGE_ID, REGISTRY_ID, HELLO_WORLD_BLOB_ID } from './constants';
 
@@ -32,6 +32,15 @@ const Dashboard: React.FC = () => {
   const [isLoadingFunctions, setIsLoadingFunctions] = useState(false);
 
   const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=1";
+
+  // Fetch SUI Balance
+  const { data: balanceData } = useSuiClientQuery(
+    'getBalance',
+    { owner: account?.address as string },
+    { enabled: !!account?.address, refetchInterval: 10000 }
+  );
+
+  const suiBalance = balanceData ? (Number(balanceData.totalBalance) / 1e9).toFixed(2) : "0.00";
 
   // Polling for events (more reliable than subscribeEvent on public RPCs)
   useEffect(() => {
@@ -371,7 +380,7 @@ const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <StatCard icon={<Activity className="text-blue-500" />} label="Executions" value={executionCount} />
                 <StatCard icon={<Globe className="text-emerald-500" />} label="Nodes Active" value={1} />
-                <StatCard icon={<Zap className="text-amber-500" />} label="Gas Balance" value="0.00 SUI" />
+                <StatCard icon={<Zap className="text-amber-500" />} label="Gas Balance" value={`${suiBalance} SUI`} />
               </div>
 
               {/* Main Content Grid */}
