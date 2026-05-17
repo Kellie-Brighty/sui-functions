@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Typography, Card, Space, Button, notification, Tag, Modal, Form, Input, Upload, message } from 'antd';
-import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play, UploadCloud } from 'lucide-react';
+import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play, UploadCloud, Trash2 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { PACKAGE_ID, REGISTRY_ID, HELLO_WORLD_BLOB_ID } from './constants';
@@ -21,6 +21,7 @@ const Dashboard: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
   const [triggerFunctionName, setTriggerFunctionName] = useState("hello_world");
   const [form] = Form.useForm();
 
@@ -119,6 +120,7 @@ const Dashboard: React.FC = () => {
           setIsRegistering(false);
           setIsRegisterModalOpen(false);
           setIsBlobIdLocked(false);
+          setUploadedFileName("");
           form.resetFields();
         },
         onError: (err) => {
@@ -130,14 +132,25 @@ const Dashboard: React.FC = () => {
   };
 
   const handleWalrusUpload = async (options: any) => {
-    const { file, onSuccess, onError } = options;
+    const { file, onSuccess, onError, onProgress } = options;
     setIsUploading(true);
 
     try {
+      // Simulate progress since fetch doesn't natively expose upload progress
+      let percent = 0;
+      const progressInterval = setInterval(() => {
+        percent += 15;
+        if (percent > 99) percent = 99;
+        onProgress({ percent });
+      }, 50);
+
       const response = await fetch(WALRUS_PUBLISHER, {
         method: 'PUT',
         body: file,
       });
+
+      clearInterval(progressInterval);
+      onProgress({ percent: 100 });
 
       if (!response.ok) {
         throw new Error(`Upload failed with status ${response.status}`);
@@ -155,6 +168,7 @@ const Dashboard: React.FC = () => {
       // Auto-fill the form and lock it
       form.setFieldsValue({ blobId });
       setIsBlobIdLocked(true);
+      setUploadedFileName(file.name);
       
       message.success(`${file.name} uploaded successfully to Walrus!`);
       onSuccess(result, file);
@@ -325,6 +339,7 @@ const Dashboard: React.FC = () => {
         onCancel={() => {
           setIsRegisterModalOpen(false);
           setIsBlobIdLocked(false);
+          setUploadedFileName("");
           form.resetFields();
         }}
         footer={null}
@@ -350,26 +365,51 @@ const Dashboard: React.FC = () => {
             />
           </Form.Item>
 
-          <div className="mb-6">
-            <Upload.Dragger
-              name="file"
-              customRequest={handleWalrusUpload}
-              showUploadList={true}
-              accept=".js,.ts"
-              maxCount={1}
-              className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:border-slate-400 transition-colors"
-            >
-              <div className="p-6 flex flex-col items-center justify-center gap-3">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                  <UploadCloud size={24} className={isUploading ? "text-blue-500 animate-bounce" : "text-slate-400"} />
+          {uploadedFileName ? (
+            <div className="mb-6 p-5 border border-green-200 bg-green-50 rounded-2xl flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                  <Code size={18} className="text-green-600" />
                 </div>
                 <div>
-                  <Text className="font-bold block text-slate-700">Click or drag file to upload to Walrus</Text>
-                  <Text type="secondary" className="text-xs">Supports single .js or .ts files</Text>
+                  <Text className="font-bold block text-slate-800">{uploadedFileName}</Text>
+                  <Text className="text-xs text-green-600 font-medium">Successfully uploaded</Text>
                 </div>
               </div>
-            </Upload.Dragger>
-          </div>
+              <Button 
+                type="text" 
+                danger 
+                icon={<Trash2 size={18} />} 
+                onClick={() => {
+                  setUploadedFileName("");
+                  form.setFieldsValue({ blobId: "" });
+                  setIsBlobIdLocked(false);
+                }}
+                className="hover:bg-red-100/50"
+              />
+            </div>
+          ) : (
+            <div className="mb-6">
+              <Upload.Dragger
+                name="file"
+                customRequest={handleWalrusUpload}
+                showUploadList={true}
+                accept=".js,.ts"
+                maxCount={1}
+                className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:border-slate-400 transition-colors"
+              >
+                <div className="p-6 flex flex-col items-center justify-center gap-3">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                    <UploadCloud size={24} className={isUploading ? "text-blue-500 animate-bounce" : "text-slate-400"} />
+                  </div>
+                  <div>
+                    <Text className="font-bold block text-slate-700">Click or drag file to upload to Walrus</Text>
+                    <Text type="secondary" className="text-xs">Supports single .js or .ts files</Text>
+                  </div>
+                </div>
+              </Upload.Dragger>
+            </div>
+          )}
 
           <Form.Item
             name="blobId"
