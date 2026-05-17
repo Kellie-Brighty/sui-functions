@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Typography, Card, Space, Button, notification, Tag, Modal, Form, Input } from 'antd';
-import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play } from 'lucide-react';
+import { Layout, Menu, Typography, Card, Space, Button, notification, Tag, Modal, Form, Input, Upload, message } from 'antd';
+import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play, UploadCloud } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { PACKAGE_ID, REGISTRY_ID, HELLO_WORLD_BLOB_ID } from './constants';
@@ -19,7 +19,10 @@ const Dashboard: React.FC = () => {
   const [isExecuting, setIsExecuting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [form] = Form.useForm();
+
+  const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/store?epochs=1";
 
   // Polling for events (more reliable than subscribeEvent on public RPCs)
   useEffect(() => {
@@ -121,6 +124,43 @@ const Dashboard: React.FC = () => {
         }
       }
     );
+  };
+
+  const handleWalrusUpload = async (options: any) => {
+    const { file, onSuccess, onError } = options;
+    setIsUploading(true);
+
+    try {
+      const response = await fetch(WALRUS_PUBLISHER, {
+        method: 'PUT',
+        body: file,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      // Walrus returns either newlyCreated or alreadyCertified
+      const blobId = result.newlyCreated?.blobObject?.blobId || result.alreadyCertified?.blobId;
+      
+      if (!blobId) {
+        throw new Error("Could not extract Blob ID from Walrus response");
+      }
+
+      // Auto-fill the form
+      form.setFieldsValue({ blobId });
+      
+      message.success(`${file.name} uploaded successfully to Walrus!`);
+      onSuccess(result, file);
+    } catch (error: any) {
+      console.error("Walrus upload error:", error);
+      message.error(`${file.name} upload failed: ${error.message}`);
+      onError(error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -312,7 +352,7 @@ const Dashboard: React.FC = () => {
             name="blobId"
             label={<Text className="font-bold text-slate-700">Walrus Blob ID</Text>}
             rules={[{ required: true, message: 'Please input the Walrus Blob ID' }]}
-            extra="The unique identifier from your Walrus upload."
+            extra="You can paste an existing ID, or upload a .js file above to generate one."
           >
             <Input 
               size="large" 
@@ -320,6 +360,27 @@ const Dashboard: React.FC = () => {
               className="rounded-xl border-gray-200 bg-gray-50 h-12 font-mono"
             />
           </Form.Item>
+
+          <div className="mb-6">
+            <Upload.Dragger
+              name="file"
+              customRequest={handleWalrusUpload}
+              showUploadList={true}
+              accept=".js,.ts"
+              maxCount={1}
+              className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:border-slate-400 transition-colors"
+            >
+              <div className="p-6 flex flex-col items-center justify-center gap-3">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                  <UploadCloud size={24} className={isUploading ? "text-blue-500 animate-bounce" : "text-slate-400"} />
+                </div>
+                <div>
+                  <Text className="font-bold block text-slate-700">Click or drag file to upload to Walrus</Text>
+                  <Text type="secondary" className="text-xs">Supports single .js or .ts files</Text>
+                </div>
+              </div>
+            </Upload.Dragger>
+          </div>
 
           <Button 
             type="primary" 
