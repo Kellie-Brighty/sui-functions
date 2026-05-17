@@ -137,19 +137,34 @@ const Dashboard: React.FC = () => {
     setIsUploading(true);
     setUploadPercentage(0);
 
+    let currentVisualPercent = 0;
+    let targetPercent = 0;
+
+    // Visual tweening: smoothly chase the true network target
+    const visualInterval = setInterval(() => {
+      if (currentVisualPercent < targetPercent) {
+        // Increment smoothly (takes ~500ms to jump 0->99 for tiny files)
+        currentVisualPercent += 5 + Math.floor(Math.random() * 8); 
+        if (currentVisualPercent > targetPercent) {
+          currentVisualPercent = targetPercent;
+        }
+        setUploadPercentage(currentVisualPercent);
+        onProgress({ percent: currentVisualPercent });
+      }
+    }, 30);
+
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', WALRUS_PUBLISHER, true);
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
-        // Prevent it from hitting 100% until we actually process the response
-        let percent = Math.floor((e.loaded / e.total) * 99);
-        setUploadPercentage(percent);
-        onProgress({ percent });
+        // Update the true network target
+        targetPercent = Math.floor((e.loaded / e.total) * 99);
       }
     };
 
     xhr.onload = () => {
+      clearInterval(visualInterval);
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           setUploadPercentage(100);
@@ -186,6 +201,7 @@ const Dashboard: React.FC = () => {
     };
 
     xhr.onerror = () => {
+      clearInterval(visualInterval);
       const error = new Error("Network error occurred during upload.");
       console.error("Walrus upload Network error:", error);
       message.error(`${file.name} upload failed: Network Error`);
