@@ -20,6 +20,7 @@ const Dashboard: React.FC = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadPercentage, setUploadPercentage] = useState(0);
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [triggerFunctionName, setTriggerFunctionName] = useState("hello_world");
@@ -138,9 +139,11 @@ const Dashboard: React.FC = () => {
     try {
       // Simulate progress since fetch doesn't natively expose upload progress
       let percent = 0;
+      setUploadPercentage(0);
       const progressInterval = setInterval(() => {
-        percent += 15;
+        percent += 5;
         if (percent > 99) percent = 99;
+        setUploadPercentage(percent);
         onProgress({ percent });
       }, 50);
 
@@ -150,6 +153,7 @@ const Dashboard: React.FC = () => {
       });
 
       clearInterval(progressInterval);
+      setUploadPercentage(100);
       onProgress({ percent: 100 });
 
       if (!response.ok) {
@@ -399,13 +403,26 @@ const Dashboard: React.FC = () => {
                 className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:border-slate-400 transition-colors"
               >
                 <div className="p-6 flex flex-col items-center justify-center gap-3">
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <UploadCloud size={24} className={isUploading ? "text-blue-500 animate-bounce" : "text-slate-400"} />
-                  </div>
-                  <div>
-                    <Text className="font-bold block text-slate-700">Click or drag file to upload to Walrus</Text>
-                    <Text type="secondary" className="text-xs">Supports single .js or .ts files</Text>
-                  </div>
+                  {isUploading ? (
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <div className="relative w-16 h-16 flex items-center justify-center mb-4">
+                        <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+                        <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                        <Text className="font-bold text-blue-500">{uploadPercentage}%</Text>
+                      </div>
+                      <Text className="font-bold text-slate-700">Uploading to Walrus...</Text>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                        <UploadCloud size={24} className="text-slate-400" />
+                      </div>
+                      <div>
+                        <Text className="font-bold block text-slate-700">Click or drag file to upload to Walrus</Text>
+                        <Text type="secondary" className="text-xs">Supports single .js or .ts files</Text>
+                      </div>
+                    </>
+                  )}
                 </div>
               </Upload.Dragger>
             </div>
