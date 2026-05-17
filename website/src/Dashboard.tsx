@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [form] = Form.useForm();
 
-  const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/store?epochs=1";
+  const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=1";
 
   // Polling for events (more reliable than subscribeEvent on public RPCs)
   useEffect(() => {
