@@ -34,8 +34,8 @@ export async function executeInSandbox(code: string): Promise<any> {
         // Compile the code
         const script = await isolate.compileScript(shimmedCode);
 
-        // Execute with a 5 second timeout
-        const result = await script.run(context, { timeout: 5000 });
+        // Execute with a 5 second timeout and copy the result from the sandbox
+        const result = await script.run(context, { timeout: 5000, copy: true });
         
         return result;
     } catch (error: any) {
