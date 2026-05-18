@@ -937,7 +937,7 @@ function App() {
                 </span>
                 {receiptBlobId ? (
                   <a 
-                    href={`https://extractor.walrus-testnet.walrus.space/v1/blobs/${receiptBlobId}`}
+                    href={`https://aggregator.walrus-testnet.walrus.space/v1/blobs/${receiptBlobId}`}
                     target="_blank"
                     rel="noreferrer"
                     style={{ 
@@ -1005,7 +1005,7 @@ function App() {
               <button 
                 onClick={() => {
                   if (receiptBlobId) {
-                    navigator.clipboard.writeText(`https://extractor.walrus-testnet.walrus.space/v1/blobs/${receiptBlobId}`);
+                    navigator.clipboard.writeText(`https://aggregator.walrus-testnet.walrus.space/v1/blobs/${receiptBlobId}`);
                     setNotification({
                       isOpen: true,
                       type: 'success',
