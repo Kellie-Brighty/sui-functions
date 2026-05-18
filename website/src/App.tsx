@@ -703,6 +703,153 @@ const App: React.FC = () => {
           </div>
         </section>
 
+        {/* LIVE DEMO SHOWCASE */}
+        <section className="mb-32">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.1)]">
+              <Zap size={10} /> Dynamic Showcases
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+              Sovereign Demo Ecosystem
+            </h2>
+            <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
+              Explore dynamic, high-performance web applications powered entirely by secure V8 execution isolates and immutable Walrus data publishing.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {/* Card 1: SuiNode Storefront */}
+            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-blue/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
+              {/* Card Blue Flare */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-[50px] rounded-full group-hover:bg-brand-blue/10 transition-colors pointer-events-none" />
+              
+              <div>
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-12 h-12 rounded-2xl border border-brand-blue/20 bg-brand-blue-glow flex items-center justify-center text-brand-blue shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                    <Globe size={20} />
+                  </div>
+                  <span className="text-[9px] font-mono font-extrabold text-brand-blue bg-brand-blue-glow/65 border border-brand-blue/30 px-2 py-1 rounded-full uppercase tracking-wider">
+                    Live Demo
+                  </span>
+                </div>
+                
+                <h3 className="text-xl font-bold text-white font-outfit mb-3 group-hover:text-brand-blue transition-colors">
+                  SuiNode E-Commerce
+                </h3>
+                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
+                  A high-end web3 storefront featuring live inventory valuations driven by real-time SUI price deviation oracles and decentralized promo validation scripts run in secure V8 sandboxes.
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-8">
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">isolated-vm</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Walrus Receipting</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Sui Testnet</span>
+                </div>
+              </div>
+
+              <a 
+                href={typeof window !== 'undefined' && window.location.port === '5174' ? 'http://localhost:5173' : 'http://localhost:5174'}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full animate-none"
+              >
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-center gap-2 border border-brand-blue/30 hover:bg-brand-blue/10 text-brand-blue hover:text-white font-bold h-11"
+                >
+                  <span>Launch Storefront</span>
+                  <ArrowRight size={14} />
+                </Button>
+              </a>
+            </div>
+
+            {/* Card 2: Yield Rebalancer */}
+            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-orange/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
+              {/* Card Orange Flare */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 blur-[50px] rounded-full group-hover:bg-brand-orange/10 transition-colors pointer-events-none" />
+              
+              <div>
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-12 h-12 rounded-2xl border border-brand-orange/20 bg-brand-orange-glow flex items-center justify-center text-brand-orange shadow-[0_0_15px_rgba(255,126,33,0.1)]">
+                    <Zap size={20} />
+                  </div>
+                  <span className="text-[9px] font-mono font-extrabold text-brand-orange bg-brand-orange-glow/65 border border-brand-orange/30 px-2 py-1 rounded-full uppercase tracking-wider">
+                    Defi Vault
+                  </span>
+                </div>
+                
+                <h3 className="text-xl font-bold text-white font-outfit mb-3 group-hover:text-brand-orange transition-colors">
+                  Yield Rebalancer
+                </h3>
+                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
+                  An automated portfolio vault that continuously audits decentralized lending pool interest rates off-chain and shifts capital between index assets via serverless reallocation scripts.
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-8">
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Autonomous Keepers</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Interest Poller</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Smart Reallocate</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={() => {
+                  alert("Yield Rebalancer Demo: In order to test this vault, connect your developer wallet, navigate to your Sui-Functions Dashboard, and deploy the dynamic rebalancer.js template function code.");
+                }}
+                variant="ghost" 
+                size="sm" 
+                className="w-full justify-center gap-2 border border-brand-orange/30 hover:bg-brand-orange/10 text-brand-orange hover:text-white font-bold h-11"
+              >
+                <span>View DeFi Details</span>
+                <ArrowRight size={14} />
+              </Button>
+            </div>
+
+            {/* Card 3: Audit Engine */}
+            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-green/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
+              {/* Card Green Flare */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-green/5 blur-[50px] rounded-full group-hover:bg-brand-green/10 transition-colors pointer-events-none" />
+              
+              <div>
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-12 h-12 rounded-2xl border border-brand-green/20 bg-brand-green-glow flex items-center justify-center text-brand-green shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                    <Shield size={20} />
+                  </div>
+                  <span className="text-[9px] font-mono font-extrabold text-brand-green bg-brand-green-glow/65 border border-brand-green/30 px-2 py-1 rounded-full uppercase tracking-wider">
+                    Immutable Audit
+                  </span>
+                </div>
+                
+                <h3 className="text-xl font-bold text-white font-outfit mb-3 group-hover:text-brand-green transition-colors">
+                  Walrus Auditor
+                </h3>
+                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
+                  A high-integrity state-archiving network that converts transactional purchase outputs into decentralized receipt blobs, registering SHA-256 cryptographic proofs on the Sui ledger.
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-8">
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Walrus Publisher</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Ledger Anchoring</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Cryptographic Proof</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={() => {
+                  alert("Audit Engine Demo: Receipt archiving runs natively inside the SuiNode Storefront purchase checkout. Execute a product purchase on the store to automatically inspect dynamic Walrus blobs.");
+                }}
+                variant="ghost" 
+                size="sm" 
+                className="w-full justify-center gap-2 border border-brand-green/30 hover:bg-brand-green/10 text-brand-green hover:text-white font-bold h-11"
+              >
+                <span>Launch Auditor Demo</span>
+                <ArrowRight size={14} />
+              </Button>
+            </div>
+          </div>
+        </section>
+
         {/* ENTERPRISE AVAILABILITY */}
         <section className="mb-32 relative rounded-[48px] overflow-hidden border border-[#161722]/50 bg-[#0a0b10]/60">
           {/* Enterprise map image background */}
