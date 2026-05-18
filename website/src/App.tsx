@@ -255,47 +255,97 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* FEATURES GRID SECTION */}
+        {/* FEATURES SECTION (SPLIT-GRID INTERACTIVE ROW LAYOUT) */}
         <section id="network" className="mb-32">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <Card glowColor="orange" className="flex flex-col gap-6 text-left group">
-              <div className="w-12 h-12 rounded-xl bg-brand-orange-glow border border-brand-orange/30 flex items-center justify-center text-brand-orange shadow-[0_4px_15px_rgba(255,126,33,0.15)] group-hover:scale-110 transition-transform duration-300">
-                <Shield size={24} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+            
+            {/* Left Column: Context & Sticky Title */}
+            <div className="lg:col-span-5 flex flex-col justify-center text-left">
+              <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[9px] font-mono font-bold uppercase tracking-widest text-brand-orange inline-block mb-4 self-start">
+                Core Capabilities
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit leading-[1.15]">
+                Engineered for <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
+                  Absolute Security
+                </span>
+              </h2>
+              <p className="text-slate-300 text-sm leading-relaxed font-medium mb-6 max-w-md">
+                Sui-Functions decouples state, compute, and logic to deliver a trustless serverless execution environment without compromising execution speed.
+              </p>
+              <div className="flex items-center gap-3 text-brand-orange font-bold text-[10px] uppercase tracking-wider font-mono">
+                <span className="w-2.5 h-2.5 rounded-full bg-brand-orange animate-ping" />
+                Zero Trust Architecture Active
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-3 font-outfit">Secure V8 Sandboxing</h3>
-                <p className="text-slate-200 text-sm leading-relaxed font-medium">
-                  Execute code in secure Google V8 isolates. Enforces strict 128MB memory heap caps, 5s CPU limits, and filesystem-blocking shims.
-                </p>
-              </div>
-            </Card>
+            </div>
 
-            {/* Feature 2 */}
-            <Card glowColor="blue" className="flex flex-col gap-6 text-left group">
-              <div className="w-12 h-12 rounded-xl bg-brand-blue-glow border border-brand-blue/30 flex items-center justify-center text-brand-blue shadow-[0_4px_15px_rgba(59,130,246,0.15)] group-hover:scale-110 transition-transform duration-300">
-                <Zap size={24} />
+            {/* Right Column: High-fidelity stacked list elements */}
+            <div className="lg:col-span-7 flex flex-col gap-6">
+              
+              {/* Feature Item 1 */}
+              <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-orange/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
+                {/* Accent glow line on top left */}
+                <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-orange to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Icon Container */}
+                <div className="w-14 h-14 rounded-2xl bg-brand-orange-glow border border-brand-orange/25 flex items-center justify-center text-brand-orange shadow-[0_4px_15px_rgba(255,126,33,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                  <Shield size={26} />
+                </div>
+                
+                {/* Description */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-orange transition-colors duration-200">
+                    Secure V8 Sandboxing
+                  </h3>
+                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                    Execute code in secure Google V8 isolates. Enforces strict 128MB memory heap caps, 5s CPU execution limits, and robust filesystem-blocking security shims.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-3 font-outfit">On-Chain Trigger Bus</h3>
-                <p className="text-slate-200 text-sm leading-relaxed font-medium">
-                  Decouple event-driven logic via high-speed Sui smart contracts. Dynamic execution registry controls permissions and commits results.
-                </p>
-              </div>
-            </Card>
 
-            {/* Feature 3 */}
-            <Card glowColor="green" className="flex flex-col gap-6 text-left group">
-              <div className="w-12 h-12 rounded-xl bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green shadow-[0_4px_15px_rgba(16,185,129,0.15)] group-hover:scale-110 transition-transform duration-300">
-                <Server size={24} />
+              {/* Feature Item 2 */}
+              <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-blue/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
+                {/* Accent glow line on top left */}
+                <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                {/* Icon Container */}
+                <div className="w-14 h-14 rounded-2xl bg-brand-blue-glow border border-brand-blue/25 flex items-center justify-center text-brand-blue shadow-[0_4px_15px_rgba(59,130,246,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                  <Zap size={26} />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-blue transition-colors duration-200">
+                    On-Chain Trigger Bus
+                  </h3>
+                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                    Decouple event-driven logic via high-speed Sui smart contracts. Dynamic execution registry controls strict actor permissions and commits verified results.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-3 font-outfit">Walrus Logic Library</h3>
-                <p className="text-slate-200 text-sm leading-relaxed font-medium">
-                  Upload serverless edge code directly to the Walrus Storage Network as permanent, immutable, content-addressed storage blobs.
-                </p>
+
+              {/* Feature Item 3 */}
+              <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-green/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
+                {/* Accent glow line on top left */}
+                <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-green to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                {/* Icon Container */}
+                <div className="w-14 h-14 rounded-2xl bg-brand-green-glow border border-brand-green/25 flex items-center justify-center text-brand-green shadow-[0_4px_15px_rgba(16,185,129,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                  <Server size={26} />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-green transition-colors duration-200">
+                    Walrus Logic Library
+                  </h3>
+                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                    Upload serverless edge code directly to the Walrus Storage Network as permanent, immutable, content-addressed and cryptographically secure storage blobs.
+                  </p>
+                </div>
               </div>
-            </Card>
+
+            </div>
           </div>
         </section>
 
