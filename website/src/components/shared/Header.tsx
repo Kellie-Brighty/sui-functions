@@ -6,9 +6,10 @@ import { Button } from './Button';
 interface HeaderProps {
   onDemoClick?: () => void;
   onBenefitsClick?: () => void;
+  onConnectClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick }) => {
+export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick, onConnectClick }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -61,10 +62,15 @@ export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick }) 
         {/* Action Buttons (Desktop) */}
         <div className="hidden md:flex items-center">
           <div className="relative">
-            <ConnectButton 
-              className="!bg-gradient-to-r !from-brand-orange !to-[#F76707] !text-white !rounded-xl !font-bold !border-none !text-sm !px-5 !py-2.5 !shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:!shadow-[0_4px_20px_rgba(255,126,33,0.4)] hover:!brightness-110 !transition-all !duration-300 active:!scale-95 cursor-pointer"
-              connectText="Deploy Now"
-            />
+            <Button 
+              onClick={onConnectClick}
+              variant="primary" 
+              size="md"
+              className="!px-5 !py-2.5 flex items-center justify-center gap-2"
+            >
+              <span>Deploy Now</span>
+              <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />
+            </Button>
           </div>
         </div>
 
@@ -110,10 +116,15 @@ export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick }) 
           </a>
           <hr className="border-brand-card-border/60 my-1" />
           <div className="pt-2">
-            <ConnectButton 
-              className="!w-full !justify-center !bg-gradient-to-r !from-brand-orange !to-[#F76707] !text-white !rounded-xl !font-bold !border-none !text-sm !px-5 !py-3 !shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:!brightness-110 !transition-all !duration-300 active:!scale-95 cursor-pointer"
-              connectText="Deploy Now"
-            />
+            <Button 
+              onClick={() => { setMobileMenuOpen(false); onConnectClick?.(); }}
+              variant="primary" 
+              size="md"
+              className="!w-full !justify-center !px-5 !py-3 flex items-center justify-center gap-2"
+            >
+              <span>Deploy Now</span>
+              <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />
+            </Button>
           </div>
         </div>
       )}

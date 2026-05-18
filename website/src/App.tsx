@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCurrentAccount } from '@mysten/dapp-kit';
+import { useCurrentAccount, ConnectModal } from '@mysten/dapp-kit';
 import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users } from 'lucide-react';
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 
 const App: React.FC = () => {
   const account = useCurrentAccount();
+  const [showConnectModal, setShowConnectModal] = useState(false);
   const [demoStatus, setDemoStatus] = useState<'idle' | 'running' | 'success'>('idle');
   const [logs, setLogs] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(-1);
@@ -82,7 +83,7 @@ const App: React.FC = () => {
       {/* Content layer above background */}
       <div className="relative z-10">
       {/* Navbar Header */}
-      <Header onDemoClick={scrollToDemo} onBenefitsClick={scrollToBenefits} />
+      <Header onDemoClick={scrollToDemo} onBenefitsClick={scrollToBenefits} onConnectClick={() => setShowConnectModal(true)} />
 
       {/* Main Container */}
       <main className="w-full px-6 lg:px-16 pt-12 pb-24">
@@ -125,7 +126,7 @@ const App: React.FC = () => {
               {/* High-fidelity custom connect button trigger */}
               <div className="relative flex justify-center">
                 <Button 
-                  onClick={runDemo} 
+                  onClick={() => setShowConnectModal(true)} 
                   variant="primary" 
                   size="lg"
                   className="w-full sm:w-auto flex items-center justify-center gap-2.5"
@@ -769,13 +770,13 @@ const App: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
                 <div className="relative">
                   <Button 
-                    onClick={runDemo} 
+                    onClick={() => setShowConnectModal(true)} 
                     variant="primary" 
                     size="lg"
                     className="w-full sm:w-auto px-10 flex items-center justify-center gap-2.5"
                   >
+                    <span>Start Deploying</span>
                     <img src="/deploy.svg" alt="Deploy Icon" className="w-5 h-5 object-contain" />
-                    Start Deploying
                   </Button>
                 </div>
                 <Button 
@@ -798,6 +799,13 @@ const App: React.FC = () => {
       {/* Footer */}
       <Footer />
       </div>{/* end content z-10 wrapper */}
+
+      {/* Controlled Wallet Connect Modal */}
+      <ConnectModal 
+        trigger={<button className="hidden" />}
+        open={showConnectModal} 
+        onOpenChange={setShowConnectModal} 
+      />
     </div>
   );
 };
