@@ -93,7 +93,16 @@ const App: React.FC = () => {
         {/* HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-
+            {/* Tagline / Chip */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[10px] font-mono font-bold uppercase tracking-widest text-brand-orange mb-6 flex items-center gap-2"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+              Sui-Functions Protocol
+            </motion.div>
 
             {/* Title */}
             <motion.h1 
@@ -102,9 +111,9 @@ const App: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-outfit text-white leading-[1.1] mb-6"
             >
-              Sovereign Compute for <br />
+              A Decentralized, <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
-                Web3 &amp; Enterprise
+                Serverless Lambda Platform
               </span>
             </motion.h1>
 
@@ -115,7 +124,7 @@ const App: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-slate-200 leading-relaxed mb-10 max-w-2xl font-medium"
             >
-              Deploy verifiably secure, censorship-resistant serverless microservices powered by Sui's real-time events and Walrus's immutable storage. Zero central cloud dependencies.
+              Deploy verifiably secure, censorship-resistant serverless microservices powered by Sui's real-time events and Walrus's immutable storage. Run zero-trust VM isolates with zero central cloud dependencies.
             </motion.p>
 
             {/* Buttons */}
