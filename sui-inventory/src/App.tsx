@@ -10,7 +10,9 @@ import {
   AlertCircle, 
   Layers, 
   FileCode,
-  ShieldCheck
+  ShieldCheck,
+  CheckCircle2,
+  Info
 } from 'lucide-react';
 import './App.css';
 import { ConnectButton, useCurrentAccount, useSuiClient, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
@@ -94,6 +96,19 @@ function App() {
   const [receiptBlobId, setReceiptBlobId] = useState<string | null>(null);
   const [purchaseTxDigest, setPurchaseTxDigest] = useState<string | null>(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'info';
+    title: string;
+    message: string;
+    digest?: string;
+  }>({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: '',
+    digest: ''
+  });
 
   // Sync wallet balance
   useEffect(() => {
@@ -232,7 +247,12 @@ function App() {
   // Trigger On-chain Oracle update by executing the smart contract calling trigger::call_function
   const triggerOracleUpdate = async () => {
     if (!account) {
-      alert("Please connect your wallet first to trigger an on-chain update!");
+      setNotification({
+        isOpen: true,
+        type: 'info',
+        title: 'Wallet Connection Required',
+        message: 'Please connect your Sui wallet first in order to trigger a sovereign on-chain update.'
+      });
       return;
     }
     
@@ -252,12 +272,23 @@ function App() {
         transaction: tx,
       });
       
-      alert(`Success! SUI on-chain trigger submitted.\nTransaction Digest: ${result.digest}\n\nThe background V8 isolate runner will now retrieve the fresh SUI price feed from CoinGecko and commit it on-chain. Please wait a few seconds and tap refresh!`);
+      setNotification({
+        isOpen: true,
+        type: 'success',
+        title: 'Sui On-Chain Trigger Submitted!',
+        message: 'The decentralized V8 isolate runner will now automatically retrieve the fresh SUI price feed from CoinGecko and commit it on-chain. Please wait a few seconds and tap refresh!',
+        digest: result.digest
+      });
       // Auto-trigger a price poll after 5 seconds to give the runner time to process
       setTimeout(fetchSuiPrice, 5000);
     } catch (e: any) {
       console.error("Oracle trigger transaction failed:", e);
-      alert(`Oracle update failed: ${e.message || e}`);
+      setNotification({
+        isOpen: true,
+        type: 'error',
+        title: 'Oracle Update Failed',
+        message: e.message || String(e)
+      });
     } finally {
       setIsFetchingPrice(false);
     }
@@ -286,7 +317,12 @@ function App() {
   // Handle purchase transaction and generate post-purchase decentralized receipt
   const handleCompletePayment = async () => {
     if (!account) {
-      alert("Please connect your wallet to execute the transaction!");
+      setNotification({
+        isOpen: true,
+        type: 'info',
+        title: 'Wallet Connection Required',
+        message: 'Please connect your Sui wallet in order to authorize and execute this purchase.'
+      });
       return;
     }
 
@@ -360,7 +396,12 @@ function App() {
 
     } catch (e: any) {
       console.error("Purchase transaction failed:", e);
-      alert(`Purchase Failed: ${e.message || e}`);
+      setNotification({
+        isOpen: true,
+        type: 'error',
+        title: 'Purchase Failed',
+        message: e.message || String(e)
+      });
     } finally {
       setIsPaying(false);
     }
@@ -965,7 +1006,12 @@ function App() {
                 onClick={() => {
                   if (receiptBlobId) {
                     navigator.clipboard.writeText(`https://extractor.walrus-testnet.walrus.space/v1/blobs/${receiptBlobId}`);
-                    alert("Walrus Receipt Link copied to clipboard!");
+                    setNotification({
+                      isOpen: true,
+                      type: 'success',
+                      title: 'Link Copied to Clipboard!',
+                      message: 'The immutable Walrus receipt link has been successfully copied to your clipboard.'
+                    });
                   }
                 }}
                 disabled={!receiptBlobId}
@@ -999,6 +1045,172 @@ function App() {
               >
                 Back to Store
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom premium notification modal */}
+      {notification.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(5, 6, 10, 0.85)',
+          backdropFilter: 'blur(12px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '20px'
+        }}>
+          <div style={{
+            maxWidth: '500px',
+            width: '100%',
+            backgroundColor: '#0c0d16',
+            border: notification.type === 'success' ? '1px solid rgba(16, 185, 129, 0.3)' : notification.type === 'error' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
+            borderRadius: '24px',
+            padding: '32px',
+            boxShadow: notification.type === 'success' ? '0 10px 40px rgba(16, 185, 129, 0.15)' : notification.type === 'error' ? '0 10px 40px rgba(239, 68, 68, 0.15)' : '0 10px 40px rgba(59, 130, 246, 0.15)',
+            textAlign: 'center',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Ambient background glow */}
+            <div style={{
+              position: 'absolute',
+              top: '-100px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '200px',
+              height: '200px',
+              backgroundColor: notification.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : notification.type === 'error' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+              borderRadius: '50%',
+              filter: 'blur(50px)',
+              pointerEvents: 'none'
+            }} />
+
+            {/* Icon */}
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '20px',
+              backgroundColor: notification.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : notification.type === 'error' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+              border: notification.type === 'success' ? '1px solid rgba(16, 185, 129, 0.3)' : notification.type === 'error' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 20px',
+              color: notification.type === 'success' ? '#10b981' : notification.type === 'error' ? '#ef4444' : '#3b82f6'
+            }}>
+              {notification.type === 'success' ? (
+                <CheckCircle2 size={32} />
+              ) : notification.type === 'error' ? (
+                <AlertCircle size={32} />
+              ) : (
+                <Info size={32} />
+              )}
+            </div>
+
+            {/* Title */}
+            <h3 style={{
+              fontSize: '22px',
+              fontWeight: '800',
+              color: 'white',
+              marginBottom: '12px',
+              fontFamily: 'sans-serif'
+            }}>
+              {notification.title}
+            </h3>
+
+            {/* Message */}
+            <p style={{
+              fontSize: '14px',
+              color: '#94a3b8',
+              lineHeight: '1.6',
+              marginBottom: '24px',
+              fontWeight: '500'
+            }}>
+              {notification.message}
+            </p>
+
+            {/* Digest Area if present */}
+            {notification.digest && (
+              <div style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                marginBottom: '24px',
+                textAlign: 'left'
+              }}>
+                <div style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '4px',
+                  fontFamily: 'monospace'
+                }}>
+                  Transaction Digest
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: 'white',
+                  wordBreak: 'break-all',
+                  fontFamily: 'monospace',
+                  fontWeight: '600'
+                }}>
+                  {notification.digest}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+                style={{
+                  padding: '12px 28px',
+                  borderRadius: '14px',
+                  backgroundColor: notification.type === 'success' ? '#10b981' : notification.type === 'error' ? '#ef4444' : '#3b82f6',
+                  color: 'white',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Acknowledge
+              </button>
+              {notification.digest && (
+                <a 
+                  href={`https://suiscan.xyz/testnet/tx/${notification.digest}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: '14px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#e2e8f0',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  View Explorer
+                </a>
+              )}
             </div>
           </div>
         </div>
