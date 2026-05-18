@@ -93,16 +93,6 @@ const App: React.FC = () => {
         {/* HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            {/* Tagline / Chip */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[10px] font-mono font-bold uppercase tracking-widest text-brand-orange mb-6 flex items-center gap-2"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
-              Sui-Functions Protocol
-            </motion.div>
 
             {/* Title */}
             <motion.h1 
@@ -142,8 +132,8 @@ const App: React.FC = () => {
                   size="lg"
                   className="w-full sm:w-auto flex items-center justify-center gap-2.5"
                 >
+                  <span>Start Deploying</span>
                   <img src="/deploy.svg" alt="Deploy Icon" className="w-5 h-5 object-contain" />
-                  Start Deploying
                 </Button>
               </div>
               <Button 
