@@ -748,7 +748,7 @@ const App: React.FC = () => {
               </div>
 
               <a 
-                href={typeof window !== 'undefined' && window.location.port === '5174' ? 'http://localhost:5173' : 'http://localhost:5174'}
+                href="https://sui-inventory.web.app/"
                 target="_blank"
                 rel="noreferrer"
                 className="w-full animate-none"
