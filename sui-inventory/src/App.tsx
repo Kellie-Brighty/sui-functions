@@ -47,7 +47,7 @@ function App() {
       id: 'suinode-pro',
       name: 'SuiNode Pro Server',
       category: 'Compute Hardware',
-      suiPrice: 2500,
+      suiPrice: 0.02,
       description: 'Fully configured bare-metal validator rig with 128GB ECC RAM, ultra-low latency NVMe storage, and pre-loaded Sui testnet binaries.',
       stock: 12,
       icon: Server
@@ -56,7 +56,7 @@ function App() {
       id: 'walrus-brick',
       name: 'Walrus Storage Brick',
       category: 'Decentralized Storage',
-      suiPrice: 800,
+      suiPrice: 0.01,
       description: 'Hot-swappable 20TB robust storage capsule designed to interact natively with the Walrus storage protocol. High durability.',
       stock: 45,
       icon: Database
@@ -65,7 +65,7 @@ function App() {
       id: 'antigravity-rig',
       name: 'Antigravity AI Rig',
       category: 'AI Heavy Compute',
-      suiPrice: 6200,
+      suiPrice: 0.05,
       description: 'The ultimate pair programming hardware. Custom water-cooled AI accelerator optimized for local deep learning models.',
       stock: 4,
       icon: Cpu
@@ -74,7 +74,7 @@ function App() {
       id: 'move-coprocessor',
       name: 'Move Accelerator Card',
       category: 'Cryptographic Coprocessor',
-      suiPrice: 350,
+      suiPrice: 0.005,
       description: 'PCIe expansion card designed specifically to speed up Move transaction signing and zero-knowledge proof generation.',
       stock: 89,
       icon: Layers
@@ -322,8 +322,8 @@ function App() {
             productId: id,
             name: prod?.name || id,
             quantity: qty,
-            priceUSD: prod ? prod.suiPrice : 0,
-            priceSUI: prod && suiPrice ? parseFloat((prod.suiPrice / suiPrice).toFixed(4)) : 0
+            priceUSD: prod && suiPrice ? parseFloat((prod.suiPrice * suiPrice).toFixed(4)) : 0,
+            priceSUI: prod ? prod.suiPrice : 0
           };
         }),
         financials: {
