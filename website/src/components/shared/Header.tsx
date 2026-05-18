@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick, on
               onClick={() => { setMobileMenuOpen(false); onConnectClick?.(); }}
               variant="primary" 
               size="md"
-              className="!w-full !justify-center !px-5 !py-3 flex items-center justify-center gap-2"
+              className="!w-full !justify-center !px-5 !py-3 flex items-center gap-2"
             >
               <span>Deploy Now</span>
               <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />

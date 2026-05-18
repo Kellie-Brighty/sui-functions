@@ -200,7 +200,7 @@ export async function startPolling(packageId: string) {
                 for (const event of result.data) {
                     console.log("\n--- New Execution Triggered ---");
                     
-                    const { project_id, walrus_blob_id, function_name, caller } = event.parsedJson as any;
+                    const { project_id, walrus_blob_id, function_name, caller, input_data } = event.parsedJson as any;
 
                     if (walrus_blob_id) {
                         try {
@@ -211,8 +211,8 @@ export async function startPolling(packageId: string) {
                             const code = await fetchFunctionCode(walrus_blob_id);
                             
                             // 2. Execute in Sandbox
-                            console.log("Executing in sandbox...");
-                            const executionResult = await executeInSandbox(code);
+                            console.log("Executing in sandbox with input:", input_data);
+                            const executionResult = await executeInSandbox(code, input_data);
                             
                             console.log("Execution Result:", executionResult);
 

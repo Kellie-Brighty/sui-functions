@@ -4,7 +4,7 @@ import ivm from 'isolated-vm';
  * Executes the provided code in a secure sandbox.
  * @param code The JS code string to execute.
  */
-export async function executeInSandbox(code: string): Promise<any> {
+export async function executeInSandbox(code: string, inputData: string = '{}'): Promise<any> {
     // Create a new isolate with 128MB memory limit
     const isolate = new ivm.Isolate({ memoryLimit: 128 });
 
@@ -13,6 +13,9 @@ export async function executeInSandbox(code: string): Promise<any> {
 
     // Get a Reference{} to the global object within the context
     const jail = context.global;
+
+    // Inject inputData variable
+    await jail.set('rawInputData', inputData);
 
     // 1. Inject console.log mapping
     await jail.set('log', new ivm.Reference(function(...args: any[]) {
@@ -42,6 +45,12 @@ export async function executeInSandbox(code: string): Promise<any> {
                 json: async () => JSON.parse(text)
             };
         };
+        globalThis.inputData = rawInputData;
+        try {
+            globalThis.input = JSON.parse(rawInputData);
+        } catch (e) {
+            globalThis.input = {};
+        }
         (async function() {
             ${code}
         })()
