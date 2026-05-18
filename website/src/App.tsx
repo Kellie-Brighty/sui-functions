@@ -63,9 +63,6 @@ const App: React.FC = () => {
         {/* Base radial glow at top */}
         <div className="absolute inset-0 radial-glow-orange" />
         
-        {/* Grid overlay */}
-        <div className="absolute inset-0 grid-bg opacity-70" />
-        
         {/* Large floating orb - top right (orange) */}
         <div className="absolute -top-32 -right-32 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-brand-orange/20 to-transparent blur-[120px] animate-float-slow" />
         
@@ -88,7 +85,8 @@ const App: React.FC = () => {
       <Header onDemoClick={scrollToDemo} onBenefitsClick={scrollToBenefits} />
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-6 lg:px-16 pt-12 pb-24">
+      <main className="w-full px-6 lg:px-16 pt-12 pb-24">
+        <div className="max-w-7xl mx-auto">
         
         {/* HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
@@ -744,6 +742,7 @@ const App: React.FC = () => {
           </div>
         </section>
 
+        </div>
       </main>
 
       {/* Footer */}
