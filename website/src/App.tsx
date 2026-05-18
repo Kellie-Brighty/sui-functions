@@ -1,257 +1,757 @@
 import React, { useState } from 'react';
-import { Button, Card, Layout, Typography, Space, Tag } from 'antd';
-import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
+import { useCurrentAccount } from '@mysten/dapp-kit';
+import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users } from 'lucide-react';
 import Dashboard from './Dashboard';
-
-const { Header, Content, Footer } = Layout;
-const { Title, Text, Paragraph } = Typography;
+import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 
 const App: React.FC = () => {
   const account = useCurrentAccount();
   const [demoStatus, setDemoStatus] = useState<'idle' | 'running' | 'success'>('idle');
   const [logs, setLogs] = useState<string[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1);
 
-  // If connected, show Dashboard
+  // If wallet is connected, show the complete SUI Dashboard
   if (account) {
     return <Dashboard />;
   }
 
   const runDemo = () => {
     setDemoStatus('running');
-    setLogs(['[System] Initializing execution engine...']);
+    setLogs(['[System] Initializing Price Oracle deviation checker...']);
     setCurrentStep(0);
     
     setTimeout(() => {
-      setLogs(prev => [...prev, '[Blockchain] Detected ExecutionTriggered event.']);
+      setLogs(prev => [...prev, '[Blockchain] SUI/USD Price deviation >0.1% detected. Emitting call_function() event...']);
       setCurrentStep(1);
-    }, 1000);
+    }, 1200);
 
     setTimeout(() => {
-      setLogs(prev => [...prev, '[Storage] Fetching code from Walrus Blob: W7VwX...']);
+      setLogs(prev => [...prev, '[Storage] Pulling immutable \'sui_usd_oracle.js\' script from Walrus Blob: W7VwX...']);
       setCurrentStep(2);
-    }, 2500);
+    }, 2800);
 
     setTimeout(() => {
-      setLogs(prev => [...prev, '[Sandbox] Booting isolated-vm environment.']);
-      setLogs(prev => [...prev, '[VM] Hello from Sui-Functions!']);
+      setLogs(prev => [
+        ...prev, 
+        '[Sandbox] Booting Google V8 isolate VM (128MB Memory Heap cap)...',
+        '[VM] ⚡ Execution Success! SUI Price: $2.45 USD. Submitting cryptographically signed result to Sui event bus...'
+      ]);
       setCurrentStep(3);
       setDemoStatus('success');
-    }, 4500);
+    }, 4800);
+  };
+
+  const resetDemo = () => {
+    setDemoStatus('idle');
+    setLogs([]);
+    setCurrentStep(-1);
+  };
+
+  const scrollToDemo = () => {
+    document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToBenefits = () => {
+    document.getElementById('network')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <Layout className="min-h-screen bg-off-white">
-      <Header className="sticky top-0 z-50 flex items-center justify-between px-8 bg-white/70 backdrop-blur-md border-b border-black/5 h-20">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-slate-pro rounded-lg flex items-center justify-center">
-            <Zap size={18} className="text-white" />
+    <div className="min-h-screen bg-brand-dark text-slate-100 font-sans selection:bg-brand-orange/30 selection:text-white overflow-x-hidden relative">
+      {/* ═══ LAYERED AMBIENT BACKGROUND ═══ */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Base radial glow at top */}
+        <div className="absolute inset-0 radial-glow-orange" />
+        
+        {/* Grid overlay */}
+        <div className="absolute inset-0 grid-bg opacity-70" />
+        
+        {/* Large floating orb - top right (orange) */}
+        <div className="absolute -top-32 -right-32 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-brand-orange/20 to-transparent blur-[120px] animate-float-slow" />
+        
+        {/* Medium orb - mid left (blue) */}
+        <div className="absolute top-[40%] -left-48 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-brand-blue/20 to-transparent blur-[100px] animate-float-medium" />
+        
+        {/* Small orb - bottom right (orange/amber) */}
+        <div className="absolute top-[70%] -right-24 w-[400px] h-[400px] rounded-full bg-gradient-to-bl from-amber-500/20 to-transparent blur-[100px] animate-float-reverse" />
+        
+        {/* Faint aurora sweep across center */}
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[90vw] h-[600px] bg-gradient-to-r from-transparent via-brand-orange/15 to-transparent blur-[80px] rotate-[-8deg] animate-aurora" />
+        
+        {/* Subtle noise texture overlay */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`, backgroundRepeat: 'repeat', backgroundSize: '128px 128px' }} />
+      </div>
+      
+      {/* Content layer above background */}
+      <div className="relative z-10">
+      {/* Navbar Header */}
+      <Header onDemoClick={scrollToDemo} onBenefitsClick={scrollToBenefits} />
+
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-6 lg:px-16 pt-12 pb-24">
+        
+        {/* HERO SECTION */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
+          <div className="lg:col-span-7 flex flex-col items-start text-left">
+
+
+            {/* Title */}
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-outfit text-white leading-[1.1] mb-6"
+            >
+              Sovereign Compute for <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
+                Web3 &amp; Enterprise
+              </span>
+            </motion.h1>
+
+            {/* Paragraph */}
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg text-slate-200 leading-relaxed mb-10 max-w-2xl font-medium"
+            >
+              Deploy verifiably secure, censorship-resistant serverless microservices powered by Sui's real-time events and Walrus's immutable storage. Zero central cloud dependencies.
+            </motion.p>
+
+            {/* Buttons */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto"
+            >
+              {/* High-fidelity custom connect button trigger */}
+              <div className="relative flex justify-center">
+                <Button 
+                  onClick={runDemo} 
+                  variant="primary" 
+                  size="lg"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2.5"
+                >
+                  <img src="/deploy.svg" alt="Deploy Icon" className="w-5 h-5 object-contain" />
+                  Start Deploying
+                </Button>
+              </div>
+              <Button 
+                onClick={scrollToDemo}
+                variant="outline" 
+                size="lg"
+                className="w-full sm:w-auto hover:bg-[#12131C]"
+              >
+                Explore Sandbox
+              </Button>
+            </motion.div>
           </div>
-          <Text className="text-xl font-bold tracking-tight text-slate-pro">Sui-Functions</Text>
-        </div>
-        <Space size="large" className="hidden md:flex">
-          <Button type="text" className="text-gray-600 font-medium hover:text-slate-pro">Benefits</Button>
-          <Button type="text" className="text-gray-600 font-medium hover:text-slate-pro">Demo</Button>
-          <ConnectButton 
-            className="!bg-slate-pro !text-white !rounded-full !font-bold !border-none px-4" 
-            connectText="Get Started"
-          />
-        </Space>
-      </Header>
 
-      <Content className="max-w-6xl mx-auto px-8 py-16 md:py-24">
-        {/* Hero Section */}
-        <div className="text-center mb-24">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Title className="!text-5xl md:!text-7xl !mb-6 !text-slate-pro !font-extrabold tracking-tight">
-              The World's Unstoppable <br /> <span className="text-gray-400">Serverless Network</span>
-            </Title>
-            <Paragraph className="text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-              Deploy once. Run everywhere. Zero maintenance. 
-              Build high-performance applications on the trustless foundation of Sui and Walrus.
-            </Paragraph>
-          </motion.div>
+          {/* Glowing copper rotating 3D asset graphic */}
+          <div className="lg:col-span-5 flex justify-center items-center relative py-8">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative w-72 h-72 sm:w-96 sm:h-96 flex items-center justify-center animate-float"
+            >
+              {/* Glowing decorative rings */}
+              <div className="absolute inset-0 rounded-full bg-brand-orange/10 blur-[80px]" />
+              <div className="absolute w-80 h-80 rounded-full border border-brand-orange/5 animate-pulse-slow" />
+              <div className="absolute w-64 h-64 rounded-full border border-brand-orange/10 border-dashed" />
+              
+              {/* Orange 3D kinetic sphere image */}
+              <img 
+                src="/sui-func-logo.png" 
+                alt="Sui-Functions 3D Mesh Sphere" 
+                className="w-60 h-60 sm:w-80 sm:h-80 object-contain drop-shadow-[0_0_50px_rgba(255,126,33,0.4)] relative z-10"
+              />
+            </motion.div>
+          </div>
+        </section>
 
-          {/* Animated Process Map */}
-          <Card className="rounded-[32px] border-none shadow-sm bg-white p-12 mt-12 overflow-hidden relative">
-            <div className="flex flex-col md:flex-row items-center justify-around gap-12 relative z-10">
-              <ProcessStep 
-                icon={<Zap size={32} />} 
-                label="Sui Transaction" 
-                active={currentStep >= 0} 
-                complete={currentStep > 0} 
-              />
-              <div className="hidden md:block flex-1 h-[2px] bg-gray-100 relative">
-                <motion.div 
-                  className="absolute inset-0 bg-slate-pro" 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${currentStep >= 1 ? 100 : 0}%` }}
-                  transition={{ duration: 1 }}
-                />
+        {/* STATISTICS BAR */}
+        <section className="mb-24">
+          <Card hoverEffect={false} className="bg-brand-card/75 border-brand-card-border/80">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-brand-card-border/60">
+              <div className="flex flex-col items-center md:items-start md:pl-4 pt-4 md:pt-0">
+                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Total Invocations</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-brand-orange font-outfit tracking-tight animate-pulse">1.2B+</span>
               </div>
-              <ProcessStep 
-                icon={<Server size={32} />} 
-                label="Walrus Blob" 
-                active={currentStep >= 1} 
-                complete={currentStep > 1} 
-              />
-              <div className="hidden md:block flex-1 h-[2px] bg-gray-100 relative">
-                <motion.div 
-                  className="absolute inset-0 bg-slate-pro" 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${currentStep >= 2 ? 100 : 0}%` }}
-                  transition={{ duration: 1 }}
-                />
+              <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
+                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Network Status</span>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-brand-green shadow-[0_0_10px_rgba(16,185,129,0.6)] animate-pulse" />
+                  <span className="text-xl sm:text-2xl font-extrabold text-[#10B981] font-outfit tracking-tight">Operational</span>
+                </div>
               </div>
-              <ProcessStep 
-                icon={<CheckCircle2 size={32} />} 
-                label="Success" 
-                active={currentStep >= 3} 
-                complete={currentStep >= 3}
-                success={currentStep >= 3}
-              />
+              <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
+                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Avg. Cold Start</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-amber-400 font-outfit tracking-tight">&lt; 14ms</span>
+              </div>
+              <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
+                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Active Workers</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-white font-outfit tracking-tight">12,402</span>
+              </div>
             </div>
           </Card>
-        </div>
+        </section>
 
-        {/* The Pitch */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-          <FeatureCard 
-            icon={<Shield className="text-green-500" />}
-            title="Unstoppable"
-            description="Your code is distributed globally via Walrus. No single point of failure. No censorship. Just pure uptime."
-          />
-          <FeatureCard 
-            icon={<Zap className="text-amber-500" />}
-            title="Low Cost"
-            description="Eliminate traditional server costs. Pay only for the compute cycles you actually use with Sui's efficient gas model."
-          />
-          <FeatureCard 
-            icon={<Clock className="text-blue-500" />}
-            title="Zero Maintenance"
-            description="Forget about patching, scaling, or managing infrastructure. We handle the orchestration; you focus on the logic."
-          />
-        </div>
+        {/* POWERED BY / CORE INFRASTRUCTURE SECTION */}
+        <section className="mb-32 animate-fade-in-up">
+          <div className="bg-[#050608]/50 backdrop-blur-md border border-brand-card-border/40 rounded-[24px] p-8 md:p-12 text-center relative overflow-hidden shadow-inner">
+            <div className="absolute top-0 left-1/2 -translate-y-1/2 w-96 h-20 bg-brand-orange/5 blur-[50px] pointer-events-none" />
+            
+            <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[9px] font-mono font-bold uppercase tracking-widest text-brand-orange inline-block mb-6">
+              Core Protocol Infrastructure
+            </span>
+            
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+              Powered by the Sui Stack
+            </h2>
+            <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed font-medium mb-12">
+              Sui-Functions merges next-generation layer-1 consensus with decentralized object storage to create a secure, serverless edge compute environment.
+            </p>
 
-        {/* Live Demo Section */}
-        <div id="demo" className="bg-gray-100 rounded-[48px] p-8 md:p-20 mb-32">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
-              <Tag className="mb-4 bg-white border-none text-slate-pro px-4 py-1 rounded-full font-bold">LIVE DEMO</Tag>
-              <Title level={2} className="!text-3xl md:!text-4xl !mb-4">Experience the speed</Title>
-              <Paragraph className="text-lg text-gray-500">
-                Trigger a decentralized function execution and watch the network respond in real-time.
-              </Paragraph>
-            </div>
-
-            <Card className="rounded-2xl border-none shadow-2xl overflow-hidden bg-white">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <Space size={4}>
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-amber-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                </Space>
-                <Text type="secondary" className="text-xs font-mono font-bold tracking-widest">RUNNER_V1.0.0</Text>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+              {/* Partner 1: Sui */}
+              <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-[#0a0c10]/40 border border-brand-card-border/30 rounded-2xl hover:border-brand-blue/30 transition-all duration-300 text-left group">
+                <div className="w-16 h-16 rounded-2xl bg-[#0d1624] border border-[#1e2f4d] flex items-center justify-center flex-shrink-0 shadow-[0_4px_20px_rgba(59,130,246,0.15)] group-hover:scale-105 transition-transform duration-300">
+                  <img 
+                    src="https://www.google.com/s2/favicons?domain=sui.io&sz=128" 
+                    alt="Sui Network Logo" 
+                    className="w-10 h-10 object-contain rounded-xl"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white font-outfit mb-1.5 flex items-center gap-2">
+                    Sui Network
+                    <span className="px-2 py-0.5 rounded bg-brand-blue-glow border border-brand-blue/20 text-[8px] font-mono font-bold text-brand-blue uppercase">Coordination</span>
+                  </h3>
+                  <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                    Acts as our state coordinator and event bus. Move smart contracts manage the dynamic trigger registry and commit completed execution receipts securely on-chain.
+                  </p>
+                </div>
               </div>
-              
-              <div className="p-8">
-                <div className="flex items-center justify-between p-6 bg-off-white rounded-2xl border border-gray-100 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-white rounded-xl shadow-sm">
-                      <Code size={24} className="text-gray-400" />
-                    </div>
-                    <div>
-                      <Text className="block font-bold text-lg">hello_world.js</Text>
-                      <Text type="secondary" className="text-xs font-mono uppercase">ID: W7VwX...NxQ</Text>
-                    </div>
-                  </div>
-                  <Button 
-                    type="primary" 
-                    size="large"
-                    className={`h-14 px-8 rounded-xl font-bold flex items-center gap-3 transition-all ${
-                      demoStatus === 'success' ? 'bg-green-500 border-none' : 'bg-slate-pro border-none hover:!bg-gray-800'
-                    }`}
-                    onClick={runDemo}
-                    loading={demoStatus === 'running'}
-                    disabled={demoStatus === 'success'}
-                  >
-                    {demoStatus === 'idle' ? <Play size={20} fill="currentColor" /> : null}
-                    {demoStatus === 'idle' ? 'Execute Now' : demoStatus === 'running' ? 'Executing' : 'Success'}
-                  </Button>
-                </div>
 
-                <div className="bg-slate-900 rounded-2xl p-8 min-h-[220px] font-mono text-sm leading-relaxed shadow-inner">
-                  <AnimatePresence>
-                    {logs.map((log, i) => (
-                      <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className={`mb-2 flex gap-3 ${log.includes('[VM]') ? 'text-green-400' : 'text-slate-400'}`}
-                      >
-                        <span className="opacity-30 select-none">{i + 1}</span>
-                        <span>{log}</span>
-                      </motion.div>
-                    ))}
-                    {logs.length === 0 && (
-                      <Text type="secondary" className="opacity-30">Waiting for trigger...</Text>
-                    )}
-                  </AnimatePresence>
+              {/* Partner 2: Walrus */}
+              <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-[#0a0c10]/40 border border-brand-card-border/30 rounded-2xl hover:border-brand-orange/30 transition-all duration-300 text-left group">
+                <div className="w-16 h-16 rounded-2xl bg-[#2a1d12] border border-[#5a3a1e] flex items-center justify-center flex-shrink-0 shadow-[0_4px_20px_rgba(255,126,33,0.25)] group-hover:scale-105 transition-transform duration-300">
+                  <img 
+                    src="https://www.google.com/s2/favicons?domain=walrus.xyz&sz=128" 
+                    alt="Walrus Protocol Logo" 
+                    className="w-10 h-10 object-contain rounded-xl brightness-[1.8] contrast-[1.2]"
+                  />
                 </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white font-outfit mb-1.5 flex items-center gap-2">
+                    Walrus Protocol
+                    <span className="px-2 py-0.5 rounded bg-brand-orange-glow border border-brand-orange/20 text-[8px] font-mono font-bold text-brand-orange uppercase">Logic Library</span>
+                  </h3>
+                  <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                    Serves as our immutable logic repository. Script files are pinned permanently to Walrus storage nodes, uniquely identified by cryptographic content-addressed Blob IDs.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FEATURES GRID SECTION */}
+        <section id="network" className="mb-32">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <Card glowColor="orange" className="flex flex-col gap-6 text-left group">
+              <div className="w-12 h-12 rounded-xl bg-brand-orange-glow border border-brand-orange/30 flex items-center justify-center text-brand-orange shadow-[0_4px_15px_rgba(255,126,33,0.15)] group-hover:scale-110 transition-transform duration-300">
+                <Shield size={24} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-3 font-outfit">Secure V8 Sandboxing</h3>
+                <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                  Execute code in secure Google V8 isolates. Enforces strict 128MB memory heap caps, 5s CPU limits, and filesystem-blocking shims.
+                </p>
+              </div>
+            </Card>
+
+            {/* Feature 2 */}
+            <Card glowColor="blue" className="flex flex-col gap-6 text-left group">
+              <div className="w-12 h-12 rounded-xl bg-brand-blue-glow border border-brand-blue/30 flex items-center justify-center text-brand-blue shadow-[0_4px_15px_rgba(59,130,246,0.15)] group-hover:scale-110 transition-transform duration-300">
+                <Zap size={24} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-3 font-outfit">On-Chain Trigger Bus</h3>
+                <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                  Decouple event-driven logic via high-speed Sui smart contracts. Dynamic execution registry controls permissions and commits results.
+                </p>
+              </div>
+            </Card>
+
+            {/* Feature 3 */}
+            <Card glowColor="green" className="flex flex-col gap-6 text-left group">
+              <div className="w-12 h-12 rounded-xl bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green shadow-[0_4px_15px_rgba(16,185,129,0.15)] group-hover:scale-110 transition-transform duration-300">
+                <Server size={24} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-3 font-outfit">Walrus Logic Library</h3>
+                <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                  Upload serverless edge code directly to the Walrus Storage Network as permanent, immutable, content-addressed storage blobs.
+                </p>
               </div>
             </Card>
           </div>
-        </div>
-      </Content>
+        </section>
 
-      <Footer className="bg-white border-t border-black/5 py-12 text-center">
-        <Space direction="vertical" size="middle">
-          <div className="flex items-center justify-center gap-2 opacity-50">
-            <div className="w-5 h-5 bg-slate-pro rounded flex items-center justify-center">
-              <Zap size={12} className="text-white" />
+        {/* THREE PILLARS ARCHITECTURE SECTION */}
+        <section id="docs" className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mb-32 py-8">
+          {/* Left: Info */}
+          <div className="lg:col-span-5 flex flex-col items-start text-left">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-8">
+              Three Pillars <br />
+              <span className="text-brand-orange">Architecture</span>
+            </h2>
+
+            <div className="flex flex-col gap-8 w-full">
+              {/* Bullet 1 */}
+              <div className="flex items-start gap-4">
+                <div className="w-6 h-6 rounded-full bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0 mt-1.5">
+                  <CheckCircle2 size={14} />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white mb-1.5 font-outfit">1. Trigger Event Bus (Sui Ledger)</h4>
+                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                    Move smart contracts manage a shared dynamic registry using Sui's high-speed tables, recording execution receipts securely on-chain.
+                  </p>
+                </div>
+              </div>
+
+              {/* Bullet 2 */}
+              <div className="flex items-start gap-4">
+                <div className="w-6 h-6 rounded-full bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0 mt-1.5">
+                  <CheckCircle2 size={14} />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white mb-1.5 font-outfit">2. Logic Library (Walrus Storage)</h4>
+                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                    Functions are stored permanently on Walrus as immutable, content-addressed blobs. Guarantees 100% logic integrity.
+                  </p>
+                </div>
+              </div>
+
+              {/* Bullet 3 */}
+              <div className="flex items-start gap-4">
+                <div className="w-6 h-6 rounded-full bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0 mt-1.5">
+                  <CheckCircle2 size={14} />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white mb-1.5 font-outfit">3. Isolated Workers (Secure Sandboxes)</h4>
+                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                    TypeScript worker daemons listen for triggers, assemble blobs, and run logic securely inside Google V8 runtime sandboxes.
+                  </p>
+                </div>
+              </div>
             </div>
-            <Text className="font-bold">Sui-Functions</Text>
           </div>
-          <Text type="secondary">Built for the Sui Overflow 2026 Hackathon. The future is unstoppable.</Text>
-        </Space>
-      </Footer>
-    </Layout>
+
+          {/* Right: Code Window */}
+          <div className="lg:col-span-7 flex justify-center items-center w-full">
+            <CodeWindow filename="trigger.move" className="w-full max-w-2xl" />
+          </div>
+        </section>
+
+        {/* SOVEREIGN DEVOPS & GOVERNANCE SECTION */}
+        <section className="mb-32 py-12 relative overflow-hidden">
+          {/* Decorative glowing background elements */}
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-72 h-72 rounded-full bg-brand-orange/5 blur-[100px] pointer-events-none" />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+            {/* Left: Interactive Visual Representation */}
+            <div className="lg:col-span-6 order-2 lg:order-1 flex justify-center items-center w-full">
+              <div className="w-full max-w-lg bg-[#08090e]/90 border border-brand-card-border/80 rounded-[24px] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
+                {/* Visual Header */}
+                <div className="flex items-center justify-between border-b border-brand-card-border pb-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-300">Upgrade Request Proposal</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono font-bold text-[9px]">AWAITING SIGS</span>
+                </div>
+
+                {/* Proposal Metadata */}
+                <div className="flex flex-col gap-4 font-mono text-[11px] mb-6">
+                  <div className="flex justify-between items-center py-2 border-b border-brand-card-border/40">
+                    <span className="text-slate-400">TARGET FUNCTION:</span>
+                    <span className="text-white font-bold">sui_usd_oracle.js</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-brand-card-border/40">
+                    <span className="text-slate-400">CURRENT BLOB ID:</span>
+                    <span className="text-brand-blue font-bold select-all">K9YtZ1pL0L8q...</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-brand-card-border/40">
+                    <span className="text-slate-400">PROPOSED BLOB ID:</span>
+                    <span className="text-brand-orange font-bold select-all">W7VwX2jrIH5y...</span>
+                  </div>
+                </div>
+
+                {/* Multi-Sig Approvals Track */}
+                <div className="flex flex-col gap-3.5 mb-6">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Consensus Progress (2/3 Approved)</span>
+                  
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-brand-green/5 border border-brand-green/20">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green">✓</div>
+                      <span className="text-[11px] font-mono font-medium text-slate-200">0x8a4c...4086 (Lead Dev)</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-bold text-brand-green uppercase">APPROVED</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-brand-green/5 border border-brand-green/20">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green">✓</div>
+                      <span className="text-[11px] font-mono font-medium text-slate-200">0x2528...9832 (Security Auditor)</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-bold text-brand-green uppercase">APPROVED</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 font-mono text-[9px] animate-pulse">●</span>
+                      <span className="text-[11px] font-mono font-medium text-slate-300">0xf767...1104 (Sponsor Treasury)</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-bold text-amber-500 uppercase animate-pulse">PENDING</span>
+                  </div>
+                </div>
+
+                {/* Explanatory visual note */}
+                <div className="p-3 bg-brand-orange-glow border border-brand-orange/20 rounded-xl text-[10px] text-slate-300 leading-relaxed font-medium">
+                  Sui layer-1 smart contracts natively block updates to edge runners until the registered Multisig object triggers a verified state change transaction.
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Rich Explanatory Copy */}
+            <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-start text-left justify-center">
+              <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[10px] font-extrabold uppercase tracking-widest text-brand-orange mb-4 font-mono">
+                Decentralized DevSecOps
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-6">
+                Sovereign Upgrade Governance <br />
+                <span className="text-brand-orange">Controlled by Consensus</span>
+              </h2>
+              <p className="text-slate-200 text-sm leading-relaxed font-medium mb-6">
+                Unlike traditional Web2 cloud functions, where a single hacked developer key or hijacked CI/CD pipeline can secretly poison serverless code, Sui-Functions introduces an unhackable deployment lifecycle.
+              </p>
+              
+              <div className="flex flex-col gap-6 w-full mb-6">
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-brand-blue-glow border border-brand-blue/30 flex items-center justify-center text-brand-blue flex-shrink-0">
+                    <Shield size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-white mb-1 font-outfit">Content-Addressed Integrity</h4>
+                    <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                      Scripts are pinned permanently to Walrus using cryptographic Blob IDs. If a single character is altered, the Blob hash changes, completely neutralizing supply-chain injection attacks.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0">
+                    <Users size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-white mb-1 font-outfit">Consensus-Gated Deployments</h4>
+                    <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                      Ownership of deployment projects can be held by on-chain multisigs or community DAO smart contracts. Upgrades demand cryptographic consensus before code can execute.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-brand-orange-glow border border-brand-orange/30 flex items-center justify-center text-brand-orange flex-shrink-0">
+                    <CheckCircle2 size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-white mb-1 font-outfit">100% Provable & Auditable</h4>
+                    <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                      The active code mapped to any function is recorded transparently on the public Sui ledger. Anyone can download the exact matching script, auditable down to the byte.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* INTERACTIVE DEMO / NETWORKING SANDBOX */}
+        <section id="demo" className="mb-32">
+          <div className="bg-[#08090E]/80 backdrop-blur-md border border-brand-card-border/80 rounded-[32px] p-8 md:p-16 relative overflow-hidden shadow-card-glow">
+            {/* Background Glow */}
+            <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-brand-blue/5 blur-[120px] pointer-events-none" />
+
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[10px] font-extrabold uppercase tracking-widest text-brand-orange inline-block mb-4 font-mono">
+                  DeFi Price Oracle Showcase
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+                  Verifiable Price-Feed Sandbox
+                </h2>
+                <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
+                  Check SUI/USD off-chain prices dynamically. When deviation drifts, trigger a sandboxed oracle worker to pull the immutable script from Walrus and submit validated results back on-chain.
+                </p>
+              </div>
+
+              {/* Main Demo Console Cards Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-8">
+                
+                {/* Left side: Process steps timeline visualizer */}
+                <div className="lg:col-span-5 flex flex-col justify-between bg-[#040509] border border-brand-card-border/60 rounded-2xl p-6 relative">
+                  <div className="absolute top-4 right-4 text-[9px] text-slate-350 font-extrabold uppercase tracking-wider font-mono">Process Pipeline</div>
+                  <div className="flex flex-col gap-8 h-full justify-center">
+                    
+                    {/* Process Step 1 */}
+                    <div className="flex items-center gap-4 relative">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-bold transition-all duration-500 ${
+                        currentStep >= 1 ? 'bg-brand-green/20 text-brand-green border-brand-green' :
+                        currentStep === 0 ? 'bg-brand-orange/20 text-brand-orange border-brand-orange animate-pulse' :
+                        'bg-[#0C0D16] text-slate-300 border-brand-card-border'
+                      }`}>
+                        {currentStep >= 1 ? <CheckCircle2 size={20} /> : <Zap size={20} />}
+                      </div>
+                      <div className="text-left">
+                        <span className={`block text-xs font-bold uppercase tracking-wider ${currentStep >= 0 ? 'text-white' : 'text-slate-400'}`}>
+                          Sui Trigger Event
+                        </span>
+                        <span className="text-[10px] text-slate-300 font-mono">Node consensus verification</span>
+                      </div>
+                      {/* Connector Line 1 */}
+                      <div className="absolute left-6 top-12 w-0.5 h-8 bg-brand-card-border/60">
+                        <div className={`w-full bg-brand-orange transition-all duration-[1000ms] ${currentStep >= 1 ? 'h-full' : 'h-0'}`} />
+                      </div>
+                    </div>
+
+                    {/* Process Step 2 */}
+                    <div className="flex items-center gap-4 relative">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-bold transition-all duration-500 ${
+                        currentStep >= 2 ? 'bg-brand-green/20 text-brand-green border-brand-green' :
+                        currentStep === 1 ? 'bg-brand-orange/20 text-brand-orange border-brand-orange animate-pulse' :
+                        'bg-[#0C0D16] text-slate-300 border-brand-card-border'
+                      }`}>
+                        {currentStep >= 2 ? <CheckCircle2 size={20} /> : <Server size={20} />}
+                      </div>
+                      <div className="text-left">
+                        <span className={`block text-xs font-bold uppercase tracking-wider ${currentStep >= 1 ? 'text-white' : 'text-slate-400'}`}>
+                          Walrus Storage Fetch
+                        </span>
+                        <span className="text-[10px] text-slate-300 font-mono">Slices assembled &amp; decoded</span>
+                      </div>
+                      {/* Connector Line 2 */}
+                      <div className="absolute left-6 top-12 w-0.5 h-8 bg-brand-card-border/60">
+                        <div className={`w-full bg-brand-orange transition-all duration-[1000ms] ${currentStep >= 2 ? 'h-full' : 'h-0'}`} />
+                      </div>
+                    </div>
+
+                    {/* Process Step 3 */}
+                    <div className="flex items-center gap-4 relative">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-bold transition-all duration-500 ${
+                        currentStep >= 3 ? 'bg-brand-green/20 text-brand-green border-brand-green shadow-[0_0_15px_rgba(16,185,129,0.2)]' :
+                        currentStep === 2 ? 'bg-brand-orange/20 text-brand-orange border-brand-orange animate-pulse' :
+                        'bg-[#0C0D16] text-slate-300 border-brand-card-border'
+                      }`}>
+                        {currentStep >= 3 ? <CheckCircle2 size={20} /> : <Code size={20} />}
+                      </div>
+                      <div className="text-left">
+                        <span className={`block text-xs font-bold uppercase tracking-wider ${currentStep >= 2 ? 'text-white' : 'text-slate-400'}`}>
+                          Sandboxed Execution
+                        </span>
+                        <span className="text-[10px] text-slate-300 font-mono">Isolated VM execution success</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Right side: Sleek Terminal display */}
+                <div className="lg:col-span-7 flex flex-col justify-between bg-[#040509] border border-brand-card-border/60 rounded-2xl overflow-hidden min-h-[300px]">
+                  
+                  {/* Console Header */}
+                  <div className="bg-[#090A11] px-5 py-3 border-b border-brand-card-border/50 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
+                    </div>
+                    <span className="text-[10px] text-slate-200 font-extrabold font-mono uppercase tracking-wider select-none flex items-center gap-1">
+                      <Terminal size={10} /> console_stream
+                    </span>
+                  </div>
+
+                  {/* Console Logs Stream */}
+                  <div className="p-6 font-mono text-xs leading-relaxed text-left flex-1 min-h-[200px] overflow-y-auto max-h-[220px]">
+                    <AnimatePresence>
+                      {logs.map((log, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className={`mb-2.5 flex items-start gap-3.5 ${
+                            log.includes('[VM]') ? 'text-brand-green font-bold' : 
+                            log.includes('[Blockchain]') ? 'text-[#ff9242] font-semibold' :
+                            'text-slate-100'
+                          }`}
+                        >
+                          <span className="text-slate-400 select-none text-[10px] mt-0.5">{index + 1}</span>
+                          <span>{log}</span>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                    {logs.length === 0 && (
+                      <div className="flex flex-col items-center justify-center h-full opacity-60 py-12">
+                        <Terminal size={24} className="mb-2.5 animate-pulse text-slate-300" />
+                        <span className="text-xs font-semibold text-slate-300 font-mono">Waiting for client execution trigger...</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Console Trigger Bar */}
+                  <div className="p-4 bg-[#090A11] border-t border-brand-card-border/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-left self-start sm:self-auto pl-1">
+                      <div className="w-2.5 h-2.5 rounded-full bg-brand-orange" />
+                      <div>
+                        <div className="text-[10px] font-bold text-white font-mono">hello_world.js</div>
+                        <div className="text-[8px] text-slate-300 font-extrabold font-mono uppercase">Walrus Blob ID: W7VwX...</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3.5 w-full sm:w-auto">
+                      {demoStatus === 'success' && (
+                        <Button 
+                          onClick={resetDemo}
+                          variant="ghost"
+                          size="sm"
+                          className="h-10 text-[11px] text-slate-200 hover:text-white font-mono underline"
+                        >
+                          Reset Logs
+                        </Button>
+                      )}
+                      <Button
+                        onClick={runDemo}
+                        variant="primary"
+                        size="sm"
+                        disabled={demoStatus === 'running'}
+                        className="h-10 px-6 text-xs w-full sm:w-auto font-bold rounded-lg"
+                      >
+                        {demoStatus === 'idle' ? 'Execute Now' : demoStatus === 'running' ? 'Executing...' : 'Execution Success!'}
+                      </Button>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* ENTERPRISE AVAILABILITY */}
+        <section className="mb-32 relative rounded-[48px] overflow-hidden border border-[#161722]/50 bg-[#0a0b10]/60">
+          {/* Enterprise map image background */}
+          <div className="absolute inset-0 bg-[url('/enterprice-bg.png')] bg-cover bg-center opacity-70 pointer-events-none" />
+          {/* Custom dark overlay with low opacity backdrop blur */}
+          <div className="absolute inset-0 bg-[#05060a]/85 backdrop-blur-[1px] pointer-events-none" />
+          <div className="absolute inset-0 grid-bg opacity-10 pointer-events-none" />
+
+          <div className="relative z-10 text-center py-12 md:py-20">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+              Ubiquitous Sovereign Compute
+            </h2>
+            <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed mb-16 font-medium">
+              Expanding the serverless compute boundary beyond Web3 to unlock massive global physical infrastructure and enterprise SaaS pipelines.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+              
+              {/* Regions Item */}
+              <div className="flex flex-col items-center">
+                <div className="w-14 h-14 rounded-full border border-brand-orange/30 bg-brand-orange-glow flex items-center justify-center text-brand-orange mb-6 shadow-[0_0_20px_rgba(255,126,33,0.15)] hover:scale-105 transition-transform duration-300">
+                  <Globe size={24} />
+                </div>
+                <h4 className="text-xl font-extrabold text-white font-outfit mb-1.5">IoT &amp; DePIN</h4>
+                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest">Dynamic Telemetry Auditing</span>
+              </div>
+
+              {/* Validators Item */}
+              <div className="flex flex-col items-center">
+                <div className="w-14 h-14 rounded-full border border-brand-blue/30 bg-brand-blue-glow flex items-center justify-center text-brand-blue mb-6 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:scale-105 transition-transform duration-300">
+                  <Server size={24} />
+                </div>
+                <h4 className="text-xl font-extrabold text-white font-outfit mb-1.5">Cloud Sovereignty</h4>
+                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest">Decentralized Execution Registry</span>
+              </div>
+
+              {/* Support Item */}
+              <div className="flex flex-col items-center">
+                <div className="w-14 h-14 rounded-full border border-brand-green/30 bg-brand-green-glow flex items-center justify-center text-brand-green mb-6 shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:scale-105 transition-transform duration-300">
+                  <Clock size={24} />
+                </div>
+                <h4 className="text-xl font-extrabold text-white font-outfit mb-1.5">B2B SaaS Glue</h4>
+                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest">Stripe &amp; Webhook Automations</span>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* CALL TO ACTION */}
+        <section className="mb-24">
+          <div className="relative rounded-[40px] border border-brand-card-border/80 overflow-hidden bg-brand-card/90 py-16 md:py-24 px-8 md:px-16 shadow-card-glow text-center">
+            
+            {/* CTA Orange Background radial flare */}
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-orange/10 blur-[120px] rounded-full pointer-events-none" />
+            
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
+                Build the Unstoppable Cloud
+              </h2>
+              <p className="text-slate-200 text-base leading-relaxed mb-10 max-w-2xl mx-auto font-medium">
+                Deploy mathematically secure, censorship-resistant serverless functions powered by Sui and Walrus. Eliminate the centralized cloud tax forever.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+                <div className="relative">
+                  <Button 
+                    onClick={runDemo} 
+                    variant="primary" 
+                    size="lg"
+                    className="w-full sm:w-auto px-10 flex items-center justify-center gap-2.5"
+                  >
+                    <img src="/deploy.svg" alt="Deploy Icon" className="w-5 h-5 object-contain" />
+                    Start Deploying
+                  </Button>
+                </div>
+                <Button 
+                  onClick={() => window.open('https://github.com/Kellie-Brighty/sui-functions', '_blank')}
+                  variant="outline" 
+                  size="lg"
+                  className="w-full sm:w-auto hover:bg-[#12131C] px-10"
+                >
+                  Explore Code Moat
+                </Button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      {/* Footer */}
+      <Footer />
+      </div>{/* end content z-10 wrapper */}
+    </div>
   );
 };
-
-const ProcessStep = ({ icon, label, active, complete, success }: any) => (
-  <div className="flex flex-col items-center gap-4 relative">
-    <motion.div 
-      className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 ${
-        success ? 'bg-green-500 text-white shadow-lg shadow-green-500/40' : 
-        active ? 'bg-slate-pro text-white shadow-xl shadow-slate-pro/20' : 
-        'bg-gray-50 text-gray-300'
-      }`}
-      animate={active ? { scale: [1, 1.05, 1] } : {}}
-      transition={{ repeat: active && !complete ? Infinity : 0, duration: 2 }}
-    >
-      {complete && !success ? <CheckCircle2 size={32} /> : icon}
-    </motion.div>
-    <Text className={`font-bold text-sm uppercase tracking-wider ${active ? 'text-slate-pro' : 'text-gray-300'}`}>{label}</Text>
-  </div>
-);
-
-const FeatureCard = ({ icon, title, description }: any) => (
-  <Card className="rounded-3xl border border-black/5 shadow-sm hover:shadow-xl transition-all duration-300 p-4">
-    <div className="p-4 bg-gray-50 rounded-2xl w-fit mb-6">
-      {React.cloneElement(icon, { size: 32 })}
-    </div>
-    <Title level={4} className="!mb-4 !text-slate-pro">{title}</Title>
-    <Paragraph className="text-gray-500 leading-relaxed m-0">
-      {description}
-    </Paragraph>
-  </Card>
-);
 
 export default App;

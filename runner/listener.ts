@@ -103,14 +103,14 @@ export async function startPriceDeviationWorker() {
             if (shouldTrigger && keypair) {
                 console.log(`[Deviation Worker] Automatically triggering on-chain function execution...`);
                 
-                const registryId = process.env.REGISTRY_ID || "0x0";
+                const projectId = process.env.PROJECT_ID || process.env.REGISTRY_ID || "0x0";
                 const packageId = process.env.PACKAGE_ID || "0x0";
                 
                 const tx = new Transaction();
                 tx.moveCall({
                     target: `${packageId}::trigger::call_function`,
                     arguments: [
-                        tx.object(registryId),
+                        tx.object(projectId),
                         tx.pure.string("SUI USD Oracle"),
                         tx.pure.string("{}")
                     ]
@@ -200,11 +200,11 @@ export async function startPolling(packageId: string) {
                 for (const event of result.data) {
                     console.log("\n--- New Execution Triggered ---");
                     
-                    const { walrus_blob_id, function_name, caller } = event.parsedJson as any;
+                    const { project_id, walrus_blob_id, function_name, caller } = event.parsedJson as any;
 
                     if (walrus_blob_id) {
                         try {
-                            console.log(`Triggering function: ${function_name} (Blob: ${walrus_blob_id})`);
+                            console.log(`Triggering function: ${function_name} (Blob: ${walrus_blob_id}) for project: ${project_id}`);
                             console.log(`Caller: ${caller}`);
                             
                             // 1. Fetch code from Walrus
@@ -220,13 +220,12 @@ export async function startPolling(packageId: string) {
                             if (keypair) {
                                 console.log(`Submitting result back to Sui...`);
                                 const tx = new Transaction();
-                                const registryId = process.env.REGISTRY_ID || "0x0";
                                 const packageId = process.env.PACKAGE_ID || "0x0";
                                 
                                 tx.moveCall({
                                     target: `${packageId}::trigger::submit_result`,
                                     arguments: [
-                                        tx.object(registryId),
+                                        tx.object(project_id),
                                         tx.pure.string(function_name),
                                         tx.pure.string(JSON.stringify(executionResult) ?? "null")
                                     ]

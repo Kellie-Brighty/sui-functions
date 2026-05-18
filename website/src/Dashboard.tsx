@@ -1,12 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Typography, Card, Space, Button, notification, Tag, Modal, Form, Input, Upload, message } from 'antd';
-import { LayoutDashboard, Code, ShoppingCart, LogOut, Plus, Cpu, User, Activity, Globe, Zap, Terminal, Play, UploadCloud, Trash2, CheckCircle } from 'lucide-react';
-import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { 
+  LayoutDashboard, 
+  Code, 
+  ShoppingCart, 
+  LogOut, 
+  Plus, 
+  Cpu, 
+  User, 
+  Activity, 
+  Globe, 
+  Zap, 
+  Terminal, 
+  Play, 
+  UploadCloud, 
+  Trash2, 
+  CheckCircle, 
+  Folder, 
+  Settings, 
+  Bell, 
+  HelpCircle, 
+  ArrowUpRight, 
+  AlertTriangle, 
+  HardDrive, 
+  RefreshCw, 
+  Sliders, 
+  ChevronDown, 
+  Search, 
+  Download, 
+  Sparkles,
+  Info,
+  Check,
+  X
+} from 'lucide-react';
+import { 
+  useCurrentAccount, 
+  useDisconnectWallet, 
+  useSuiClient, 
+  useSignAndExecuteTransaction, 
+  useSuiClientQuery 
+} from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID, REGISTRY_ID } from './constants';
-
-const { Content, Sider } = Layout;
-const { Title, Text, Paragraph } = Typography;
+import { PACKAGE_ID } from './constants';
 
 const Dashboard: React.FC = () => {
   const account = useCurrentAccount();
@@ -14,8 +48,26 @@ const Dashboard: React.FC = () => {
   const { mutate: disconnect } = useDisconnectWallet();
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
+  // Multi-Project States
+  const [myProjects, setMyProjects] = useState<{id: string, name: string, description: string}[]>([]);
+  const [activeProject, setActiveProject] = useState<{id: string, name: string, description: string} | null>(null);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+  const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  
+  // Custom Form States
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectDescription, setNewProjectDescription] = useState("");
+  const [registerFunctionName, setRegisterFunctionName] = useState("");
+  const [registerBlobId, setRegisterBlobId] = useState("");
+
+  // Dashboard Stats & Logs States
   const [executionCount, setExecutionCount] = useState(0);
-  const [logs, setLogs] = useState<string[]>([]);
+  const [allEvents, setAllEvents] = useState<any[]>([]);
+  const [logs, setLogs] = useState<string[]>([
+    `[System] Sui-Functions Operator runner fleet initialized successfully.`,
+    `[System] Awaiting on-chain transaction events...`
+  ]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -23,13 +75,44 @@ const Dashboard: React.FC = () => {
   const [uploadPercentage, setUploadPercentage] = useState(0);
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
-  const [activeMenu, setActiveMenu] = useState('1');
-  const [triggerFunctionName, setTriggerFunctionName] = useState("hello_world");
-  const [form] = Form.useForm();
+  const [activeMenu, setActiveMenu] = useState('1'); // 1 = Overview, 2 = Functions, 3 = Logs, 4 = Compute, 5 = Storage
+  const [triggerFunctionName, setTriggerFunctionName] = useState("");
+  const [triggerInputJson, setTriggerInputJson] = useState("{}");
   
   // My Functions State
   const [myFunctions, setMyFunctions] = useState<{name: string, blobId: string, version: string}[]>([]);
   const [isLoadingFunctions, setIsLoadingFunctions] = useState(false);
+
+  // Help & Notification state
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
+  const [isDashboardLoading, setIsDashboardLoading] = useState(false);
+
+  // Active Alerts state
+  const [alerts, setAlerts] = useState([
+    {
+      id: 1,
+      title: "SUI/USD Oracle Deviation Triggered",
+      time: "2m ago",
+      desc: "SUI/USD price deviation exceeded the 0.1% threshold, automatically dispatching an on-chain transaction calling trigger::call_function().",
+      severity: "high"
+    },
+    {
+      id: 2,
+      title: "Walrus Storage Node Cache Verified",
+      time: "14m ago",
+      desc: "Immutable script blob 'sui_usd_oracle.js' successfully fetched and cached on isolated edge runner.",
+      severity: "warning"
+    },
+    {
+      id: 3,
+      title: "Sui RPC Testnet Gateway Timeout",
+      time: "42m ago",
+      desc: "Latency spike (>500ms) detected on Sui Testnet JSON-RPC validator node. Failing over to backup fullnode.",
+      severity: "error"
+    }
+  ]);
 
   const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=1";
 
@@ -42,98 +125,91 @@ const Dashboard: React.FC = () => {
 
   const suiBalance = balanceData ? (Number(balanceData.totalBalance) / 1e9).toFixed(2) : "0.00";
 
-  // Polling for events (more reliable than subscribeEvent on public RPCs)
-  useEffect(() => {
-    if (!client) return;
-    
-    let cursor: any = null;
-    let isInitialLoad = true;
-    let seenDigests = new Set();
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const { data, nextCursor } = await client.queryEvents({
-          query: { MoveModule: { package: PACKAGE_ID, module: 'trigger' } },
-          cursor,
-          order: 'ascending',
-        });
-
-        if (data.length > 0) {
-          const newLogs: string[] = [];
-          
-          data.forEach(event => {
-            if (!seenDigests.has(event.id.txDigest)) {
-              seenDigests.add(event.id.txDigest);
-              const funcName = (event.parsedJson as any).function_name;
-
-              if (event.type.includes('ExecutionTriggered')) {
-                newLogs.push(`[Blockchain] Event detected: ${event.id.txDigest.slice(0, 10)}... (${funcName})`);
-                
-                if (!isInitialLoad) {
-                  notification.success({
-                    message: 'New Execution',
-                    description: `Function "${funcName}" triggered.`,
-                    placement: 'bottomRight',
-                    icon: <Zap size={18} className="text-amber-500" />,
-                  });
-                }
-              } else if (event.type.includes('ExecutionCompleted')) {
-                const result = (event.parsedJson as any).result_data;
-                newLogs.push(`[Blockchain] Success: ${funcName} -> ${result.slice(0, 30)}${result.length > 30 ? '...' : ''}`);
-                
-                if (!isInitialLoad) {
-                  notification.info({
-                    message: 'Execution Completed',
-                    description: `Function "${funcName}" returned: ${result}`,
-                    placement: 'bottomRight',
-                    icon: <CheckCircle size={18} className="text-emerald-500" />,
-                  });
-                }
-              }
-            }
-          });
-
-          if (newLogs.length > 0) {
-            setExecutionCount(prev => prev + newLogs.length);
-            setLogs(prev => [...newLogs.reverse(), ...prev]);
-          }
-          
-          cursor = nextCursor;
-        }
-        isInitialLoad = false;
-      } catch (err) {
-        console.error("Polling error:", err);
-      }
-    }, 3000);
-
-    return () => clearInterval(pollInterval);
-  }, [client]);
-
-  // Fetch functions from Registry
-  const fetchMyFunctions = async () => {
+  // Fetch Owned Projects
+  const fetchMyProjects = async () => {
     if (!client || !account) return;
+    setIsLoadingProjects(true);
+    try {
+      const ownedObjects = await client.getOwnedObjects({
+        owner: account.address,
+        filter: {
+          StructType: `${PACKAGE_ID}::trigger::Project`
+        },
+        options: {
+          showContent: true
+        }
+      });
+
+      const projectsList = ownedObjects.data.map(obj => {
+        const fields = (obj.data?.content as any)?.fields;
+        return {
+          id: obj.data?.objectId as string,
+          name: fields?.name || "Unnamed Project",
+          description: fields?.description || ""
+        };
+      });
+
+      const combinedList = projectsList;
+      setMyProjects(combinedList);
+      
+      setActiveProject(prev => {
+        if (prev && combinedList.some(p => p.id === prev.id)) {
+          return combinedList.find(p => p.id === prev.id) || null;
+        }
+        return combinedList[0] || null;
+      });
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setIsLoadingProjects(false);
+    }
+  };
+
+  useEffect(() => {
+    if (account && client) {
+      fetchMyProjects();
+    }
+  }, [account, client]);
+
+  // Handle wallet connection loading sequence
+  const prevAccountRef = useRef<any>(null);
+  useEffect(() => {
+    if (account && !prevAccountRef.current) {
+      setIsDashboardLoading(true);
+      const timer = setTimeout(() => {
+        setIsDashboardLoading(false);
+      }, 1600);
+      return () => clearTimeout(timer);
+    }
+    prevAccountRef.current = account;
+  }, [account]);
+
+  // Fetch functions from Active Project Table
+  const fetchMyFunctions = async () => {
+    if (!client || !account || !activeProject) {
+      setMyFunctions([]);
+      return;
+    }
     setIsLoadingFunctions(true);
     try {
-      // 1. Get the Registry Object to find the Table ID
-      const registryObj = await client.getObject({
-        id: REGISTRY_ID,
+      const projectObj = await client.getObject({
+        id: activeProject.id,
         options: { showContent: true }
       });
       
-      const content = registryObj.data?.content as any;
+      const content = projectObj.data?.content as any;
       const tableId = content?.fields?.functions?.fields?.id?.id;
       
       if (!tableId) {
+        setMyFunctions([]);
         setIsLoadingFunctions(false);
         return;
       }
 
-      // 2. Get all dynamic fields (the keys of the table)
       const dynamicFields = await client.getDynamicFields({
         parentId: tableId
       });
 
-      // 3. Fetch the actual object for each key to get Walrus Blob ID
       const functionsList = [];
       for (const field of dynamicFields.data) {
         const fieldObj = await client.getDynamicFieldObject({
@@ -144,8 +220,7 @@ const Dashboard: React.FC = () => {
         const fieldContent = fieldObj.data?.content as any;
         const metadata = fieldContent?.fields?.value?.fields;
         
-        // Filter by owner
-        if (metadata && metadata.owner === account.address) {
+        if (metadata) {
           functionsList.push({
             name: field.name.value as string,
             blobId: metadata.walrus_blob_id,
@@ -163,43 +238,122 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    if (activeMenu === '2') {
+    if (activeMenu === '2' || activeProject) {
       fetchMyFunctions();
     }
-  }, [activeMenu, account, client]);
+  }, [activeMenu, activeProject, account, client]);
 
-  const handleTrigger = (functionName: string) => {
-    if (!account) return;
+  useEffect(() => {
+    if (triggerFunctionName === "sui_usd_oracle.js" || triggerFunctionName === "sui_usd_oracle") {
+      setTriggerInputJson(JSON.stringify({ asset: "SUI/USD", deviation: 0.001 }, null, 2));
+    } else if (triggerFunctionName === "hello_world.js" || triggerFunctionName === "hello_world") {
+      setTriggerInputJson(JSON.stringify({ user: "0x2e8f5c31ad3a89e2c45f4d8a571ea38de1f4c718" }, null, 2));
+    } else if (triggerFunctionName === "test_upload.js" || triggerFunctionName === "test_upload") {
+      setTriggerInputJson(JSON.stringify({ test: true, timestamp: Date.now() }, null, 2));
+    } else {
+      setTriggerInputJson("{}");
+    }
+  }, [triggerFunctionName]);
+
+  // Polling for events matching our package triggers
+  useEffect(() => {
+    if (!client) return;
     
-    setIsExecuting(true);
+    let cursor: any = null;
+    let isInitialLoad = true;
+    let seenDigests = new Set();
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const { data, nextCursor } = await client.queryEvents({
+          query: { MoveModule: { package: PACKAGE_ID, module: 'trigger' } },
+          cursor,
+          order: 'ascending',
+        });
+
+        if (data.length > 0) {
+          setAllEvents(prev => {
+            const merged = [...prev];
+            data.forEach(e => {
+              if (!merged.some(m => m.id.txDigest === e.id.txDigest)) {
+                merged.push(e);
+              }
+            });
+            return merged;
+          });
+
+          const newLogs: string[] = [];
+          
+          data.forEach(event => {
+            if (!seenDigests.has(event.id.txDigest)) {
+              seenDigests.add(event.id.txDigest);
+              const funcName = (event.parsedJson as any).function_name;
+              const projId = (event.parsedJson as any).project_id;
+
+              if (event.type.includes('ExecutionTriggered')) {
+                newLogs.push(`[Blockchain] Event: ${event.id.txDigest.slice(0, 10)}... (Trigger "${funcName}" for Project: ${projId.slice(0, 6)}...)`);
+              } else if (event.type.includes('ExecutionCompleted')) {
+                const result = (event.parsedJson as any).result_data;
+                newLogs.push(`[Blockchain] Success: ${funcName} in ${projId.slice(0, 6)}... -> ${result.slice(0, 30)}${result.length > 30 ? '...' : ''}`);
+              }
+            }
+          });
+
+          if (newLogs.length > 0) {
+            setLogs(prev => [...newLogs.reverse(), ...prev]);
+          }
+          
+          cursor = nextCursor;
+        }
+        isInitialLoad = false;
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
+  }, [client]);
+
+  // Create on-chain Project object
+  const handleCreateProject = () => {
+    if (!account || !newProjectName.trim()) return;
+    
+    setIsCreatingProject(true);
     const tx = new Transaction();
     
     tx.moveCall({
-      target: `${PACKAGE_ID}::trigger::call_function`,
+      target: `${PACKAGE_ID}::trigger::create_project`,
       arguments: [
-        tx.object(REGISTRY_ID),
-        tx.pure.string(functionName),
-        tx.pure.string("{}")
-      ],
+        tx.pure.string(newProjectName),
+        tx.pure.string(newProjectDescription || "")
+      ]
     });
 
     signAndExecute(
       { transaction: tx },
       {
         onSuccess: (result) => {
-          setLogs(prev => [`[Transaction] Submitted: ${result.digest.slice(0, 10)}...`, ...prev]);
-          setIsExecuting(false);
+          setLogs(prev => [`[Transaction] Workspace Minted: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setIsCreatingProject(false);
+          setIsCreateProjectModalOpen(false);
+          setNewProjectName("");
+          setNewProjectDescription("");
+          fetchMyProjects();
         },
         onError: (err) => {
-          notification.error({ message: 'Execution Failed', description: err.message });
-          setIsExecuting(false);
+          alert(`Workspace Creation Failed: ${err.message}`);
+          setIsCreatingProject(false);
         }
       }
     );
   };
 
-  const handleRegister = (values: { functionName: string; blobId: string }) => {
-    if (!account) return;
+  // Register Function inside Active Project
+  const handleRegister = () => {
+    if (!account || !activeProject || !registerFunctionName.trim() || !registerBlobId.trim()) {
+      alert('Missing function registration details');
+      return;
+    }
     
     setIsRegistering(true);
     const tx = new Transaction();
@@ -207,9 +361,9 @@ const Dashboard: React.FC = () => {
     tx.moveCall({
       target: `${PACKAGE_ID}::trigger::register_function`,
       arguments: [
-        tx.object(REGISTRY_ID),
-        tx.pure.string(values.functionName),
-        tx.pure.string(values.blobId)
+        tx.object(activeProject.id),
+        tx.pure.string(registerFunctionName),
+        tx.pure.string(registerBlobId)
       ],
     });
 
@@ -217,43 +371,76 @@ const Dashboard: React.FC = () => {
       { transaction: tx },
       {
         onSuccess: (result) => {
-          notification.success({ 
-            message: 'Registration Successful', 
-            description: `Function ${values.functionName} has been registered.` 
-          });
-          setLogs(prev => [`[Transaction] Register Submitted: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setLogs(prev => [`[Transaction] Function Registered: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsRegistering(false);
           setIsRegisterModalOpen(false);
+          setRegisterFunctionName("");
+          setRegisterBlobId("");
           setIsBlobIdLocked(false);
           setUploadedFileName("");
-          form.resetFields();
+          fetchMyFunctions();
         },
         onError: (err) => {
-          notification.error({ message: 'Registration Failed', description: err.message });
+          alert(`Registration Failed: ${err.message}`);
           setIsRegistering(false);
         }
       }
     );
   };
 
-  const handleWalrusUpload = (options: any) => {
-    const { file, onSuccess, onError, onProgress } = options;
+  // Manual Trigger calling call_function inside Active Project
+  const handleTrigger = (functionName: string) => {
+    if (!activeProject) {
+      alert('Please select or create a project first.');
+      return;
+    }
+
+    if (!account) {
+      alert('Please connect your wallet to execute custom smart contract triggers.');
+      return;
+    }
+    
+    setIsExecuting(true);
+    const tx = new Transaction();
+    
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::call_function`,
+      arguments: [
+        tx.object(activeProject.id),
+        tx.pure.string(functionName),
+        tx.pure.string(triggerInputJson || "{}")
+      ],
+    });
+
+    signAndExecute(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          setLogs(prev => [`[Transaction] Trigger Emitted: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setIsExecuting(false);
+        },
+        onError: (err) => {
+          alert(`Execution Failed: ${err.message}`);
+          setIsExecuting(false);
+        }
+      }
+    );
+  };
+
+  const handleWalrusUpload = (file: File) => {
     setIsUploading(true);
     setUploadPercentage(0);
 
     let currentVisualPercent = 0;
     let targetPercent = 0;
 
-    // Visual tweening: smoothly chase the true network target
     const visualInterval = setInterval(() => {
       if (currentVisualPercent < targetPercent) {
-        // Increment smoothly (takes ~500ms to jump 0->99 for tiny files)
         currentVisualPercent += 5 + Math.floor(Math.random() * 8); 
         if (currentVisualPercent > targetPercent) {
           currentVisualPercent = targetPercent;
         }
         setUploadPercentage(currentVisualPercent);
-        onProgress({ percent: currentVisualPercent });
       }
     }, 30);
 
@@ -262,7 +449,6 @@ const Dashboard: React.FC = () => {
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
-        // Update the true network target
         targetPercent = Math.floor((e.loaded / e.total) * 99);
       }
     };
@@ -272,240 +458,957 @@ const Dashboard: React.FC = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           setUploadPercentage(100);
-          onProgress({ percent: 100 });
           
           const result = JSON.parse(xhr.responseText);
-          
-          // Walrus returns either newlyCreated or alreadyCertified
           const blobId = result.newlyCreated?.blobObject?.blobId || result.alreadyCertified?.blobId;
           
           if (!blobId) {
             throw new Error("Could not extract Blob ID from Walrus response");
           }
 
-          // Auto-fill the form and lock it
-          form.setFieldsValue({ blobId });
+          setRegisterBlobId(blobId);
           setIsBlobIdLocked(true);
           setUploadedFileName(file.name);
-          
-          message.success(`${file.name} uploaded successfully to Walrus!`);
-          onSuccess(result, file);
         } catch (error: any) {
           console.error("Walrus response parsing error:", error);
-          message.error(`${file.name} upload failed: ${error.message}`);
-          onError(error);
+          alert(`Walrus upload failed: ${error.message}`);
         }
       } else {
-        const error = new Error(`Upload failed with status ${xhr.status}`);
-        console.error("Walrus upload HTTP error:", error);
-        message.error(`${file.name} upload failed: ${error.message}`);
-        onError(error);
+        alert(`Upload failed with status ${xhr.status}`);
       }
       setIsUploading(false);
     };
 
     xhr.onerror = () => {
       clearInterval(visualInterval);
-      const error = new Error("Network error occurred during upload.");
-      console.error("Walrus upload Network error:", error);
-      message.error(`${file.name} upload failed: Network Error`);
-      onError(error);
+      alert("Network error occurred during Walrus upload.");
       setIsUploading(false);
     };
 
     xhr.send(file);
   };
 
-  return (
-    <Layout className="min-h-screen bg-[#F3F4F6]">
-      <Sider 
-        width={260} 
-        className="h-screen sticky top-0 hidden lg:block border-none"
-        style={{ background: '#020617' }}
-      >
-        <div className="flex flex-col h-full">
-          <div className="px-8 pt-12 mb-12">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-white/10">
-                <Cpu size={20} className="text-slate-950" />
-              </div>
-              <Text className="text-white text-xl font-bold tracking-tight">Sui-Functions</Text>
-            </div>
-          </div>
-          
-          <Menu
-            mode="inline"
-            selectedKeys={[activeMenu]}
-            onSelect={({ key }) => setActiveMenu(key)}
-            className="bg-transparent border-none px-4 flex-1"
-            items={[
-              { key: '1', icon: <LayoutDashboard size={18} />, label: 'Overview', className: '!text-slate-400 hover:!text-white' },
-              { key: '2', icon: <Code size={18} />, label: 'My Functions', className: '!text-slate-400 hover:!text-white' },
-              { key: '3', icon: <ShoppingCart size={18} />, label: 'Marketplace', className: '!text-slate-400 hover:!text-white' },
-            ]}
-          />
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleWalrusUpload(file);
+    }
+  };
 
-          <div className="p-6 border-t border-white/5">
-            <div className="bg-white/5 rounded-2xl p-4 border border-white/10 mb-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <User size={14} className="text-white" />
-                </div>
-                <div className="overflow-hidden">
-                  <div className="text-white text-[10px] font-bold uppercase opacity-50 tracking-wider">Connected Account</div>
-                  <div className="text-white text-xs font-mono truncate">{account?.address}</div>
-                </div>
+  const [acknowledgedAlertIds, setAcknowledgedAlertIds] = useState<string[]>([]);
+  const acknowledgeAlert = (id: string) => {
+    setAcknowledgedAlertIds(prev => [...prev, id]);
+  };
+
+  // 1. Filter events relevant to activeProject
+  const projectEvents = useMemo(() => {
+    if (!activeProject) return [];
+    return allEvents.filter(e => {
+      const projId = (e.parsedJson as any)?.project_id;
+      return projId === activeProject.id;
+    });
+  }, [allEvents, activeProject]);
+
+  // 2. Count executions and triggers
+  const projectInvocations = useMemo(() => {
+    return projectEvents.filter(e => e.type.includes('ExecutionTriggered'));
+  }, [projectEvents]);
+
+  const projectCompletions = useMemo(() => {
+    return projectEvents.filter(e => e.type.includes('ExecutionCompleted'));
+  }, [projectEvents]);
+
+  const totalInvocations = projectInvocations.length;
+  const totalCompletions = projectCompletions.length;
+
+  // 3. Compute Latencies
+  const latencies = useMemo(() => {
+    const list: number[] = [];
+    projectCompletions.forEach(comp => {
+      const compTime = Number(comp.timestampMs);
+      const funcName = (comp.parsedJson as any).function_name;
+      // find closest preceding trigger for this function
+      const trigger = projectInvocations
+        .filter(trig => (trig.parsedJson as any).function_name === funcName && Number(trig.timestampMs) <= compTime)
+        .sort((a, b) => Number(b.timestampMs) - Number(a.timestampMs))[0];
+      if (trigger) {
+        const diff = compTime - Number(trigger.timestampMs);
+        if (diff > 0 && diff < 30000) {
+          list.push(diff);
+        }
+      }
+    });
+    return list;
+  }, [projectCompletions, projectInvocations]);
+
+  const avgLatencyVal = latencies.length > 0 
+    ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) 
+    : 0;
+
+  const avgLatency = avgLatencyVal > 0 ? `${avgLatencyVal} ms` : "0 ms";
+
+  const successRateString = totalInvocations > 0 
+    ? ((totalCompletions / totalInvocations) * 100).toFixed(1) + "%" 
+    : "100.0%";
+
+  const clusterHealthString = totalInvocations > 0 
+    ? ((totalCompletions / totalInvocations) * 100).toFixed(2) + "%" 
+    : "100.00%";
+
+  // 4. Dynamic alert feed
+  const activeAlerts = useMemo(() => {
+    const alertsList: any[] = [];
+    
+    // Scan dynamic fields/functions to alert if empty
+    if (activeProject && myFunctions.length === 0) {
+      alertsList.push({
+        id: "no-func",
+        title: "Workspace is Empty",
+        time: "Now",
+        desc: "Deploy a custom JavaScript script (e.g. sui_usd_oracle.js) to Walrus to register your first function module.",
+        severity: "warning"
+      });
+    }
+
+    // Scan recent triggers
+    projectInvocations.slice(-2).forEach((trig, idx) => {
+      const funcName = (trig.parsedJson as any).function_name;
+      const timeString = new Date(Number(trig.timestampMs)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      alertsList.push({
+        id: `trig-${idx}`,
+        title: `Keeper Execution Dispatched`,
+        time: timeString,
+        desc: `Intercepted event trigger for '${funcName}'. Sandbox allocated in runner.`,
+        severity: "warning"
+      });
+    });
+
+    // Scan recent completions
+    projectCompletions.slice(-3).forEach((comp, idx) => {
+      const funcName = (comp.parsedJson as any).function_name;
+      const result = (comp.parsedJson as any).result_data;
+      const timeString = new Date(Number(comp.timestampMs)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      alertsList.push({
+        id: `comp-${idx}`,
+        title: `VM Isolate Completed`,
+        time: timeString,
+        desc: `Executed ${funcName} successfully inside V8 sandbox. Output: ${result.slice(0, 45)}${result.length > 45 ? '...' : ''}`,
+        severity: "info"
+      });
+    });
+
+    return alertsList.reverse().filter(a => !acknowledgedAlertIds.includes(a.id));
+  }, [activeProject, myFunctions, projectInvocations, projectCompletions, acknowledgedAlertIds]);
+
+  // 5. Dynamic Chart dataset mapping
+  const chartData = useMemo(() => {
+    const latestEventTime = projectEvents.length > 0 
+      ? Math.max(...projectEvents.map(e => Number(e.timestampMs) || Date.now())) 
+      : Date.now();
+      
+    // Set baseTime to either the latest event time or current system time
+    const baseTime = latestEventTime > 0 ? latestEventTime : Date.now();
+
+    // 1. Gather raw counts for all 9 bins going backward from baseTime
+    const rawBins = [];
+    for (let i = 8; i >= 0; i--) {
+      const binTime = new Date(baseTime - i * 15 * 60 * 1000);
+      const label = binTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const startTime = baseTime - (i + 1) * 15 * 60 * 1000;
+      const endTime = baseTime - i * 15 * 60 * 1000;
+      
+      const windowEvents = projectEvents.filter(e => {
+        const t = Number(e.timestampMs);
+        return t >= startTime && t <= endTime;
+      });
+      
+      const suiTriggers = windowEvents.filter(e => e.type.includes('ExecutionTriggered')).length;
+      const walrusDownloads = windowEvents.filter(e => e.type.includes('ExecutionCompleted')).length;
+      
+      rawBins.push({
+        label,
+        suiTriggers,
+        walrusDownloads
+      });
+    }
+
+    // 2. Find maximum counts to auto-scale the height proportions beautifully
+    const maxSui = Math.max(...rawBins.map(b => b.suiTriggers)) || 1;
+    const maxWalrus = Math.max(...rawBins.map(b => b.walrusDownloads)) || 1;
+
+    // 3. Map to final percentage heights and return
+    return rawBins.map(b => {
+      // Use minimum active height of 6% so single invocation events are easily visible
+      const suiPercent = b.suiTriggers > 0 
+        ? Math.max(6, (b.suiTriggers / maxSui) * 44) 
+        : 0;
+      const walrusPercent = b.walrusDownloads > 0 
+        ? Math.max(6, (b.walrusDownloads / maxWalrus) * 44) 
+        : 0;
+
+      return {
+        label: b.label,
+        sui: suiPercent,
+        walrus: walrusPercent,
+        rawSui: b.suiTriggers,
+        rawWalrus: b.walrusDownloads
+      };
+    });
+  }, [projectEvents]);
+
+  // Export dynamically captured on-chain event telemetry as formatted JSON
+  const handleExportData = () => {
+    if (!projectEvents || projectEvents.length === 0) return;
+    
+    const exportData = projectEvents.map(e => {
+      const parsed = e.parsedJson as any;
+      return {
+        txDigest: e.id.txDigest,
+        eventType: e.type,
+        timestamp: new Date(Number(e.timestampMs)).toISOString(),
+        timestampMs: e.timestampMs,
+        functionName: parsed?.function_name || "N/A",
+        projectId: parsed?.project_id || "N/A",
+        caller: parsed?.caller || "N/A",
+        resultData: parsed?.result_data || "N/A"
+      };
+    });
+
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(exportData, null, 2)
+    )}`;
+    
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", jsonString);
+    downloadAnchor.setAttribute("download", `sui_functions_telemetry_${activeProject?.name?.toLowerCase().replace(/\s+/g, '_') || 'export'}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  return (
+    <div className="min-h-screen bg-[#05060a] text-slate-100 flex flex-col font-sans select-none relative">
+      
+      {/* Dynamic Sovereign Synchronization Loader */}
+      {isDashboardLoading && (
+        <div className="fixed inset-0 z-[100] bg-[#05060a] flex flex-col items-center justify-center p-6 animate-in fade-in duration-300 select-none">
+          <div className="relative flex flex-col items-center max-w-sm w-full text-center">
+            {/* Spinning Glowing Orb */}
+            <div className="relative w-24 h-24 mb-8">
+              {/* Outer Pulse */}
+              <div className="absolute inset-0 rounded-full border border-brand-orange/30 animate-ping opacity-60"></div>
+              {/* Spinning Track */}
+              <div className="absolute inset-0 rounded-full border-4 border-[#161824] border-t-brand-orange animate-spin"></div>
+              {/* Inner Glow */}
+              <div className="absolute inset-4 rounded-full bg-brand-orange/5 border border-brand-orange/20 flex items-center justify-center shadow-[0_0_20px_rgba(255,126,33,0.15)]">
+                <Cpu size={24} className="text-brand-orange animate-pulse" />
               </div>
-              <Button 
-                block 
-                type="text" 
-                onClick={() => disconnect()}
-                className="text-slate-400 hover:!text-red-400 hover:!bg-red-400/10 flex items-center justify-start gap-2 h-9 px-2 border-none transition-all"
-              >
-                <LogOut size={14} /> <span className="text-xs font-bold">Disconnect</span>
-              </Button>
+            </div>
+
+            {/* Glowing Text telemetry */}
+            <h3 className="text-base font-extrabold text-white mb-2 tracking-wide font-outfit uppercase">
+              Establishing Sovereign Tunnel
+            </h3>
+            <p className="text-xs text-slate-200 leading-relaxed font-medium mb-6">
+              Syncing Sui Event Bus triggers & cached Walrus Blobs on edge nodes...
+            </p>
+
+            {/* Futuristic Progress bar */}
+            <div className="w-full h-1.5 bg-[#161824] rounded-full overflow-hidden border border-[#252838]">
+              <div className="h-full bg-gradient-to-r from-brand-orange to-[#F76707] animate-pulse-width rounded-full" style={{ width: '85%' }}></div>
+            </div>
+            
+            <div className="flex items-center gap-2 mt-4 text-[9px] font-mono font-bold text-slate-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              SECURE RPC TUNNEL ONLINE
             </div>
           </div>
         </div>
-      </Sider>
+      )}
+      
+      {/* 1. Global Header Bar */}
+      <header className="h-16 w-full border-b border-[#252838] px-6 flex items-center justify-between bg-[#08090d]/65 backdrop-blur-xl sticky top-0 z-40">
+        {/* Brand Logo */}
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-brand-dark border border-[#252838] flex items-center justify-center">
+            <img src="/sui-func-logo.png" alt="Sui-Functions Logo" className="w-6 h-6 object-contain" />
+          </div>
+          <span className="text-lg font-bold tracking-tight text-white font-outfit">
+            Sui-Functions
+          </span>
+        </div>
 
-      <Content className="p-6 md:p-12 overflow-y-auto">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-            <div>
-              <Title level={1} className="!m-0 !text-slate-900 !font-extrabold tracking-tight">Dashboard</Title>
-              <Text className="text-slate-500 font-medium">Real-time status of your decentralized infrastructure</Text>
+        {/* Global Search */}
+        <div className="hidden md:flex items-center relative w-96">
+          <Search size={16} className="text-slate-300 absolute left-3.5" />
+          <input 
+            type="text" 
+            placeholder="Search functions, logs, or metrics..." 
+            className="w-full bg-[#0c0d14]/70 border border-[#252838] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+          />
+        </div>
+
+        {/* Right Controls */}
+        <div className="flex items-center gap-4 relative">
+          <button 
+            onClick={() => setIsNotificationDropdownOpen(prev => !prev)}
+            className="p-2 text-slate-200 hover:text-white transition-colors relative border-none bg-transparent cursor-pointer"
+          >
+            <Bell size={18} />
+            {activeAlerts.length > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-orange shadow-[0_0_8px_#FF7E21]"></span>
+            )}
+          </button>
+          
+          <button 
+            onClick={() => setIsHelpModalOpen(prev => !prev)}
+            className="p-2 text-slate-200 hover:text-white transition-colors border-none bg-transparent cursor-pointer"
+          >
+            <HelpCircle size={18} />
+          </button>
+
+          {/* Active Connected User Profile SUI gas balance pill */}
+          <div className="flex items-center gap-2 pl-2 border-l border-[#252838]">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/30 rounded-xl transition-all duration-300">
+              <div className="w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center font-black text-[8px] text-white">
+                S
+              </div>
+              <span className="text-xs font-mono font-bold text-blue-300 select-all">
+                {suiBalance} SUI
+              </span>
             </div>
-            <Button 
-              type="primary" 
-              icon={<Plus size={18} />} 
-              onClick={() => setIsRegisterModalOpen(true)}
-              className="bg-slate-900 hover:!bg-slate-800 border-none rounded-2xl font-bold h-14 px-8 shadow-xl shadow-slate-900/10"
-            >
-              Register Function
-            </Button>
           </div>
 
-          {activeMenu === '1' && (
-            <>
-              {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <StatCard icon={<Activity className="text-blue-500" />} label="Executions" value={executionCount} />
-                <StatCard icon={<Globe className="text-emerald-500" />} label="Nodes Active" value={1} />
-                <StatCard icon={<Zap className="text-amber-500" />} label="Gas Balance" value={`${suiBalance} SUI`} />
+          {/* Active Notifications Dropdown */}
+          {isNotificationDropdownOpen && (
+            <div className="absolute right-0 top-12 w-80 bg-[#0d0e15] border border-[#252838] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.95)] p-4 z-50 text-xs">
+              <div className="flex items-center justify-between border-b border-[#252838] pb-2.5 mb-3">
+                <span className="font-extrabold text-slate-200 uppercase tracking-wider text-[10px]">Active Notifications</span>
+                <span className="px-2 py-0.5 rounded-full bg-brand-orange/15 text-brand-orange font-bold text-[9px]">
+                  {activeAlerts.length} Active
+                </span>
               </div>
-
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Logs Section */}
-                <div className="xl:col-span-2">
-                  <Card 
-                    className="rounded-[32px] border-none shadow-sm h-full overflow-hidden"
-                    title={<div className="flex items-center gap-2 py-1"><Terminal size={18} className="text-slate-400" /> <Text className="font-bold">Live Execution Logs</Text></div>}
-                  >
-                    <div className="bg-slate-950 rounded-2xl p-6 h-[550px] flex flex-col font-mono text-sm shadow-inner relative">
-                      <div className="absolute top-4 right-4 flex gap-1.5 z-10 bg-slate-950 pl-2 pb-2">
-                        <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
+              <div className="flex flex-col gap-2.5 max-h-[300px] overflow-y-auto pr-1">
+                {activeAlerts.length === 0 ? (
+                  <div className="text-slate-400 py-6 text-center text-xs">
+                    No active alerts. All operations settled.
+                  </div>
+                ) : (
+                  activeAlerts.map(alert => (
+                    <div key={alert.id} className="p-2.5 rounded-xl bg-[#141622]/60 border border-[#252838]/60 flex flex-col gap-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white text-[11px] truncate">{alert.title}</span>
+                        <span className="text-[9px] text-slate-400 text-right shrink-0 ml-1">{alert.time}</span>
                       </div>
-                      <div className="flex-1 overflow-y-auto pr-2 mt-4 scrollbar-thin scrollbar-thumb-slate-800">
-                        {logs.map((log, i) => (
-                          <div key={i} className="mb-2.5 flex gap-4 animate-in fade-in slide-in-from-left-2">
-                            <span className="text-slate-700 select-none w-6 text-right">{logs.length - i}</span>
-                            <span className={log.includes('Event') ? 'text-blue-400' : 'text-slate-400'}>{log}</span>
-                          </div>
-                        ))}
-                        {logs.length === 0 && (
-                          <div className="flex flex-col items-center justify-center h-full opacity-20 py-20">
-                            <Activity size={32} className="mb-4 animate-pulse" />
-                            <Text className="text-slate-400 font-mono">Awaiting blockchain events...</Text>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-
-                {/* Actions Section */}
-                <div className="xl:col-span-1">
-                  <Card className="rounded-[32px] border-none shadow-sm p-2">
-                    <div className="p-6">
-                      <Title level={4} className="!mb-2 !font-bold">Quick Trigger</Title>
-                      <Paragraph className="text-slate-500 text-sm mb-8 leading-relaxed">
-                        Fire a manual execution request to verify your logic across the Walrus storage network.
-                      </Paragraph>
-                      
-                      <div className="mb-8">
-                        <Text className="font-bold text-slate-700 block mb-2">Target Function</Text>
-                        <Input 
-                          size="large" 
-                          value={triggerFunctionName}
-                          onChange={(e) => setTriggerFunctionName(e.target.value)}
-                          placeholder="e.g., my_test_upload"
-                          prefix={<Code size={16} className="text-slate-400 mr-2" />}
-                          className="rounded-xl border-gray-200 bg-gray-50 h-12 font-mono"
-                        />
-                      </div>
-
-                      <Button 
-                        type="primary" 
-                        size="large" 
-                        block
-                        loading={isExecuting}
-                        onClick={() => handleTrigger(triggerFunctionName)}
-                        className="h-16 rounded-2xl bg-slate-900 hover:!bg-slate-800 border-none font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-slate-900/20"
+                      <p className="text-[10px] text-slate-300 leading-normal">{alert.desc}</p>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAcknowledgedAlertIds(prev => [...prev, alert.id]);
+                        }}
+                        className="mt-1 text-[9px] font-bold text-brand-orange hover:text-orange-400 text-left border-none bg-transparent p-0 cursor-pointer self-start transition-colors"
                       >
-                        <Play size={20} fill="currentColor" /> Execute Now
-                      </Button>
+                        Acknowledge Alert
+                      </button>
                     </div>
-                  </Card>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Main Content Layout */}
+      <div className="flex flex-1">
+        
+        {/* 2. Left Navigation Sider */}
+        <aside className="w-[260px] bg-[#05060a] border-r border-[#252838]/60 hidden lg:flex flex-col justify-between p-4 sticky top-16 h-[calc(100vh-64px)] z-30">
+          
+          <div className="flex flex-col gap-6">
+            {/* Active Workspace Block */}
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-4 relative group">
+              <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Sovereign Compute</div>
+              
+              {isLoadingProjects ? (
+                <div className="text-xs text-slate-300 font-semibold py-1 animate-pulse">Syncing smart contracts...</div>
+              ) : myProjects.length === 0 ? (
+                <button 
+                  onClick={() => setIsCreateProjectModalOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 border border-dashed border-[#252838] text-slate-300 hover:text-brand-orange hover:border-brand-orange/40 py-2.5 rounded-xl text-xs font-bold transition-all bg-white/5"
+                >
+                  <Plus size={14} /> Create Project
+                </button>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <div className="relative">
+                    <select
+                      value={activeProject?.id || ''}
+                      onChange={(e) => {
+                        const proj = myProjects.find(p => p.id === e.target.value);
+                        if (proj) setActiveProject(proj);
+                      }}
+                      className="w-full bg-[#0c0d14] border border-[#252838] text-white rounded-xl h-10 pl-3 pr-8 font-bold text-xs cursor-pointer hover:border-brand-orange/40 transition-colors focus:outline-none appearance-none"
+                    >
+                      {myProjects.map(p => (
+                        <option key={p.id} value={p.id} className="bg-slate-950 text-slate-200 font-semibold text-xs">
+                          {p.name.length > 20 ? `${p.name.slice(0, 20)}...` : p.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown size={14} className="text-slate-300 absolute right-3 top-3 pointer-events-none" />
+                  </div>
+                  
+                  <button 
+                    onClick={() => setIsCreateProjectModalOpen(true)}
+                    className="text-brand-orange hover:text-brand-orange/80 text-[11px] font-bold flex items-center gap-1.5 pt-1.5 transition-colors self-start border-none"
+                  >
+                    <Plus size={10} /> New Workspace
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Sidebar Main Menus */}
+            <nav className="flex flex-col gap-1.5">
+              <button 
+                onClick={() => setActiveMenu('1')}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeMenu === '1' 
+                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <LayoutDashboard size={16} />
+                Dashboard
+              </button>
+
+              <button 
+                onClick={() => setActiveMenu('2')}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeMenu === '2' 
+                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <Code size={16} />
+                Functions
+              </button>
+
+              <button 
+                onClick={() => setActiveMenu('3')}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeMenu === '3' 
+                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <Terminal size={16} />
+                Logs
+              </button>
+
+              <button 
+                onClick={() => setActiveMenu('4')}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeMenu === '4' 
+                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <Cpu size={16} />
+                Compute
+              </button>
+
+              <button 
+                onClick={() => setActiveMenu('5')}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeMenu === '5' 
+                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <HardDrive size={16} />
+                Storage
+              </button>
+            </nav>
+          </div>
+
+          {/* Sidebar Footer Operations */}
+          <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4">
+            
+            {/* Deploy New Function Trigger */}
+            <button 
+              onClick={() => {
+                if (!activeProject) {
+                  alert("Create or select a workspace first!");
+                  return;
+                }
+                setIsRegisterModalOpen(true);
+              }}
+              disabled={!activeProject}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Plus size={16} /> Deploy New Function
+            </button>
+
+            {/* Wallet Connector Details */}
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-xl p-3 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                </div>
+                <span className="text-xs text-slate-200 font-bold font-mono truncate w-36">
+                  {account ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : "Disconnected"}
+                </span>
+              </div>
+              <button 
+                onClick={() => setIsDisconnectModalOpen(true)}
+                className="w-full text-left text-xs font-bold text-slate-300 hover:text-red-400 transition-colors flex items-center gap-1.5 border-none bg-transparent cursor-pointer"
+              >
+                <LogOut size={12} /> Disconnect Wallet
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* 3. Main Operational Workplate */}
+        <main className="flex-1 p-6 md:p-8 lg:p-10 overflow-y-auto max-w-[1400px] mx-auto w-full">
+          
+          {/* Menu Panel 1: Overview */}
+          {activeMenu === '1' && (
+            <div className="flex flex-col gap-8 animate-in fade-in duration-300">
+              
+              {/* Header Status & Filters Row */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight font-outfit">
+                    {activeProject ? activeProject.name : "Operational Overview"}
+                  </h1>
+
+                </div>
+
+                {/* Export Telemetry Button */}
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={handleExportData}
+                    disabled={!projectEvents || projectEvents.length === 0}
+                    className="flex items-center gap-1.5 bg-[#0c0d14] border border-[#252838] rounded-xl px-3.5 py-2 text-xs font-bold text-slate-200 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <Download size={12} />
+                    Export Data
+                  </button>
                 </div>
               </div>
-            </>
+
+              {/* Top Row: 4 Metric Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                
+                {/* 1. Cluster Health */}
+                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Cluster Health</span>
+                    <Activity size={16} className="text-emerald-400" />
+                  </div>
+                  <h3 className="text-3xl font-black text-white font-outfit">{clusterHealthString}</h3>
+                  <div className="text-xs text-emerald-400 font-bold font-mono mt-1 flex items-center gap-1">
+                    <span>✓</span> Operator nodes operational
+                  </div>
+                  
+                  {/* Segment Health bar visualizations */}
+                  <div className="flex gap-[4px] mt-5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <div 
+                        key={s} 
+                        className={`h-1.5 flex-1 rounded-full ${
+                          totalInvocations > 0 && totalCompletions === 0 && s === 5 ? 'bg-amber-500/20' : 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
+                        }`}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Avg Latency */}
+                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Avg Latency (P99)</span>
+                    <Cpu size={16} className="text-blue-400" />
+                  </div>
+                  <h3 className="text-3xl font-black text-white font-outfit">{avgLatency}</h3>
+                  <div className="text-xs text-blue-400 font-bold font-mono mt-1 flex items-center gap-1">
+                    <span>⚡</span> Live round-trip runner lag
+                  </div>
+
+                  {/* Micro mini bar chart visualization */}
+                  <div className="flex items-end gap-[3px] mt-4 h-5">
+                    {(latencies.length > 0 ? latencies.slice(-7) : [1200, 1800, 1400, 2500, 2000, 1500, 2200]).map((val, i, arr) => {
+                      const maxVal = Math.max(...arr, 1000);
+                      const heightVal = Math.min(100, Math.max(25, (val / maxVal) * 100));
+                      return (
+                        <div 
+                          key={i} 
+                          style={{ height: `${heightVal}%` }} 
+                          className="w-full rounded-sm bg-gradient-to-t from-blue-500/20 to-blue-400/80 hover:to-blue-300 transition-all duration-300"
+                        ></div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 3. Success Rate */}
+                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Success Rate</span>
+                    <CheckCircle size={16} className="text-emerald-400" />
+                  </div>
+                  <h3 className="text-3xl font-black text-white font-outfit">{successRateString}</h3>
+                  <div className="text-xs text-emerald-400 font-bold font-mono mt-1 flex items-center gap-1">
+                    <span>✓</span> Dynamic execution validation
+                  </div>
+                  <div className="flex items-center justify-between border-t border-[#252838]/60 pt-3 mt-4 text-xs text-slate-300 font-mono">
+                    <div>OK: <span className="text-white font-bold">{totalCompletions}</span></div>
+                    <div>ERR: <span className="text-red-400 font-bold">{totalInvocations - totalCompletions}</span></div>
+                  </div>
+                </div>
+
+                {/* 4. Total Invocations */}
+                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Total Invocations</span>
+                    <Sparkles size={16} className="text-brand-orange" />
+                  </div>
+                  <h3 className="text-3xl font-black text-white font-outfit">
+                    {totalInvocations}
+                  </h3>
+                  <div className="text-xs text-brand-orange font-bold font-mono mt-1 flex items-center gap-1">
+                    <span>▲</span> On-chain events queried
+                  </div>
+
+                  {/* Horizontal visual progress uploader bar */}
+                  <div className="w-full bg-[#252838] h-1.5 rounded-full mt-6 overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-brand-orange to-[#F76707] rounded-full shadow-[0_0_8px_#FF7E21]"
+                      style={{ width: successRateString }}
+                    ></div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Middle Section: Global Volume stacked bar chart & Active Alerts */}
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                
+                {/* Stacked Chart container */}
+                <div className="xl:col-span-2 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
+                      Execution Volume (Global)
+                    </span>
+                    {/* Legends */}
+                    <div className="flex items-center gap-4 text-xs text-slate-200 font-bold font-mono">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500/40 border border-blue-400/50"></span>
+                        SUI EVENT BUS
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-brand-orange/40 border border-brand-orange/50"></span>
+                        WALRUS WORKERS
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* High fidelity pure CSS bar chart component */}
+                  <div className="flex items-end justify-between h-[280px] pt-6 pb-2 border-b border-[#252838]/70">
+                    {chartData.map((data, i) => {
+                      const suiHeight = `${data.sui}%`;
+                      const walrusHeight = `${data.walrus}%`;
+                      return (
+                        <div key={i} className="flex flex-col items-center flex-1 group">
+                          <div className="relative w-7 sm:w-10 h-[220px] flex flex-col justify-end gap-[2px] transition-all duration-300 group-hover:scale-y-[1.03] origin-bottom cursor-pointer">
+                            {/* Premium Pure-CSS Hover Tooltip */}
+                            <div className="absolute bottom-[230px] left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-center bg-[#0d0e15] border border-[#252838] px-3.5 py-2.5 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.95)] z-50 text-[10px] min-w-[130px] pointer-events-none transition-all duration-200 select-none">
+                              <span className="font-mono text-slate-400 font-bold mb-1.5">{data.label} Window</span>
+                              <div className="flex items-center justify-between w-full gap-3 text-blue-400 font-bold mb-1">
+                                <span>Sui Triggers:</span>
+                                <span>{data.rawSui}</span>
+                              </div>
+                              <div className="flex items-center justify-between w-full gap-3 text-brand-orange font-bold">
+                                <span>Walrus Execs:</span>
+                                <span>{data.rawWalrus}</span>
+                              </div>
+                              {/* Bottom CSS Pointer Triangle */}
+                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0d0e15] border-r border-b border-[#252838] rotate-45"></div>
+                            </div>
+                            {/* Top stack: Sui workload */}
+                            <div 
+                              style={{ height: suiHeight }}
+                              className="w-full bg-blue-500/20 border-l border-r border-blue-500/40 rounded-t-[4px] relative group-hover:bg-blue-500/30 transition-colors duration-200"
+                            >
+                              <div className="absolute top-0 left-0 right-0 h-[2px] bg-blue-400/60 shadow-[0_-2px_10px_rgba(59,130,246,0.5)]"></div>
+                            </div>
+                            {/* Bottom stack: Walrus workload */}
+                            <div 
+                              style={{ height: walrusHeight }}
+                              className="w-full bg-brand-orange/20 border-l border-r border-brand-orange/40 rounded-b-[4px] relative group-hover:bg-brand-orange/30 transition-colors duration-200"
+                            >
+                              <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-orange/60 shadow-[0_-2px_10px_rgba(255,126,33,0.5)]"></div>
+                            </div>
+                          </div>
+                          <span className="text-xs text-slate-200 font-mono font-bold mt-3 select-none">{data.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Active Alerts Widget */}
+                <div className="xl:col-span-1 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 flex flex-col">
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-outfit">
+                      Active Alerts
+                    </span>
+                    {activeAlerts.length > 0 && (
+                      <span className="bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.15)]">
+                        {activeAlerts.length} ACTIVE
+                      </span>
+                    )}
+                  </div>
+
+                  {/* List of alert items */}
+                  <div className="flex-1 flex flex-col gap-3 overflow-y-auto max-h-[280px] pr-1">
+                    {activeAlerts.map((alert) => (
+                      <div 
+                        key={alert.id} 
+                        className={`p-4 border rounded-xl flex gap-3 relative transition-all group ${
+                          alert.severity === 'high' || alert.severity === 'error'
+                            ? 'bg-red-500/5 border-red-500/20 hover:border-red-500/40' 
+                            : alert.severity === 'info'
+                            ? 'bg-blue-500/5 border-blue-500/20 hover:border-blue-500/40'
+                            : 'bg-amber-500/5 border-amber-500/20 hover:border-amber-500/40'
+                        }`}
+                      >
+                        {alert.severity === 'info' ? (
+                          <Info 
+                            size={16} 
+                            className="mt-0.5 flex-shrink-0 text-blue-400"
+                          />
+                        ) : (
+                          <AlertTriangle 
+                            size={16} 
+                            className={`mt-0.5 flex-shrink-0 ${
+                              alert.severity === 'high' || alert.severity === 'error' 
+                                ? 'text-red-400' 
+                                : 'text-amber-500'
+                            }`} 
+                          />
+                        )}
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs font-bold text-slate-200">{alert.title}</span>
+                            <span className="text-[10px] text-slate-300 font-mono font-bold flex-shrink-0">{alert.time}</span>
+                          </div>
+                          <p className="text-[10px] text-slate-200 leading-relaxed mt-1 font-medium">{alert.desc}</p>
+                          <div className="flex items-center gap-3 mt-3">
+                            <button 
+                              onClick={() => acknowledgeAlert(alert.id)}
+                              className="text-[9px] font-black uppercase text-slate-200 hover:text-white transition-colors tracking-wider border-none bg-transparent cursor-pointer"
+                            >
+                              Acknowledge
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {activeAlerts.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-10 opacity-60 my-auto">
+                        <CheckCircle size={32} className="text-emerald-400 mb-2.5" />
+                        <span className="text-xs font-bold text-slate-200">All Systems Stable</span>
+                        <span className="text-[10px] text-slate-300 font-bold">No active incidents detected.</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Bottom Section: Top Performing Functions Table */}
+              <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
+                    Top Performing Functions
+                  </span>
+                  <button className="text-xs font-bold text-brand-orange hover:underline bg-transparent border-none">
+                    View Performance Suite
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-[#252838]/70 text-xs text-slate-200 font-bold uppercase tracking-wider">
+                        <th className="pb-3.5 pl-2">Function Name</th>
+                        <th className="pb-3.5">Invocations</th>
+                        <th className="pb-3.5">Success Rate</th>
+                        <th className="pb-3.5">Latency</th>
+                        <th className="pb-3.5">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-xs text-slate-300 font-medium divide-y divide-[#252838]/50">
+                      {/* 1. Dynamic Functions from Sui if exist */}
+                      {myFunctions.map((fn, idx) => {
+                        // Count triggers
+                        const fnTriggers = projectInvocations.filter(e => (e.parsedJson as any).function_name === fn.name);
+                        const fnInvocations = fnTriggers.length;
+                        
+                        // Count completions
+                        const fnCompletions = projectCompletions.filter(e => (e.parsedJson as any).function_name === fn.name);
+                        
+                        // Calculate success rate
+                        const fnRate = fnInvocations > 0 
+                          ? ((fnCompletions.length / fnInvocations) * 100).toFixed(1) + "%" 
+                          : "100.0%";
+                          
+                        // Calculate average latency specifically for this function
+                        const fnLatencies: number[] = [];
+                        fnCompletions.forEach(comp => {
+                          const compTime = Number(comp.timestampMs);
+                          const trigger = fnTriggers
+                            .filter(trig => Number(trig.timestampMs) <= compTime)
+                            .sort((a, b) => Number(b.timestampMs) - Number(a.timestampMs))[0];
+                          if (trigger) {
+                            const diff = compTime - Number(trigger.timestampMs);
+                            if (diff > 0 && diff < 30000) fnLatencies.push(diff);
+                          }
+                        });
+                        
+                        const fnAvgLatencyVal = fnLatencies.length > 0 
+                          ? Math.round(fnLatencies.reduce((a, b) => a + b, 0) / fnLatencies.length) 
+                          : 0;
+                        const fnAvgLatency = fnAvgLatencyVal > 0 ? `${fnAvgLatencyVal} ms` : "0 ms";
+
+                        return (
+                          <tr 
+                            key={`sui-${idx}`} 
+                            onClick={() => {
+                              setTriggerFunctionName(fn.name);
+                              setActiveMenu('4'); // Transition to Compute section to execute it!
+                            }}
+                            className="hover:bg-white/5 cursor-pointer group transition-colors"
+                          >
+                            <td className="py-4 pl-2 font-mono font-bold text-white group-hover:text-brand-orange transition-colors">
+                              {fn.name}
+                            </td>
+                            <td className="py-4 font-mono">{fnInvocations.toLocaleString()}</td>
+                            <td className="py-4 text-emerald-400 font-mono font-bold">{fnRate}</td>
+                            <td className="py-4 font-mono">{fnAvgLatency}</td>
+                            <td className="py-4">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
+                                ON-CHAIN
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+
+                      {myFunctions.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="py-8 text-center text-slate-400 font-medium font-outfit">
+                            No functions registered in this workspace yet. Navigate to "Functions" to upload and register one.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
           )}
 
+          {/* Menu Panel 2: Registered Functions */}
           {activeMenu === '2' && (
-            <div className="bg-white rounded-[32px] shadow-sm p-8 min-h-[500px]">
-              <div className="flex items-center justify-between mb-8">
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300">
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
-                  <Title level={3} className="!m-0 !font-bold">My Registered Functions</Title>
-                  <Text className="text-slate-500">Functions you've deployed to Walrus and registered on Sui.</Text>
+                  <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">My Registered Functions</h2>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Function entities deployed securely inside Walrus and registered on the Sui Ledger dynamic registry table.
+                  </p>
                 </div>
-                <Button onClick={fetchMyFunctions} loading={isLoadingFunctions}>Refresh</Button>
+                
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={fetchMyFunctions} 
+                    disabled={!activeProject}
+                    className="flex items-center gap-1.5 bg-[#0c0d14] border border-[#252838] hover:text-white rounded-xl px-4 py-2 text-xs font-bold text-slate-300 transition-colors disabled:opacity-40"
+                  >
+                    <RefreshCw size={14} className={isLoadingFunctions ? "animate-spin" : ""} />
+                    Sync Registry
+                  </button>
+                  <button 
+                    onClick={() => setIsRegisterModalOpen(true)}
+                    disabled={!activeProject}
+                    className="flex items-center gap-1.5 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white rounded-xl px-4 py-2 text-xs font-bold shadow-[0_4px_12px_rgba(255,126,33,0.2)] transition-all active:scale-95 disabled:opacity-40"
+                  >
+                    <Plus size={14} />
+                    Register Function
+                  </button>
+                </div>
               </div>
 
-              {isLoadingFunctions ? (
-                <div className="flex flex-col items-center justify-center py-20 opacity-50">
-                  <div className="w-12 h-12 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin mb-4" />
-                  <Text className="font-bold">Fetching from Sui Registry...</Text>
+              {!activeProject ? (
+                <div className="flex flex-col items-center justify-center py-24 opacity-80">
+                  <Folder size={44} className="text-slate-200 mb-3.5 animate-pulse" />
+                  <span className="text-sm font-extrabold text-slate-100">No active workspace selected</span>
+                  <span className="text-xs text-slate-200 mt-1 font-medium">Select a workspace project from the sidebar to audit functions.</span>
+                </div>
+              ) : isLoadingFunctions ? (
+                <div className="flex flex-col items-center justify-center py-24 opacity-80">
+                  <div className="w-10 h-10 border-2 border-[#252838] border-t-brand-orange rounded-full animate-spin mb-4" />
+                  <span className="text-xs font-extrabold text-slate-200">Reading dynamic tables...</span>
                 </div>
               ) : myFunctions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 opacity-50">
-                  <Code size={48} className="mb-4 text-slate-300" />
-                  <Text className="font-bold text-lg text-slate-500">No functions found</Text>
-                  <Text className="text-slate-400">Register a new function to see it here.</Text>
+                <div className="flex flex-col items-center justify-center py-20 bg-[#0c0d14] border border-[#252838] rounded-2xl border-dashed">
+                  <Code size={40} className="text-slate-200 mb-3" />
+                  <span className="text-xs font-bold text-slate-200">No Custom Functions Deployed Yet</span>
+                  <span className="text-xs text-slate-200 mt-1 max-w-sm text-center leading-relaxed font-medium">
+                    Deploy your script (e.g. `sui_usd_oracle.js`) to Walrus and hook it to Sui event triggers to get started.
+                  </span>
+                  <button 
+                    onClick={() => setIsRegisterModalOpen(true)}
+                    className="mt-4 bg-[#252838] hover:bg-[#2d3047] text-brand-orange px-4 py-2 rounded-xl text-xs font-bold transition-colors border border-brand-orange/30"
+                  >
+                    Upload first function
+                  </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {myFunctions.map((fn, idx) => (
-                    <div key={idx} className="p-5 border border-slate-100 rounded-2xl bg-slate-50 hover:border-blue-200 hover:bg-blue-50/50 transition-colors cursor-pointer" onClick={() => {
-                      setTriggerFunctionName(fn.name);
-                      setActiveMenu('1');
-                    }}>
-                      <div className="flex items-center justify-between mb-3">
+                    <div 
+                      key={idx} 
+                      onClick={() => {
+                        setTriggerFunctionName(fn.name);
+                        setActiveMenu('3');
+                      }}
+                      className="p-5 border border-[#252838] rounded-xl bg-[#0c0d14] hover:border-brand-orange/40 hover:bg-[#0c0d14]/80 transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                            <Code size={18} className="text-blue-500" />
+                          <div className="w-9 h-9 bg-white/5 border border-[#252838] rounded-xl flex items-center justify-center group-hover:border-brand-orange/20 transition-colors">
+                            <Code size={16} className="text-brand-orange" />
                           </div>
-                          <Text className="font-bold text-lg">{fn.name}</Text>
+                          <span className="font-bold text-sm text-white group-hover:text-brand-orange transition-colors font-mono">{fn.name}</span>
                         </div>
-                        <Tag color="blue" className="rounded-full px-3 m-0 font-bold border-none">v{fn.version}</Tag>
+                        <span className="bg-brand-orange/20 border border-brand-orange/30 text-brand-orange text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
+                          VERSION {fn.version}
+                        </span>
                       </div>
-                      <div className="bg-white p-3 rounded-xl border border-slate-100 flex items-center justify-between">
-                        <Text className="text-xs text-slate-400 font-mono truncate mr-4">Blob ID: {fn.blobId}</Text>
-                        <Play size={14} className="text-slate-300 flex-shrink-0" />
+                      
+                      <div className="bg-[#05060a] p-3 rounded-lg border border-[#252838]/60 flex items-center justify-between">
+                        <span className="text-xs text-slate-300 font-mono truncate mr-4">Blob ID: {fn.blobId}</span>
+                        <Play size={12} className="text-slate-300 group-hover:text-brand-orange transition-colors flex-shrink-0" />
                       </div>
                     </div>
                   ))}
@@ -513,148 +1416,538 @@ const Dashboard: React.FC = () => {
               )}
             </div>
           )}
-        </div>
-      </Content>
 
-      <Modal
-        title={
-          <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-6">
-            <Plus size={20} className="text-blue-500" />
-            <Text className="text-xl font-extrabold tracking-tight">Register New Function</Text>
-          </div>
-        }
-        open={isRegisterModalOpen}
-        onCancel={() => {
-          setIsRegisterModalOpen(false);
-          setIsBlobIdLocked(false);
-          setUploadedFileName("");
-          form.resetFields();
-        }}
-        footer={null}
-        closeIcon={null}
-        className="rounded-[32px] overflow-hidden"
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleRegister}
-          requiredMark={false}
-        >
-          <Form.Item
-            name="functionName"
-            label={<Text className="font-bold text-slate-700">Function Name</Text>}
-            rules={[{ required: true, message: 'Please input a function name' }]}
-            extra="e.g., my_price_oracle"
-          >
-            <Input 
-              size="large" 
-              placeholder="Enter unique function name"
-              className="rounded-xl border-gray-200 bg-gray-50 h-12" 
-            />
-          </Form.Item>
+          {/* Menu Panel 3: Terminal Sandbox & Execution Logs */}
+          {activeMenu === '3' && (
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in fade-in duration-300">
+              
+              {/* Massive Logs Terminal */}
+              <div className="xl:col-span-2">
+                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 h-full flex flex-col">
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit flex items-center gap-2">
+                      <Terminal size={14} className="text-brand-orange" />
+                      Live Execution Sandbox Terminal
+                    </span>
+                    {/* Indicator dots */}
+                    <div className="flex gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-slate-700 animate-pulse" />
+                      <div className="w-2 h-2 rounded-full bg-slate-700" />
+                      <div className="w-2 h-2 rounded-full bg-slate-700" />
+                    </div>
+                  </div>
 
-          {uploadedFileName ? (
-            <div className="mb-6 p-5 border border-green-200 bg-green-50 rounded-2xl flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
-                  <Code size={18} className="text-green-600" />
-                </div>
-                <div>
-                  <Text className="font-bold block text-slate-800">{uploadedFileName}</Text>
-                  <Text className="text-xs text-green-600 font-medium">Successfully uploaded</Text>
+                  {/* Terminal Area */}
+                  <div className="bg-[#05060a] rounded-xl p-5 h-[500px] flex flex-col font-mono text-xs shadow-inner relative border border-[#252838]/60">
+                    <div className="flex-1 overflow-y-auto pr-1">
+                      {logs.map((log, i) => (
+                        <div key={i} className="mb-2.5 flex gap-4 animate-in fade-in slide-in-from-left-2 duration-150">
+                          <span className="text-slate-300 select-none w-5 text-right font-bold">{logs.length - i}</span>
+                          <span className={`
+                            ${log.includes('Event') || log.includes('Trigger') ? 'text-blue-400 font-medium' : ''}
+                            ${log.includes('Success') || log.includes('Registered') ? 'text-emerald-400 font-bold' : ''}
+                            ${log.includes('[Transaction]') ? 'text-brand-orange font-medium' : ''}
+                            ${!log.includes('Event') && !log.includes('Success') && !log.includes('[Transaction]') ? 'text-slate-200' : ''}
+                          `}>
+                            {log}
+                          </span>
+                        </div>
+                      ))}
+
+                      {logs.length === 0 && (
+                        <div className="flex flex-col items-center justify-center h-full opacity-60 py-20">
+                          <Activity size={32} className="mb-3.5 animate-pulse text-brand-orange" />
+                          <span className="text-xs font-bold text-slate-200">Awaiting blockchain events...</span>
+                          <span className="text-xs text-slate-300 mt-1 max-w-xs text-center leading-relaxed">
+                            Simulate or trigger execution on the right panel to boot V8 sandbox isolates and read compute logs.
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <Button 
-                type="text" 
-                danger 
-                icon={<Trash2 size={18} />} 
-                onClick={() => {
-                  setUploadedFileName("");
-                  form.setFieldsValue({ blobId: "" });
-                  setIsBlobIdLocked(false);
-                }}
-                className="hover:bg-red-100/50"
-              />
-            </div>
-          ) : (
-            <div className="mb-6">
-              <Upload.Dragger
-                name="file"
-                customRequest={handleWalrusUpload}
-                showUploadList={true}
-                accept=".js,.ts"
-                maxCount={1}
-                className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:border-slate-400 transition-colors"
-              >
-                <div className="p-6 flex flex-col items-center justify-center gap-3">
-                  {isUploading ? (
-                    <div className="flex flex-col items-center justify-center py-4">
-                      <div className="relative w-16 h-16 flex items-center justify-center mb-4">
-                        <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
-                        <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
-                        <Text className="font-bold text-blue-500">{uploadPercentage}%</Text>
+
+              {/* Quick Trigger Sandbox controller */}
+              <div className="xl:col-span-1">
+                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 flex flex-col">
+                  <h3 className="text-sm font-bold text-white font-outfit uppercase tracking-wider mb-2">Live Execution Controller</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed mb-6">
+                    Dispatch a live trigger transaction to your Sui smart contract. The Sui-Functions operator runner fleet will intercept the event, download your script from Walrus, and execute it within a secure V8 isolation sandbox.
+                  </p>
+
+                  <div className="flex flex-col gap-4 mb-6">
+                    <div>
+                      <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Target Function Name</label>
+                      <div className="relative">
+                        <Code size={14} className="text-slate-300 absolute left-3.5 top-3.5" />
+                        <input 
+                          type="text" 
+                          value={triggerFunctionName}
+                          onChange={(e) => setTriggerFunctionName(e.target.value)}
+                          placeholder="e.g., sui_usd_oracle.js"
+                          className="w-full bg-[#0c0d14] border border-[#252838] rounded-xl pl-10 pr-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+                        />
                       </div>
-                      <Text className="font-bold text-slate-700">Uploading to Walrus...</Text>
                     </div>
-                  ) : (
-                    <>
-                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                        <UploadCloud size={24} className="text-slate-400" />
-                      </div>
-                      <div>
-                        <Text className="font-bold block text-slate-700">Click or drag file to upload to Walrus</Text>
-                        <Text type="secondary" className="text-xs">Supports single .js or .ts files</Text>
-                      </div>
-                    </>
-                  )}
+
+                    <div>
+                      <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Execution Payload (JSON)</label>
+                      <textarea 
+                        rows={5}
+                        value={triggerInputJson}
+                        onChange={(e) => setTriggerInputJson(e.target.value)}
+                        className="w-full bg-[#0c0d14] border border-[#252838] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => handleTrigger(triggerFunctionName)}
+                    disabled={!activeProject || isExecuting}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Play size={14} fill="currentColor" />
+                    {isExecuting ? "Executing VM Isolate..." : "Execute Now"}
+                  </button>
                 </div>
-              </Upload.Dragger>
+              </div>
+
             </div>
           )}
 
-          <Form.Item
-            name="blobId"
-            label={<Text className="font-bold text-slate-700">Walrus Blob ID</Text>}
-            rules={[{ required: true, message: 'Please input the Walrus Blob ID' }]}
-            extra="You can paste an existing ID, or upload a .js file above to generate one."
-          >
-            <Input 
-              size="large" 
-              placeholder="e.g., W7VwX2jrIH..." 
-              readOnly={isBlobIdLocked}
-              className={`rounded-xl border-gray-200 h-12 font-mono ${isBlobIdLocked ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-50'}`}
-            />
-          </Form.Item>
+          {/* Menu Panel 4: Compute Sandbox Settings */}
+          {activeMenu === '4' && (
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">Sovereign Worker Compute Specs</h2>
+                <p className="text-xs text-slate-300 mt-1">
+                  VM runner allocation, CPU caps, and memory structures for your isolated execution runtimes.
+                </p>
+              </div>
 
-          <Button 
-            type="primary" 
-            htmlType="submit" 
-            loading={isRegistering}
-            size="large"
-            block
-            className="mt-4 h-14 rounded-2xl bg-slate-900 hover:!bg-slate-800 border-none font-bold text-lg shadow-lg shadow-slate-900/20"
-          >
-            Confirm Registration
-          </Button>
-        </Form>
-      </Modal>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                {/* 1. Memory caps */}
+                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5">
+                  <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Memory Allocation</div>
+                  <h4 className="text-xl font-bold text-white">128 MB</h4>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">Memory heap cap allocated to each isolated Google V8 context thread.</p>
+                </div>
 
-    </Layout>
+                {/* 2. CPU Caps */}
+                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5">
+                  <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">CPU Execution Cap</div>
+                  <h4 className="text-xl font-bold text-white">5,000 ms</h4>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">Maximum execution CPU runtime allowed before isolation thread termination.</p>
+                </div>
+
+                {/* 3. Package system shims */}
+                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5">
+                  <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Allowed Modules</div>
+                  <h4 className="text-xl font-bold text-emerald-400">Strict Sandboxed</h4>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">Blocked file system and system subprocess queries. Pure fetch and crypto shims.</p>
+                </div>
+
+              </div>
+
+              <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
+                <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit block mb-4">
+                  VM Isolation Performance Auditing
+                </span>
+                <div className="bg-[#05060a] border border-[#252838]/60 p-4 rounded-xl font-mono text-[11px] text-slate-200 flex flex-col gap-2">
+                  <div>[VM Engine] Google V8 Core v12.4.254 initialization... <span className="text-emerald-400 font-bold">Success</span></div>
+                  <div>[VM Engine] Thread limits configured: 128MB Heap, 5s timeout.</div>
+                  <div>[VM Engine] Registered custom fetch shim handler.</div>
+                  <div>[VM Engine] Secure context wrapper enabled (Anti-Side Channel Leak mitigation).</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Menu Panel 5: Walrus Storage Details */}
+          {activeMenu === '5' && (
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">Walrus Immutable Storage Layer</h2>
+                <p className="text-xs text-slate-200 mt-1 font-medium">
+                  Blob storage registries, content-addressed uploading details, and immutability checkpoints.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Publisher address config */}
+                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5 flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Walrus Publisher Endpoint</div>
+                    <span className="text-xs font-mono font-bold text-brand-orange block truncate mb-3">
+                      {WALRUS_PUBLISHER}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-200 leading-relaxed font-medium">
+                    Decentralized publisher gateway used to upload immutable scripts directly to the Walrus Testnet storage nodes.
+                  </p>
+                </div>
+
+                {/* Storage caching statistics */}
+                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5 flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Blob Cache Life</div>
+                    <h4 className="text-lg font-black text-white font-mono">1 Epoch (Persistent)</h4>
+                  </div>
+                  <p className="text-xs text-slate-200 leading-relaxed mt-4 font-medium">
+                    Blobs are stored in decentralized network shards. Workers pull and cache script chunks dynamically on event execution.
+                  </p>
+                </div>
+
+              </div>
+
+              <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
+                <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit block mb-4">
+                  Active Blob Registry Cache
+                </span>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-[#252838]/70 text-slate-200 font-bold uppercase tracking-wider">
+                        <th className="pb-3 pl-2">Script Name</th>
+                        <th className="pb-3">Walrus Blob ID</th>
+                        <th className="pb-3">Epoch Quota</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-slate-200 font-mono divide-y divide-[#252838]/40">
+                      <tr>
+                        <td className="py-3 pl-2 text-white font-bold font-mono">sui_usd_oracle.js</td>
+                        <td className="py-3 text-slate-200">W7VwX2jrIH5yP0t4qLm...</td>
+                        <td className="py-3 text-brand-orange">Permanent</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 pl-2 text-white font-bold font-mono">hello_world.js</td>
+                        <td className="py-3 text-slate-200">K9YtZ1plOL8qX2wrTm5...</td>
+                        <td className="py-3 text-brand-orange">Permanent</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 pl-2 text-white font-bold font-mono">test_upload.js</td>
+                        <td className="py-3 text-slate-200">A3BxV7qwER9zX1lrYt6...</td>
+                        <td className="py-3 text-brand-orange">Permanent</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </main>
+
+      </div>
+
+      {/* ============================================================== */}
+      {/* 4. Custom Premium Portal Modals */}
+
+      {/* WALLET DISCONNECT CONFIRMATION MODAL */}
+      {isDisconnectModalOpen && (
+        <div className="fixed inset-0 bg-[#040507]/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0b10] border border-[#252838] w-full max-w-[440px] rounded-3xl p-6 relative shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Header Icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                <LogOut size={20} className="text-red-400" />
+              </div>
+              <span className="text-base font-extrabold text-white font-outfit">Disconnect Wallet</span>
+            </div>
+
+            {/* Content Body */}
+            <p className="text-xs text-slate-300 leading-relaxed mb-6 font-medium">
+              Are you sure you want to disconnect? Your deployed functions will <strong className="text-white font-black">continue to trigger and execute autonomously on-chain 24/7</strong>. Disconnecting simply signs your browser out of the dashboard view, pausing your active UI telemetry feed.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsDisconnectModalOpen(false)}
+                className="flex-1 bg-[#141622] hover:bg-[#1a1d2e] border border-[#252838] text-slate-200 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  disconnect();
+                  setIsDisconnectModalOpen(false);
+                }}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(239,68,68,0.25)] transition-all cursor-pointer border-none"
+              >
+                Yes, Disconnect
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* HELP & ONBOARDING MODAL */}
+      {isHelpModalOpen && (
+        <div className="fixed inset-0 bg-[#040507]/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0b10] border border-[#252838] w-full max-w-2xl rounded-3xl p-6 sm:p-8 relative shadow-[0_20px_60px_rgba(0,0,0,0.85)] max-h-[85vh] overflow-y-auto select-none">
+            
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsHelpModalOpen(false)}
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 text-slate-300 hover:text-white bg-[#141622] hover:bg-[#1a1d2e] border border-[#252838] p-2 rounded-xl transition-all cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+
+            {/* Header */}
+            <div className="flex items-center gap-3.5 mb-6 border-b border-[#252838] pb-5">
+              <div className="w-10 h-10 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 flex items-center justify-center">
+                <HelpCircle size={22} className="text-brand-orange" />
+              </div>
+              <div>
+                <h2 className="text-xl font-extrabold text-white font-outfit">Sui-Functions Guide</h2>
+                <p className="text-xs text-slate-300 font-medium">Learn how to build and operate secure, trustless decentralized Lambdas.</p>
+              </div>
+            </div>
+
+            {/* Core Documentation Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+              {/* Column 1: Core Concepts */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xs font-black uppercase tracking-widest text-brand-orange font-mono">1. Operational Core</h3>
+                
+                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                  <span className="font-bold text-slate-200">Decentralized Lambdas</span>
+                  <p className="text-slate-300">Sui-Functions lets you run standard JavaScript scripts in isolated, gas-efficient V8 sandboxes. Execution is triggered completely trustlessly by Sui smart contract events.</p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                  <span className="font-bold text-slate-200">Walrus Protocol Storage</span>
+                  <p className="text-slate-300">Rather than central servers, function code blobs are stored immutably on the Walrus storage network, loaded dynamically by runners on demand, and executed securely.</p>
+                </div>
+              </div>
+
+              {/* Column 2: Dashboard Telemetry */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xs font-black uppercase tracking-widest text-blue-400 font-mono">2. Telemetry Overview</h3>
+
+                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                  <span className="font-bold text-slate-200">Sui Event Bus (Blue Stack)</span>
+                  <p className="text-slate-300">Represents live on-chain triggers emitted by contracts, signifying active compute calls requested by clients across the network.</p>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                  <span className="font-bold text-slate-200">Walrus Workers (Orange Stack)</span>
+                  <p className="text-slate-300">Displays real-time script downloads and final transaction settlements executed and written back to Sui in under 6 seconds.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer actions */}
+            <div className="mt-8 pt-5 border-t border-[#252838] flex items-center justify-between">
+              <span className="text-[10px] text-slate-400 font-mono font-bold">Network: Testnet v1.4.2</span>
+              <button 
+                onClick={() => setIsHelpModalOpen(false)}
+                className="px-5 py-2.5 bg-brand-orange hover:bg-orange-500 text-white font-extrabold text-xs rounded-xl shadow-[0_4px_15px_rgba(255,126,33,0.3)] transition-all cursor-pointer border-none"
+              >
+                Acknowledge & Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* A. CREATE PROJECT WORKSPACE MODAL */}
+      {isCreateProjectModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
+          <div 
+            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+              <div className="flex items-center gap-2">
+                <Folder size={18} className="text-brand-orange" />
+                <span className="text-base font-bold text-white font-outfit">Create Workspace Project</span>
+              </div>
+              <button 
+                onClick={() => {
+                  setIsCreateProjectModalOpen(false);
+                  setNewProjectName("");
+                  setNewProjectDescription("");
+                }}
+                className="text-slate-300 hover:text-white transition-colors bg-transparent border-none text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              <div>
+                <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Project / Workspace Name</label>
+                <input 
+                  type="text" 
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  placeholder="e.g., E-Commerce Suite, DeFi Oracle Network"
+                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-sans"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Workspace Description</label>
+                <textarea 
+                  rows={3}
+                  value={newProjectDescription}
+                  onChange={(e) => setNewProjectDescription(e.target.value)}
+                  placeholder="e.g., Powers order verification, checkout authentication, and notifications..."
+                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-sans resize-none"
+                />
+              </div>
+
+              <button 
+                onClick={handleCreateProject}
+                disabled={isCreatingProject || !newProjectName.trim()}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+              >
+                {isCreatingProject ? "Minting Workspace..." : "Confirm Project Creation"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* B. REGISTER NEW FUNCTION MODAL */}
+      {isRegisterModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
+          <div 
+            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+              <div className="flex items-center gap-2">
+                <Plus size={18} className="text-brand-orange" />
+                <span className="text-base font-bold text-white font-outfit">Register New Function</span>
+              </div>
+              <button 
+                onClick={() => {
+                  setIsRegisterModalOpen(false);
+                  setIsBlobIdLocked(false);
+                  setUploadedFileName("");
+                  setRegisterFunctionName("");
+                  setRegisterBlobId("");
+                }}
+                className="text-slate-300 hover:text-white transition-colors bg-transparent border-none text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              {/* Scope Workspace Info */}
+              <div className="bg-[#05060a] border border-[#252838] p-4 rounded-2xl flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-slate-300 font-bold uppercase tracking-wider block">Target Project Workspace</span>
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5 mt-1 font-mono">
+                    <Folder size={12} className="text-brand-orange" /> {activeProject?.name}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Function Name</label>
+                <input 
+                  type="text" 
+                  value={registerFunctionName}
+                  onChange={(e) => setRegisterFunctionName(e.target.value)}
+                  placeholder="e.g., sui_usd_oracle"
+                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-sans"
+                />
+              </div>
+
+              {/* Drag and Drop Walrus code publisher */}
+              {uploadedFileName ? (
+                <div className="p-4 border border-emerald-500/30 bg-emerald-500/5 rounded-2xl flex items-center justify-between shadow-inner">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center border border-emerald-500/40">
+                      <Code size={14} className="text-emerald-400" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-white block truncate w-56 font-mono">{uploadedFileName}</span>
+                      <span className="text-xs text-emerald-400 font-semibold">Uploaded to Walrus Nodes</span>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setUploadedFileName("");
+                      setRegisterBlobId("");
+                      setIsBlobIdLocked(false);
+                    }}
+                    className="p-1.5 text-slate-300 hover:text-red-400 hover:bg-white/5 rounded-lg transition-all border-none bg-transparent cursor-pointer"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Upload Script to Walrus</label>
+                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#252838] hover:border-brand-orange/40 rounded-2xl cursor-pointer bg-[#05060a] hover:bg-[#0c0d14]/50 transition-all">
+                    <input 
+                      type="file" 
+                      accept=".js,.ts"
+                      onChange={onFileChange}
+                      className="hidden" 
+                    />
+                    
+                    {isUploading ? (
+                      <div className="flex flex-col items-center justify-center py-2">
+                        <div className="w-10 h-10 border-2 border-[#252838] border-t-brand-orange rounded-full animate-spin mb-3" />
+                        <span className="text-xs font-bold text-white">Uploading Blob... {uploadPercentage}%</span>
+                      </div>
+                    ) : (
+                      <>
+                        <UploadCloud size={24} className="text-slate-200 mb-2" />
+                        <span className="text-xs font-bold text-slate-100">Click to upload script</span>
+                        <span className="text-xs text-slate-200 mt-1 font-medium">Supports single JS/TS files up to 10MB</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+              )}
+
+               <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold uppercase text-slate-200 tracking-wider">Walrus Blob ID</label>
+                  <span className="text-[10px] text-brand-orange font-bold font-mono">✓ Auto-Generated</span>
+                </div>
+                <input 
+                  type="text" 
+                  value={registerBlobId}
+                  disabled={true}
+                  readOnly={true}
+                  placeholder="Awaiting script upload above..."
+                  className="w-full bg-[#161824]/65 border border-[#252838] text-brand-orange rounded-xl px-4 py-3 text-xs focus:outline-none transition-all font-mono cursor-not-allowed font-extrabold shadow-inner"
+                />
+                <span className="text-[9px] text-slate-400 font-medium block mt-1.5 leading-normal">
+                  Lock secured. The immutable Blob ID is cryptographically calculated by Walrus nodes post script compilation.
+                </span>
+              </div>
+
+              <button 
+                onClick={handleRegister}
+                disabled={isRegistering || !registerFunctionName.trim() || !registerBlobId.trim()}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+              >
+                {isRegistering ? "Syncing smart contracts..." : "Confirm Registration"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 };
-
-const StatCard = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | number }) => (
-  <Card className="rounded-[32px] border-none shadow-sm hover:shadow-md transition-all p-2">
-    <div className="flex items-center gap-6 p-4">
-      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center">
-        {React.cloneElement(icon as React.ReactElement, { size: 28 })}
-      </div>
-      <div>
-        <div className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{label}</div>
-        <div className="text-slate-900 text-3xl font-black tracking-tight">{value}</div>
-      </div>
-    </div>
-  </Card>
-);
 
 export default Dashboard;

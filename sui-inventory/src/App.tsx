@@ -16,7 +16,7 @@ import './App.css';
 
 // Consts
 const SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443';
-const PACKAGE_ID = '0xc4eccd56b8b1c25b5517f518ccd2a1845a64e9cfddabf4c6981a3bb0c0feecf0';
+const PACKAGE_ID = '0x0a4c46e798a86a660b6c40d4be93d9b97bcad0183f97f4ffa2fc8a38dbf84086';
 
 interface Product {
   id: string;

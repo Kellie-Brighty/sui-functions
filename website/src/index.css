@@ -1,9 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply antialiased;
+  html {
+    scroll-behavior: smooth;
+    background-color: #05060a !important;
   }
+  
+  body {
+    @apply antialiased bg-brand-dark text-slate-100 font-sans;
+    background-color: #05060a !important;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #05060a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1e2030;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2d3047;
+  }
+}
+
+/* Premium UI Utilities */
+.glow-orange {
+  position: relative;
+}
+
+.glow-orange::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 40px rgba(255, 126, 33, 0.12);
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+.glow-orange:hover::before {
+  opacity: 1;
+}
+
+/* Grid overlay background */
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+/* Radial light glow effects */
+.radial-glow-orange {
+  background: radial-gradient(circle 600px at 50% 200px, rgba(255, 126, 33, 0.08), #05060a 80%);
+}
+
+.radial-glow-footer {
+  background: radial-gradient(circle 400px at 50% 100%, rgba(255, 126, 33, 0.05), #030407 70%);
+}
+
+/* Shimmer animation for headers or glowing text */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.text-shimmer {
+  background: linear-gradient(90deg, #ff7e21, #ffbe85, #ff7e21);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* Progress bar width animation */
+@keyframes pulseWidth {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-pulse-width {
+  animation: pulseWidth 1.6s ease-in-out infinite;
+}
+
+/* Floating ambient orb animations */
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(-10px, 15px) scale(0.98); }
+  75% { transform: translate(20px, 10px) scale(1.02); }
+}
+
+@keyframes floatMedium {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-25px, 20px) scale(1.04); }
+  66% { transform: translate(15px, -15px) scale(0.97); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  30% { transform: translate(20px, 25px) scale(1.03); }
+  60% { transform: translate(-30px, -10px) scale(0.96); }
+}
+
+@keyframes aurora {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) rotate(-8deg) scaleX(1); }
+  50% { opacity: 1; transform: translateX(-50%) rotate(-5deg) scaleX(1.1); }
+}
+
+.animate-float-slow {
+  animation: floatSlow 20s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: floatMedium 15s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 18s ease-in-out infinite;
+}
+
+.animate-aurora {
+  animation: aurora 12s ease-in-out infinite;
+}
+
+/* Fade in up for sections */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out both;
 }
