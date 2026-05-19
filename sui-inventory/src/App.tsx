@@ -20,8 +20,8 @@ import { ConnectButton, useCurrentAccount, useSuiClient, useSignAndExecuteTransa
 import { Transaction } from '@mysten/sui/transactions';
 // Consts
 const SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443';
-const PACKAGE_ID = '0x0a4c46e798a86a660b6c40d4be93d9b97bcad0183f97f4ffa2fc8a38dbf84086';
-const PROJECT_ID = '0xbbd539992a5e47c80fd393d6cdd17d6512048f0964a67137bf4a0cd7cd84017e';
+const PACKAGE_ID = '0x53636064fefacacc924df2766cd2e4678456d3163373ee084227e638aae3e76e';
+const PROJECT_ID = '0xbdbd6aa440b84b29ef2788d31fd465c066c4cda8c9aca14fa8c7e1e81d59ea7e';
 
 interface Product {
   id: string;
@@ -172,7 +172,7 @@ function App() {
         const sortedEvents = rpcResult.result.data;
 
         for (const event of sortedEvents) {
-          if (event.type.includes('ExecutionCompleted')) {
+          if (event.type.includes('ExecutionCompleted') && event.parsedJson?.project_id === PROJECT_ID) {
             try {
               const parsedResult = JSON.parse(event.parsedJson.result_data);
               if (parsedResult && parsedResult.asset === 'SUI/USD' && typeof parsedResult.price === 'number') {
