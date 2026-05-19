@@ -31,7 +31,8 @@ import {
   Info,
   Check,
   X,
-  Shield
+  Shield,
+  Copy
 } from 'lucide-react';
 import { 
   useCurrentAccount, 
@@ -1355,6 +1356,45 @@ const Dashboard: React.FC = () => {
                     <ChevronDown size={14} className="text-slate-300 absolute right-3 top-3 pointer-events-none" />
                   </div>
                   
+                  {/* Package and Project IDs for quick copy */}
+                  <div className="flex flex-col gap-1.5 mt-1 pt-1.5 border-t border-[#252838]/40">
+                    <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                      <div className="flex flex-col">
+                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Package ID</span>
+                        <span className="text-[10px] font-mono text-slate-200 mt-0.5">{PACKAGE_ID.slice(0, 6)}...{PACKAGE_ID.slice(-4)}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(PACKAGE_ID);
+                          showToast('success', 'Package ID Copied', 'Package ID has been copied to your clipboard.');
+                        }}
+                        title="Copy Package ID"
+                        className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                      >
+                        <Copy size={11} />
+                      </button>
+                    </div>
+
+                    {activeProject && (
+                      <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                        <div className="flex flex-col">
+                          <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Project ID</span>
+                          <span className="text-[10px] font-mono text-slate-200 mt-0.5">{activeProject.id.slice(0, 6)}...{activeProject.id.slice(-4)}</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(activeProject.id);
+                            showToast('success', 'Project ID Copied', 'Project ID has been copied to your clipboard.');
+                          }}
+                          title="Copy Project ID"
+                          className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                        >
+                          <Copy size={11} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   <button 
                     onClick={() => setIsCreateProjectModalOpen(true)}
                     className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-orange/40 hover:border-brand-orange text-brand-orange hover:bg-brand-orange/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-orange/5"
