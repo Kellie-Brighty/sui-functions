@@ -1322,9 +1322,9 @@ const Dashboard: React.FC = () => {
         {/* 2. Left Navigation Sider */}
         <aside className="w-[260px] bg-[#05060a] border-r border-[#252838]/60 hidden lg:flex flex-col justify-between p-4 sticky top-16 h-[calc(100vh-64px)] z-30">
           
-          <div className="flex flex-col gap-6">
-            {/* Active Workspace Block */}
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-4 relative group">
+          <div className="flex flex-col flex-1 min-h-0 gap-6">
+            {/* Active Workspace Block (Fixed at Top) */}
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-4 relative group shrink-0">
               <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Sovereign Compute</div>
               
               {isLoadingProjects ? (
@@ -1405,72 +1405,74 @@ const Dashboard: React.FC = () => {
               )}
             </div>
 
-            {/* Sidebar Main Menus */}
-            <nav className="flex flex-col gap-1.5">
-              <button 
-                onClick={() => setActiveMenu('1')}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeMenu === '1' 
-                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                <LayoutDashboard size={16} />
-                Dashboard
-              </button>
+            {/* Scrollable Main Menus Section */}
+            <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#252838] scrollbar-track-transparent">
+              <nav className="flex flex-col gap-1.5">
+                <button 
+                  onClick={() => setActiveMenu('1')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '1' 
+                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <LayoutDashboard size={16} />
+                  Dashboard
+                </button>
 
-              <button 
-                onClick={() => setActiveMenu('2')}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeMenu === '2' 
-                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                <Code size={16} />
-                Functions
-              </button>
+                <button 
+                  onClick={() => setActiveMenu('2')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '2' 
+                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <Code size={16} />
+                  Functions
+                </button>
 
-              <button 
-                onClick={() => setActiveMenu('3')}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeMenu === '3' 
-                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                <Terminal size={16} />
-                Logs
-              </button>
+                <button 
+                  onClick={() => setActiveMenu('3')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '3' 
+                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <Terminal size={16} />
+                  Logs
+                </button>
 
-              <button 
-                onClick={() => setActiveMenu('4')}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeMenu === '4' 
-                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                <Cpu size={16} />
-                Compute
-              </button>
+                <button 
+                  onClick={() => setActiveMenu('4')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '4' 
+                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <Cpu size={16} />
+                  Compute
+                </button>
 
-              <button 
-                onClick={() => setActiveMenu('5')}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeMenu === '5' 
-                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                    : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                <HardDrive size={16} />
-                Storage
-              </button>
-            </nav>
+                <button 
+                  onClick={() => setActiveMenu('5')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '5' 
+                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <HardDrive size={16} />
+                  Storage
+                </button>
+              </nav>
+            </div>
           </div>
 
-          {/* Sidebar Footer Operations */}
-          <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4">
+          {/* Sidebar Footer Operations (Fixed at Bottom) */}
+          <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4 shrink-0 mt-4">
             
             {/* Deploy New Function Trigger */}
             <button 
