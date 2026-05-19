@@ -1,0 +1,263 @@
+/* yield rebalancer responsive layout styles */
+
+@media (max-width: 1024px) {
+  .rebalancer-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Custom styles for dApp Kit Connect Button to style it premium */
+.w-dapp-kit-connect-button {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, #1a1f2e 100%) !important;
+  border: 1px solid var(--border-color) !important;
+  color: white !important;
+  font-family: var(--sans) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.w-dapp-kit-connect-button:hover {
+  border-color: var(--accent-orange) !important;
+  box-shadow: 0 0 15px var(--accent-orange-glow) !important;
+  transform: translateY(-1px);
+}
+
+/* --- Premium Rebalancer Overhaul Styles --- */
+
+/* Grid background helper */
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center top;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glowing background blur blobs */
+.glow-blob-1 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 126, 33, 0.08) 0%, transparent 70%);
+  top: 10%;
+  left: 5%;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glow-blob-2 {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(69, 140, 245, 0.06) 0%, transparent 70%);
+  bottom: 10%;
+  right: 5%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Pulsing live indicator dot */
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  position: relative;
+}
+
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 1px solid #10b981;
+  border-radius: 50%;
+  animation: pulse-out 2s infinite ease-out;
+  opacity: 0.8;
+}
+
+@keyframes pulse-out {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Interactive Slider Custom Styling */
+.premium-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #1e293b;
+  outline: none;
+  margin: 12px 0;
+}
+
+.premium-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-orange);
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--accent-orange-glow);
+  transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.premium-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: #ff9147;
+}
+
+/* CSS Network Orbit Visualization */
+.orbit-container {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orbit-center {
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #2563eb 0%, #1e3a8a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(37, 99, 235, 0.4);
+  z-index: 10;
+}
+
+.orbit-path-inner {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  animation: spin-slow 24s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orbit-path-outer {
+  position: absolute;
+  width: 290px;
+  height: 290px;
+  border: 1px dashed rgba(255, 126, 33, 0.12);
+  border-radius: 50%;
+  animation: spin-slow 35s linear infinite reverse;
+}
+
+.orbit-node {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.node-navi {
+  top: -18px;
+  left: calc(50% - 18px);
+  border-color: rgba(69, 140, 245, 0.4);
+  box-shadow: 0 0 12px rgba(69, 140, 245, 0.2);
+}
+
+.node-scallop {
+  bottom: 30px;
+  right: -10px;
+  border-color: rgba(255, 126, 33, 0.4);
+  box-shadow: 0 0 12px rgba(255, 126, 33, 0.2);
+}
+
+.node-usdc {
+  bottom: 30px;
+  left: -10px;
+  border-color: rgba(78, 93, 120, 0.4);
+}
+
+/* Animated flow arrows/particles */
+.flow-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: var(--accent-orange);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-orange);
+  offset-path: border-box; /* Dynamic fallback */
+  animation: flow-along-orbit 6s linear infinite;
+}
+
+/* Custom premium buttons */
+.btn-premium-primary {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, #ea580c 100%);
+  border: none;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-premium-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 126, 33, 0.4), 0 0 15px rgba(255, 126, 33, 0.2);
+}
+
+.btn-premium-secondary {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, #1e293b 100%);
+  border: 1px solid var(--border-color);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-premium-secondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Telemetry quick audit visual console simulator */
+.sim-terminal {
+  background: #030406;
+  border: 1px solid rgba(255, 126, 33, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #38bdf8;
+  height: 150px;
+  overflow-y: auto;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 15px rgba(255, 126, 33, 0.03);
+}

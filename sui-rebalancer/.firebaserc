@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "suifunctions"
+  },
+  "targets": {
+    "suifunctions": {
+      "hosting": {
+        "sui-yield": [
+          "sui-yield"
+        ]
+      }
+    }
+  }
+}

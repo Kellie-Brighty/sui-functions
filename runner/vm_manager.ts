@@ -33,7 +33,7 @@ export async function executeInSandbox(code: string, inputData: string = '{}'): 
         }
     }));
 
-    // Prepend shims for console.log and async fetch
+    // Prepend shims for console.log, async fetch, TextEncoder and TextDecoder
     const shimmedCode = `
         globalThis.console = {
             log: (...args) => log.applySync(undefined, args, { arguments: { copy: true } })
@@ -44,6 +44,24 @@ export async function executeInSandbox(code: string, inputData: string = '{}'): 
                 text: async () => text,
                 json: async () => JSON.parse(text)
             };
+        };
+        globalThis.TextEncoder = class TextEncoder {
+            encode(str) {
+                const arr = new Uint8Array(str.length);
+                for (let i = 0; i < str.length; i++) {
+                    arr[i] = str.charCodeAt(i) & 0xff;
+                }
+                return arr;
+            }
+        };
+        globalThis.TextDecoder = class TextDecoder {
+            decode(arr) {
+                let str = "";
+                for (let i = 0; i < arr.length; i++) {
+                    str += String.fromCharCode(arr[i]);
+                }
+                return str;
+            }
         };
         globalThis.inputData = rawInputData;
         try {

@@ -30,7 +30,8 @@ import {
   Sparkles,
   Info,
   Check,
-  X
+  X,
+  Shield
 } from 'lucide-react';
 import { 
   useCurrentAccount, 
@@ -49,11 +50,41 @@ const Dashboard: React.FC = () => {
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
   // Multi-Project States
-  const [myProjects, setMyProjects] = useState<{id: string, name: string, description: string}[]>([]);
-  const [activeProject, setActiveProject] = useState<{id: string, name: string, description: string} | null>(null);
+  const [myProjects, setMyProjects] = useState<{id: string, name: string, description: string, runnerAddress: string, auditorBlobId: string}[]>([]);
+  const [activeProject, setActiveProject] = useState<{id: string, name: string, description: string, runnerAddress: string, auditorBlobId: string} | null>(null);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
   const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  
+  // Settings States
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsRunnerAddress, setSettingsRunnerAddress] = useState("");
+  const [isCustomRunner, setIsCustomRunner] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [isDeletingProject, setIsDeletingProject] = useState(false);
+  const [deletingFunctionName, setDeletingFunctionName] = useState<string | null>(null);
+  
+  // Audit Warning Modal States
+  const [isAuditWarningModalOpen, setIsAuditWarningModalOpen] = useState(false);
+  const [auditWarningFnName, setAuditWarningFnName] = useState("");
+  const [auditWarningStatus, setAuditWarningStatus] = useState<'Pending Audit' | 'Rejected'>('Pending Audit');
+  const [auditWarningBlobId, setAuditWarningBlobId] = useState("");
+  const [isRequestingVerification, setIsRequestingVerification] = useState<string | null>(null);
+
+  // Custom Confirmation Modal State
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    actionType: 'delete_project' | 'delete_function' | null;
+    targetName: string;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    actionType: null,
+    targetName: ''
+  });
   
   // Custom Form States
   const [newProjectName, setNewProjectName] = useState("");
@@ -80,7 +111,7 @@ const Dashboard: React.FC = () => {
   const [triggerInputJson, setTriggerInputJson] = useState("{}");
   
   // My Functions State
-  const [myFunctions, setMyFunctions] = useState<{name: string, blobId: string, version: string}[]>([]);
+  const [myFunctions, setMyFunctions] = useState<{name: string, blobId: string, version: string, status: number}[]>([]);
   const [isLoadingFunctions, setIsLoadingFunctions] = useState(false);
 
   // Help & Notification state
@@ -114,7 +145,7 @@ const Dashboard: React.FC = () => {
     }
   ]);
 
-  const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=1";
+  const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=5";
 
   // Fetch SUI Balance
   const { data: balanceData } = useSuiClientQuery(
@@ -125,38 +156,62 @@ const Dashboard: React.FC = () => {
 
   const suiBalance = balanceData ? (Number(balanceData.totalBalance) / 1e9).toFixed(2) : "0.00";
 
-  // Fetch Owned Projects
+  // Fetch Shared/Owned Projects
   const fetchMyProjects = async () => {
     if (!client || !account) return;
     setIsLoadingProjects(true);
     try {
-      const ownedObjects = await client.getOwnedObjects({
-        owner: account.address,
-        filter: {
-          StructType: `${PACKAGE_ID}::trigger::Project`
+      // 1. Query ProjectCreated events to locate project IDs created by this user
+      const events = await client.queryEvents({
+        query: {
+          MoveEventType: `${PACKAGE_ID}::trigger::ProjectCreated`
         },
+        order: 'descending',
+        limit: 100
+      });
+
+      const myProjectIds = events.data
+        .filter((event: any) => event.parsedJson?.owner === account.address)
+        .map((event: any) => event.parsedJson?.project_id as string);
+
+      // De-duplicate project IDs
+      const uniqueProjectIds = Array.from(new Set(myProjectIds));
+
+      if (uniqueProjectIds.length === 0) {
+        setMyProjects([]);
+        setActiveProject(null);
+        return;
+      }
+
+      // 2. Fetch object details for each project to filter out deleted ones
+      const projectObjects = await client.multiGetObjects({
+        ids: uniqueProjectIds,
         options: {
           showContent: true
         }
       });
 
-      const projectsList = ownedObjects.data.map(obj => {
-        const fields = (obj.data?.content as any)?.fields;
-        return {
-          id: obj.data?.objectId as string,
-          name: fields?.name || "Unnamed Project",
-          description: fields?.description || ""
-        };
-      });
+      // Filter out deleted projects (where data is null/undefined or status is not exists)
+      const projectsList = projectObjects
+        .filter(obj => obj.data !== null && obj.data !== undefined)
+        .map(obj => {
+          const fields = (obj.data?.content as any)?.fields;
+          return {
+            id: obj.data?.objectId as string,
+            name: fields?.name || "Unnamed Project",
+            description: fields?.description || "",
+            runnerAddress: fields?.runner_address || "",
+            auditorBlobId: fields?.auditor_blob_id || ""
+          };
+        });
 
-      const combinedList = projectsList;
-      setMyProjects(combinedList);
+      setMyProjects(projectsList);
       
       setActiveProject(prev => {
-        if (prev && combinedList.some(p => p.id === prev.id)) {
-          return combinedList.find(p => p.id === prev.id) || null;
+        if (prev && projectsList.some(p => p.id === prev.id)) {
+          return projectsList.find(p => p.id === prev.id) || null;
         }
-        return combinedList[0] || null;
+        return projectsList[0] || null;
       });
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -170,6 +225,22 @@ const Dashboard: React.FC = () => {
       fetchMyProjects();
     }
   }, [account, client]);
+
+  useEffect(() => {
+    if (activeProject) {
+      const runner = activeProject.runnerAddress || "";
+      const defaultRunner = "0x66e2384110dfebe33a817f76f8f7916bdd92b1046b7ac699b59701f2c965a875";
+      const isZeroAddress = !runner || runner === "0x0" || /^0x0+$/.test(runner);
+      
+      if (isZeroAddress) {
+        setSettingsRunnerAddress(defaultRunner);
+        setIsCustomRunner(false);
+      } else {
+        setSettingsRunnerAddress(runner);
+        setIsCustomRunner(runner.toLowerCase() !== defaultRunner.toLowerCase());
+      }
+    }
+  }, [activeProject]);
 
   // Handle wallet connection loading sequence
   const prevAccountRef = useRef<any>(null);
@@ -224,7 +295,8 @@ const Dashboard: React.FC = () => {
           functionsList.push({
             name: field.name.value as string,
             blobId: metadata.walrus_blob_id,
-            version: metadata.version
+            version: metadata.version,
+            status: metadata.status !== undefined ? Number(metadata.status) : 1
           });
         }
       }
@@ -332,17 +404,268 @@ const Dashboard: React.FC = () => {
     signAndExecute(
       { transaction: tx },
       {
-        onSuccess: (result) => {
+        onSuccess: async (result) => {
           setLogs(prev => [`[Transaction] Workspace Minted: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsCreatingProject(false);
           setIsCreateProjectModalOpen(false);
+          const savedName = newProjectName;
+          const savedDesc = newProjectDescription;
           setNewProjectName("");
           setNewProjectDescription("");
+          
+          try {
+            // Wait 1 second to ensure RPC indexers have processed transaction block
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const txDetails = await client.getTransactionBlock({
+              digest: result.digest,
+              options: { showObjectChanges: true }
+            });
+            
+            let newProjectId = "";
+            if (txDetails.objectChanges) {
+              for (const change of txDetails.objectChanges) {
+                if (change.type === 'created' && change.objectType.endsWith('::trigger::Project')) {
+                  newProjectId = change.objectId;
+                  break;
+                }
+              }
+            }
+            
+            if (newProjectId) {
+              // Fetch the newly created project object directly to bypass indexer lag
+              const projectObj = await client.getObject({
+                id: newProjectId,
+                options: { showContent: true }
+              });
+              
+              const fields = (projectObj.data?.content as any)?.fields;
+              const newProj = {
+                id: newProjectId,
+                name: fields?.name || savedName,
+                description: fields?.description || savedDesc,
+                runnerAddress: fields?.runner_address || "",
+                auditorBlobId: fields?.auditor_blob_id || ""
+              };
+              
+              setMyProjects(prevProjects => {
+                if (prevProjects.some(p => p.id === newProjectId)) return prevProjects;
+                const updated = [...prevProjects, newProj];
+                return updated;
+              });
+              setActiveProject(newProj);
+              setLogs(prev => [`[System] Project "${newProj.name}" successfully created and activated!`, ...prev]);
+            }
+          } catch (err: any) {
+            console.error("Error fetching minted project details:", err);
+          }
+          
+          // Poll in background for safety
           fetchMyProjects();
+          let attempts = 0;
+          const interval = setInterval(() => {
+            attempts++;
+            fetchMyProjects();
+            if (attempts >= 4) {
+              clearInterval(interval);
+            }
+          }, 1500);
         },
         onError: (err) => {
           alert(`Workspace Creation Failed: ${err.message}`);
           setIsCreatingProject(false);
+        }
+      }
+    );
+  };
+
+  // Save Settings for active project (Runner Address)
+  const handleSaveSettings = () => {
+    if (!account || !activeProject) return;
+    if (!settingsRunnerAddress.trim()) {
+      alert("Runner address is required");
+      return;
+    }
+    
+    setIsSavingSettings(true);
+    const tx = new Transaction();
+    
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::set_runner_address`,
+      arguments: [
+        tx.object(activeProject.id),
+        tx.pure.address(settingsRunnerAddress)
+      ]
+    });
+
+    signAndExecute(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          setLogs(prev => [`[Transaction] Workspace Settings Configured: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setIsSavingSettings(false);
+          setIsSettingsModalOpen(false);
+          
+          // Apply local state updates instantly to bypass indexer lag
+          const updatedRunner = settingsRunnerAddress;
+          
+          setActiveProject(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              runnerAddress: updatedRunner
+            };
+          });
+          
+          setMyProjects(prevProjects => 
+            prevProjects.map(p => {
+              if (p.id === activeProject.id) {
+                return {
+                  ...p,
+                  runnerAddress: updatedRunner
+                };
+              }
+              return p;
+            })
+          );
+          
+          // Poll to handle RPC indexer lag
+          fetchMyProjects();
+          let attempts = 0;
+          const interval = setInterval(() => {
+            attempts++;
+            fetchMyProjects();
+            if (attempts >= 4) {
+              clearInterval(interval);
+            }
+          }, 1500);
+        },
+        onError: (err) => {
+          alert(`Failed to save settings: ${err.message}`);
+          setIsSavingSettings(false);
+        }
+      }
+    );
+  };
+
+  // Delete Workspace Project Click Trigger
+  const handleDeleteProjectClick = () => {
+    if (!account || !activeProject) return;
+
+    if (myFunctions.length > 0) {
+      setConfirmModal({
+        isOpen: true,
+        title: "Cannot Delete Workspace",
+        message: "Please delete all registered functions in this workspace first before destroying the project. Sui dynamic tables cannot be destroyed on-chain while they contain active items.",
+        actionType: null,
+        targetName: ""
+      });
+      return;
+    }
+
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Workspace Project",
+      message: "Are you sure you want to permanently delete this workspace project? This will destroy the project container object on-chain and recover your SUI storage rebate.",
+      actionType: "delete_project",
+      targetName: ""
+    });
+  };
+
+  // Execute actual Project Deletion on-chain
+  const executeDeleteProject = () => {
+    if (!account || !activeProject) return;
+
+    setIsDeletingProject(true);
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
+    const tx = new Transaction();
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::delete_project`,
+      arguments: [
+        tx.object(activeProject.id)
+      ]
+    });
+
+    signAndExecute(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          setLogs(prev => [`[Transaction] Workspace Destroyed: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setIsDeletingProject(false);
+          setIsSettingsModalOpen(false);
+
+          // Update local state
+          const remainingProjects = myProjects.filter(p => p.id !== activeProject.id);
+          setMyProjects(remainingProjects);
+          setActiveProject(remainingProjects[0] || null);
+
+          // Refresh list from chain
+          fetchMyProjects();
+        },
+        onError: (err) => {
+          setConfirmModal({
+            isOpen: true,
+            title: "Workspace Deletion Failed",
+            message: `Transaction failed: ${err.message}`,
+            actionType: null,
+            targetName: ""
+          });
+          setIsDeletingProject(false);
+        }
+      }
+    );
+  };
+
+  // Delete Function Click Trigger
+  const handleDeleteFunctionClick = (functionName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!account || !activeProject) return;
+
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete Function Registry",
+      message: `Are you sure you want to permanently delete function "${functionName}" from the blockchain registry? This will reclaim the associated storage rebate.`,
+      actionType: "delete_function",
+      targetName: functionName
+    });
+  };
+
+  // Execute actual Function Deletion on-chain
+  const executeDeleteFunction = (functionName: string) => {
+    if (!account || !activeProject) return;
+
+    setDeletingFunctionName(functionName);
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
+    const tx = new Transaction();
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::delete_function`,
+      arguments: [
+        tx.object(activeProject.id),
+        tx.pure.string(functionName)
+      ]
+    });
+
+    signAndExecute(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          setLogs(prev => [`[Transaction] Function "${functionName}" deleted: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setDeletingFunctionName(null);
+
+          // Remove from local state instantly to bypass RPC indexing delay
+          setMyFunctions(prev => prev.filter(f => f.name !== functionName));
+
+          // Refresh list from chain
+          fetchMyFunctions();
+        },
+        onError: (err) => {
+          setConfirmModal({
+            isOpen: true,
+            title: "Function Deletion Failed",
+            message: `Transaction failed: ${err.message}`,
+            actionType: null,
+            targetName: ""
+          });
+          setDeletingFunctionName(null);
         }
       }
     );
@@ -378,11 +701,67 @@ const Dashboard: React.FC = () => {
           setRegisterBlobId("");
           setIsBlobIdLocked(false);
           setUploadedFileName("");
+          
+          // Poll to handle RPC indexer lag
           fetchMyFunctions();
+          let attempts = 0;
+          const interval = setInterval(() => {
+            attempts++;
+            fetchMyFunctions();
+            if (attempts >= 4) {
+              clearInterval(interval);
+            }
+          }, 1500);
         },
         onError: (err) => {
           alert(`Registration Failed: ${err.message}`);
           setIsRegistering(false);
+        }
+      }
+    );
+  };
+
+  // Request On-Chain Verification / Retrying Audit
+  const handleRequestVerification = (functionName: string) => {
+    if (!account) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+    if (!activeProject) {
+      alert("Please select a workspace project first.");
+      return;
+    }
+    
+    setIsRequestingVerification(functionName);
+    const tx = new Transaction();
+    
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::request_verification`,
+      arguments: [
+        tx.object(activeProject.id),
+        tx.pure.string(functionName)
+      ],
+    });
+
+    signAndExecute(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          setLogs(prev => [`[Transaction] Verification Request Dispatched: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setIsRequestingVerification(null);
+          setIsAuditWarningModalOpen(false);
+          
+          // Poll to refresh the functions status on-chain
+          let count = 0;
+          const interval = setInterval(() => {
+            count++;
+            fetchMyFunctions();
+            if (count >= 4) clearInterval(interval);
+          }, 1500);
+        },
+        onError: (err) => {
+          alert(`Verification Request Failed: ${err.message}`);
+          setIsRequestingVerification(null);
         }
       }
     );
@@ -397,6 +776,15 @@ const Dashboard: React.FC = () => {
 
     if (!account) {
       alert('Please connect your wallet to execute custom smart contract triggers.');
+      return;
+    }
+
+    const targetFn = myFunctions.find(f => f.name === functionName);
+    if (targetFn && targetFn.status !== 1) {
+      setAuditWarningFnName(functionName);
+      setAuditWarningStatus(targetFn.status === 0 ? "Pending Audit" : "Rejected");
+      setAuditWarningBlobId(targetFn.blobId || "");
+      setIsAuditWarningModalOpen(true);
       return;
     }
     
@@ -862,9 +1250,9 @@ const Dashboard: React.FC = () => {
                   
                   <button 
                     onClick={() => setIsCreateProjectModalOpen(true)}
-                    className="text-brand-orange hover:text-brand-orange/80 text-[11px] font-bold flex items-center gap-1.5 pt-1.5 transition-colors self-start border-none"
+                    className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-orange/40 hover:border-brand-orange text-brand-orange hover:bg-brand-orange/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-orange/5"
                   >
-                    <Plus size={10} /> New Workspace
+                    <Plus size={14} /> New Workspace
                   </button>
                 </div>
               )}
@@ -952,6 +1340,15 @@ const Dashboard: React.FC = () => {
               <Plus size={16} /> Deploy New Function
             </button>
 
+            {/* Workspace Settings */}
+            <button 
+              onClick={() => setIsSettingsModalOpen(true)}
+              disabled={!activeProject}
+              className="w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] hover:border-brand-orange/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
+            </button>
+
             {/* Wallet Connector Details */}
             <div className="bg-[#0a0b10] border border-[#252838] rounded-xl p-3 flex flex-col gap-2">
               <div className="flex items-center gap-2">
@@ -964,7 +1361,7 @@ const Dashboard: React.FC = () => {
               </div>
               <button 
                 onClick={() => setIsDisconnectModalOpen(true)}
-                className="w-full text-left text-xs font-bold text-slate-300 hover:text-red-400 transition-colors flex items-center gap-1.5 border-none bg-transparent cursor-pointer"
+                className="w-full flex items-center justify-center gap-1.5 bg-red-950/20 hover:bg-red-900/30 border border-red-900/35 hover:border-red-500 text-red-400 hover:text-white py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm shadow-red-900/10 mt-1"
               >
                 <LogOut size={12} /> Disconnect Wallet
               </button>
@@ -973,7 +1370,30 @@ const Dashboard: React.FC = () => {
         </aside>
 
         {/* 3. Main Operational Workplate */}
-        <main className="flex-1 p-6 md:p-8 lg:p-10 overflow-y-auto max-w-[1400px] mx-auto w-full">
+        <main className="flex-1 p-6 md:p-8 lg:p-10 overflow-y-auto max-w-[1400px] mx-auto w-full flex flex-col gap-6">
+          
+          {/* Global Unconfigured Runner Alert */}
+          {activeProject && (!activeProject.runnerAddress || activeProject.runnerAddress === "0x0" || activeProject.runnerAddress === "0x0000000000000000000000000000000000000000000000000000000000000000" || /^0x0+$/.test(activeProject.runnerAddress)) && (
+            <div className="bg-amber-950/15 border border-amber-500/30 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_4px_20px_rgba(245,158,11,0.05)] animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white font-outfit font-bold">Action Required: Authorize a Runner</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed mt-1 text-left">
+                    This project does not have an authorized runner configured yet. Off-chain execution and on-chain result write-backs will be skipped until you authorize a runner in the project settings.
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsSettingsModalOpen(true)}
+                className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                Configure Workspace Runner
+              </button>
+            </div>
+          )}
           
           {/* Menu Panel 1: Overview */}
           {activeMenu === '1' && (
@@ -1291,10 +1711,17 @@ const Dashboard: React.FC = () => {
                           <tr 
                             key={`sui-${idx}`} 
                             onClick={() => {
+                              if (fn.status !== 1) {
+                                setAuditWarningFnName(fn.name);
+                                setAuditWarningStatus(fn.status === 0 ? "Pending Audit" : "Rejected");
+                                setAuditWarningBlobId(fn.blobId || "");
+                                setIsAuditWarningModalOpen(true);
+                                return;
+                              }
                               setTriggerFunctionName(fn.name);
                               setActiveMenu('4'); // Transition to Compute section to execute it!
                             }}
-                            className="hover:bg-white/5 cursor-pointer group transition-colors"
+                            className={`group transition-colors ${fn.status === 1 ? 'hover:bg-white/5 cursor-pointer' : 'opacity-85 hover:bg-red-500/5 cursor-not-allowed'}`}
                           >
                             <td className="py-4 pl-2 font-mono font-bold text-white group-hover:text-brand-orange transition-colors">
                               {fn.name}
@@ -1303,9 +1730,37 @@ const Dashboard: React.FC = () => {
                             <td className="py-4 text-emerald-400 font-mono font-bold">{fnRate}</td>
                             <td className="py-4 font-mono">{fnAvgLatency}</td>
                             <td className="py-4">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
-                                ON-CHAIN
-                              </span>
+                              <div className="flex items-center gap-2">
+                                {fn.status === 0 && (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                    Pending Audit
+                                  </span>
+                                )}
+                                {fn.status === 1 && (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.1)]">
+                                    <CheckCircle size={10} className="text-emerald-400" />
+                                    Verified
+                                  </span>
+                                )}
+                                {fn.status === 2 && (
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500/10 border border-red-500/20 text-red-400">
+                                      <AlertTriangle size={10} className="text-red-400" />
+                                      Rejected
+                                    </span>
+                                    <a 
+                                      href="https://publisher.walrus.site/TJgeWW4t-MOv1K2klEsC0eDTDZbmcUu610eHptXD9mA"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="text-[9px] font-black uppercase text-brand-orange hover:text-orange-400 hover:underline transition-colors flex items-center gap-0.5"
+                                    >
+                                      Auditor <ArrowUpRight size={10} />
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1401,14 +1856,69 @@ const Dashboard: React.FC = () => {
                           </div>
                           <span className="font-bold text-sm text-white group-hover:text-brand-orange transition-colors font-mono">{fn.name}</span>
                         </div>
-                        <span className="bg-brand-orange/20 border border-brand-orange/30 text-brand-orange text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
-                          VERSION {fn.version}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="bg-brand-orange/20 border border-brand-orange/30 text-brand-orange text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
+                            VERSION {fn.version}
+                          </span>
+                          <button
+                            onClick={(e) => handleDeleteFunctionClick(fn.name, e)}
+                            disabled={deletingFunctionName === fn.name}
+                            className="p-1.5 rounded-lg bg-red-950/20 hover:bg-red-900/40 border border-red-900/40 hover:border-red-500/50 text-red-400 hover:text-white transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                            title="Delete from registry"
+                          >
+                            <Trash2 size={12} className={deletingFunctionName === fn.name ? "animate-pulse" : ""} />
+                          </button>
+                        </div>
                       </div>
                       
-                      <div className="bg-[#05060a] p-3 rounded-lg border border-[#252838]/60 flex items-center justify-between">
+                      <div className="bg-[#05060a] p-3 rounded-lg border border-[#252838]/60 flex items-center justify-between mb-3">
                         <span className="text-xs text-slate-300 font-mono truncate mr-4">Blob ID: {fn.blobId}</span>
                         <Play size={12} className="text-slate-300 group-hover:text-brand-orange transition-colors flex-shrink-0" />
+                      </div>
+
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#252838]/30">
+                        <div className="flex items-center gap-1.5">
+                          {fn.status === 0 && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                              Pending Audit
+                            </span>
+                          )}
+                          {fn.status === 1 && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                              <CheckCircle size={10} className="text-emerald-400" />
+                              Verified & Active
+                            </span>
+                          )}
+                          {fn.status === 2 && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500/10 border border-red-500/20 text-red-400">
+                              <AlertTriangle size={10} className="text-red-400" />
+                              Audit Rejected
+                            </span>
+                          )}
+                        </div>
+
+                        {fn.status !== 1 && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRequestVerification(fn.name);
+                            }}
+                            disabled={isRequestingVerification !== null}
+                            className="text-[9px] font-black uppercase bg-[#252838] hover:bg-[#2d3047] text-brand-orange hover:text-orange-400 border border-brand-orange/20 px-2.5 py-1 rounded-xl transition-all cursor-pointer flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            {isRequestingVerification === fn.name ? (
+                              <>
+                                <span className="w-2.5 h-2.5 border-2 border-brand-orange/20 border-t-brand-orange rounded-full animate-spin"></span>
+                                Requesting...
+                              </>
+                            ) : (
+                              <>
+                                Request Audit <RefreshCw size={9} />
+                              </>
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1818,7 +2328,129 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* B. REGISTER NEW FUNCTION MODAL */}
+      {/* WORKSPACE SETTINGS MODAL */}
+      {isSettingsModalOpen && activeProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
+          <div 
+            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+              <div className="flex items-center gap-2">
+                <Settings size={18} className="text-brand-orange animate-spin-slow" />
+                <div>
+                  <span className="text-base font-bold text-white block font-outfit">Workspace Settings</span>
+                  <span className="text-[10px] text-slate-300 font-mono mt-0.5 block truncate max-w-[340px]">{activeProject.name}</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsSettingsModalOpen(false)}
+                className="text-slate-300 hover:text-white transition-colors bg-transparent border-none text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              {/* RUNNER OPTION SELECTOR */}
+              <div className="bg-[#141622]/40 border border-[#252838]/60 p-4 rounded-2xl flex flex-col gap-3">
+                <span className="text-[10px] font-bold uppercase text-slate-200 tracking-wider">Execution Environment</span>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCustomRunner(false);
+                      setSettingsRunnerAddress("0x66e2384110dfebe33a817f76f8f7916bdd92b1046b7ac699b59701f2c965a875");
+                    }}
+                    className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      !isCustomRunner
+                        ? "bg-brand-orange/10 border-brand-orange/50 shadow-[0_0_12px_rgba(255,126,33,0.1)] text-white"
+                        : "bg-[#05060a]/50 border-[#252838] hover:border-[#2d3047] text-slate-300"
+                    }`}
+                  >
+                    <span className="text-xs font-bold font-outfit">Managed Mode</span>
+                    <span className="text-[9px] leading-normal opacity-85">Shared execution fleet. Zero local configuration.</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    disabled={true}
+                    className="flex flex-col items-start gap-1 p-3 rounded-xl border border-[#252838]/60 bg-[#05060a]/30 text-slate-400 opacity-60 cursor-not-allowed text-left transition-all w-full"
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-xs font-bold font-outfit text-slate-300">Self-Hosted</span>
+                      <span className="text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#F76707]/10 border border-[#F76707]/30 text-[#F76707] leading-none shrink-0 font-mono">Soon</span>
+                    </div>
+                    <span className="text-[9px] leading-normal opacity-85 font-medium">Your own private AWS/VPS. Complete sovereignty.</span>
+                  </button>
+                </div>
+              </div>
+
+              {!isCustomRunner ? (
+                <div className="bg-[#141622]/30 border border-[#252838]/60 p-4 rounded-xl flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-brand-orange/10 flex items-center justify-center text-brand-orange text-[10px] shrink-0 mt-0.5 font-bold">ℹ</div>
+                  <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
+                    <strong className="text-white block mb-1">Managed Serverless Mode Active</strong>
+                    By default, your serverless functions execute inside our decentralized, isolated V8 sandboxes. We pay the blockchain gas fees to register and run your scripts automatically.
+                    <div className="mt-2 text-[9px] font-mono text-slate-400 break-all select-all font-bold">
+                      Default Runner: 0x66e2384110dfebe33a817f76f8f7916bdd92b1046b7ac699b59701f2c965a875
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs font-bold uppercase text-slate-200 tracking-wider">Private Runner Address</label>
+                      <span className="text-[9px] text-slate-300 font-mono font-bold">Must sign transactions</span>
+                    </div>
+                    <input 
+                      type="text" 
+                      value={settingsRunnerAddress}
+                      onChange={(e) => setSettingsRunnerAddress(e.target.value)}
+                      placeholder="0x..."
+                      className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+                    />
+                  </div>
+                  
+                  <div className="bg-amber-950/10 border border-amber-900/30 p-4 rounded-xl flex items-start gap-3">
+                    <span className="text-amber-500 font-bold text-xs shrink-0 mt-0.5">⚠️</span>
+                    <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
+                      Configure your cloud VPS (e.g. AWS) to run the Sui-Functions listener daemon. Load it with a hot-wallet key, and input the address here. Only transactions signed by this address will be allowed to submit execution results to this workspace.
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <button 
+                onClick={handleSaveSettings}
+                disabled={isSavingSettings || !settingsRunnerAddress.trim()}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+              >
+                {isSavingSettings ? "Configuring On-Chain Specs..." : "Save Workspace Configurations"}
+              </button>
+
+              <div className="border-t border-[#252838]/60 pt-4 mt-2">
+                <span className="text-[10px] font-bold uppercase text-red-400 tracking-wider block mb-2">Danger Zone</span>
+                <div className="bg-red-950/20 border border-red-900/30 p-4 rounded-xl flex items-center justify-between gap-4">
+                  <div className="text-[10px] text-slate-300 leading-normal font-medium">
+                    Destroy this workspace on-chain to reclaim your storage deposit. Ensure all functions are deleted first.
+                  </div>
+                  <button
+                    onClick={handleDeleteProjectClick}
+                    disabled={isDeletingProject || myFunctions.length > 0}
+                    type="button"
+                    className="flex-shrink-0 bg-red-900/40 hover:bg-red-800/60 text-red-200 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border border-red-900/60 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {isDeletingProject ? "Destroying..." : "Delete Workspace"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {isRegisterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
           <div 
@@ -1940,6 +2572,144 @@ const Dashboard: React.FC = () => {
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {isRegistering ? "Syncing smart contracts..." : "Confirm Registration"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* CUSTOM CONFIRMATION MODAL */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md px-4 animate-in fade-in duration-200">
+          <div 
+            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[440px] shadow-[0_10px_50px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 pb-4 border-b border-[#252838]/60 mb-5">
+              <div className="w-10 h-10 bg-red-500/10 border border-red-500/25 rounded-2xl flex items-center justify-center">
+                <AlertTriangle size={18} className="text-red-400 animate-pulse" />
+              </div>
+              <div>
+                <span className="text-base font-bold text-white block font-outfit">{confirmModal.title}</span>
+                <span className="text-[9px] text-slate-400 font-mono block mt-0.5 uppercase tracking-wider">Blockchain Registry Confirmation</span>
+              </div>
+            </div>
+
+            <div className="text-xs text-slate-300 leading-relaxed font-medium mb-6 font-outfit">
+              {confirmModal.message}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                className="flex-1 bg-transparent hover:bg-white/5 text-slate-300 hover:text-white py-3 rounded-xl text-xs font-bold border border-[#252838] transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              
+              {confirmModal.actionType ? (
+                <button 
+                  onClick={() => {
+                    if (confirmModal.actionType === 'delete_project') {
+                      executeDeleteProject();
+                    } else if (confirmModal.actionType === 'delete_function') {
+                      executeDeleteFunction(confirmModal.targetName);
+                    }
+                  }}
+                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:brightness-110 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(220,38,38,0.25)] transition-all cursor-pointer"
+                >
+                  Confirm Delete
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                  className="flex-1 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] transition-all cursor-pointer"
+                >
+                  Dismiss
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AUDIT SAFETY WARNING MODAL */}
+      {isAuditWarningModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md px-4 animate-in fade-in duration-200">
+          <div 
+            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[460px] shadow-[0_10px_50px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 pb-4 border-b border-[#252838]/60 mb-5">
+              <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-center justify-center">
+                <Shield size={18} className="text-amber-500 animate-pulse" />
+              </div>
+              <div>
+                <span className="text-base font-bold text-white block font-outfit">Verification Required</span>
+                <span className="text-[9px] text-amber-400 font-mono block mt-0.5 uppercase tracking-wider font-bold">V8 Sandbox Safety Check</span>
+              </div>
+            </div>
+
+            <div className="text-xs text-slate-300 leading-relaxed font-medium mb-6 font-outfit flex flex-col gap-4 text-left">
+              <p>
+                The execution trigger for <strong className="text-white">"{auditWarningFnName}"</strong> was aborted. Every function registered on-chain must pass a sandboxed safety audit before it can be triggered.
+              </p>
+              
+              <div className="bg-[#141622]/50 border border-[#252838]/60 rounded-2xl p-4 flex flex-col gap-2 font-mono text-[10px]">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">STATUS:</span>
+                  <span className={`font-bold ${auditWarningStatus === 'Rejected' ? 'text-red-400' : 'text-amber-400'}`}>{auditWarningStatus}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-slate-400">WALRUS BLOB ID:</span>
+                  <span className="text-slate-300 break-all select-all bg-[#05060a] border border-[#252838] px-2 py-1.5 rounded-lg mt-1 font-bold">{auditWarningBlobId}</span>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400">
+                You can run this static and dynamic safety audit using the Walrus Auditor platform. Once verified, the runner fleet will confirm the safety payload on-chain.
+              </p>
+            </div>
+
+             <div className="flex flex-col gap-2.5">
+              <button 
+                onClick={() => handleRequestVerification(auditWarningFnName)}
+                disabled={isRequestingVerification !== null}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-[#4f46e5] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(79,70,229,0.25)] transition-all cursor-pointer text-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isRequestingVerification === auditWarningFnName ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                    Submitting On-Chain Request...
+                  </>
+                ) : (
+                  <>
+                    Request On-Chain Audit <Shield size={14} />
+                  </>
+                )}
+              </button>
+              <a 
+                href="http://localhost:5175" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] transition-all cursor-pointer text-center"
+              >
+                Launch Walrus Auditor (Local) <ArrowUpRight size={14} />
+              </a>
+
+              <a 
+                href="https://publisher.walrus.site/TJgeWW4t-MOv1K2klEsC0eDTDZbmcUu610eHptXD9mA" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-[#141622]/40 hover:bg-[#141622]/70 text-slate-300 py-3 rounded-xl text-xs font-bold border border-[#252838] transition-all cursor-pointer text-center"
+              >
+                Launch Walrus Auditor (Decentralized) <ArrowUpRight size={12} />
+              </a>
+
+              <button 
+                onClick={() => setIsAuditWarningModalOpen(false)}
+                className="w-full bg-transparent hover:bg-white/5 text-slate-400 hover:text-white py-2 rounded-xl text-xs font-bold transition-all cursor-pointer mt-1"
+              >
+                Dismiss
               </button>
             </div>
           </div>

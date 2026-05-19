@@ -793,17 +793,21 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <Button 
-                onClick={() => {
-                  alert("Yield Rebalancer Demo: In order to test this vault, connect your developer wallet, navigate to your Sui-Functions Dashboard, and deploy the dynamic rebalancer.js template function code.");
-                }}
-                variant="ghost" 
-                size="sm" 
-                className="w-full justify-center gap-2 border border-brand-orange/30 hover:bg-brand-orange/10 text-brand-orange hover:text-white font-bold h-11"
+              <a 
+                href="https://sui-yield.web.app/"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full animate-none"
               >
-                <span>View DeFi Details</span>
-                <ArrowRight size={14} />
-              </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-center gap-2 border border-brand-orange/30 hover:bg-brand-orange/10 text-brand-orange hover:text-white font-bold h-11"
+                >
+                  <span>Launch Yield Vault</span>
+                  <ArrowRight size={14} />
+                </Button>
+              </a>
             </div>
 
             {/* Card 3: Audit Engine */}

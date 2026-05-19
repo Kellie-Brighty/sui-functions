@@ -18,8 +18,8 @@ fi
 echo "Uploading $FILENAME to Walrus..."
 
 # Run walrus store and capture output
-# We use --epochs 5 as requested
-OUTPUT=$(walrus store "$FILENAME" --epochs 5 2>&1)
+# We use --epochs 180 as requested
+OUTPUT=$(walrus store "$FILENAME" --epochs 180 2>&1)
 
 if [ $? -ne 0 ]; then
     echo "Error: Walrus upload failed."
@@ -54,7 +54,7 @@ cat <<EOF > metadata/latest_upload.json
   "filename": "$FILENAME",
   "blob_id": "$BLOB_ID",
   "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "epochs": 5
+  "epochs": 180
 }
 EOF
 

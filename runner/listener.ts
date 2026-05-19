@@ -23,6 +23,42 @@ const client = new SuiJsonRpcClient({
 const secretKey = process.env.ADMIN_SECRET_KEY;
 const keypair = secretKey ? Ed25519Keypair.fromSecretKey(secretKey) : null;
 
+// Cache to store project -> runner_address association to limit Sui RPC load
+const projectRunnerCache = new Map<string, { runnerAddress: string; timestamp: number }>();
+const CACHE_TTL = 30 * 1000; // 30 seconds cache
+
+async function isRunnerAuthorized(projectId: string): Promise<boolean> {
+    if (!keypair) return false;
+    const runnerAddress = keypair.toSuiAddress();
+    
+    // Check cache
+    const cached = projectRunnerCache.get(projectId);
+    if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
+        return cached.runnerAddress === runnerAddress;
+    }
+
+    try {
+        const projectObj = await client.getObject({
+            id: projectId,
+            options: { showContent: true }
+        });
+        const fields = (projectObj.data?.content as any)?.fields;
+        const configuredRunner = fields?.runner_address;
+        
+        if (configuredRunner) {
+            projectRunnerCache.set(projectId, {
+                runnerAddress: configuredRunner,
+                timestamp: Date.now()
+            });
+            return configuredRunner === runnerAddress;
+        }
+    } catch (e: any) {
+        console.warn(`[Listener] Failed to verify runner authorization for project ${projectId}:`, e.message);
+    }
+    return false;
+}
+
+
 /**
  * Robust helper to fetch SUI/USD price from multiple sources (Coinbase, CryptoCompare, CoinGecko)
  */
@@ -62,7 +98,15 @@ async function fetchSuiPrice(): Promise<number> {
  * on-chain execution if SUI drifts by more than 0.1% or 5 minutes heartbeat.
  */
 export async function startPriceDeviationWorker() {
-    console.log("[Deviation Worker] Starting SUI/USD Price Deviation Keeper...");
+    const projectId = process.env.PROJECT_ID || process.env.REGISTRY_ID || "0x0";
+    const isZeroProject = !projectId || projectId === "0x0" || projectId.replace("0x", "").replace(/0/g, "") === "";
+    
+    if (isZeroProject) {
+        console.log("[Deviation Worker] SUI/USD Price Deviation Keeper disabled (PROJECT_ID is not configured or set to 0x0).");
+        return;
+    }
+
+    console.log("[Deviation Worker] Starting SUI/USD Price Deviation Keeper for project:", projectId);
     
     const DEVIATION_THRESHOLD = 0.001; // 0.1% drift for high demo responsiveness
     const HEARTBEAT_INTERVAL = 5 * 60 * 1000; // 5 minutes heartbeat
@@ -198,49 +242,111 @@ export async function startPolling(packageId: string) {
                 const nextCursor = result.nextCursor;
 
                 for (const event of result.data) {
-                    console.log("\n--- New Execution Triggered ---");
-                    
-                    const { project_id, walrus_blob_id, function_name, caller, input_data } = event.parsedJson as any;
+                    if (event.type.includes('ExecutionTriggered')) {
+                        console.log("\n--- New Execution Triggered ---");
+                        const { project_id, walrus_blob_id, function_name, caller, input_data } = event.parsedJson as any;
 
-                    if (walrus_blob_id) {
-                        try {
-                            console.log(`Triggering function: ${function_name} (Blob: ${walrus_blob_id}) for project: ${project_id}`);
-                            console.log(`Caller: ${caller}`);
-                            
-                            // 1. Fetch code from Walrus
-                            const code = await fetchFunctionCode(walrus_blob_id);
-                            
-                            // 2. Execute in Sandbox
-                            console.log("Executing in sandbox with input:", input_data);
-                            const executionResult = await executeInSandbox(code, input_data);
-                            
-                            console.log("Execution Result:", executionResult);
+                        if (walrus_blob_id) {
+                            try {
+                                // Authorization Check: Prevent wasting CPU/bandwidth on projects where this runner is not authorized
+                                if (!(await isRunnerAuthorized(project_id))) {
+                                    console.log(`[Listener] Skipping execution: Runner is not authorized for project: ${project_id}`);
+                                    continue;
+                                }
 
-                            // 3. Submit result back to Sui
-                            if (keypair) {
-                                console.log(`Submitting result back to Sui...`);
-                                const tx = new Transaction();
-                                const packageId = process.env.PACKAGE_ID || "0x0";
+                                console.log(`Triggering function: ${function_name} (Blob: ${walrus_blob_id}) for project: ${project_id}`);
+                                console.log(`Caller: ${caller}`);
                                 
-                                tx.moveCall({
-                                    target: `${packageId}::trigger::submit_result`,
-                                    arguments: [
-                                        tx.object(project_id),
-                                        tx.pure.string(function_name),
-                                        tx.pure.string(JSON.stringify(executionResult) ?? "null")
-                                    ]
-                                });
+                                // 1. Fetch code from Walrus
+                                const code = await fetchFunctionCode(walrus_blob_id);
+                                
+                                // 2. Execute in Sandbox
+                                console.log("Executing in sandbox with input:", input_data);
+                                const executionResult = await executeInSandbox(code, input_data);
+                                
+                                console.log("Execution Result:", executionResult);
 
-                                const writeResult = await client.signAndExecuteTransaction({
-                                    signer: keypair,
-                                    transaction: tx
-                                });
-                                console.log(`Result submitted successfully! Tx Digest: ${writeResult.digest}`);
-                            } else {
-                                console.warn("WARNING: ADMIN_SECRET_KEY is not set. Skipping on-chain submission.");
+                                // 3. Submit result back to Sui
+                                if (keypair) {
+                                    console.log(`Submitting result back to Sui...`);
+                                    const tx = new Transaction();
+                                    const packageId = process.env.PACKAGE_ID || "0x0";
+                                    
+                                    tx.moveCall({
+                                        target: `${packageId}::trigger::submit_result`,
+                                        arguments: [
+                                            tx.object(project_id),
+                                            tx.pure.string(function_name),
+                                            tx.pure.string(JSON.stringify(executionResult) ?? "null")
+                                        ]
+                                    });
+
+                                    const writeResult = await client.signAndExecuteTransaction({
+                                        signer: keypair,
+                                        transaction: tx
+                                    });
+                                    console.log(`Result submitted successfully! Tx Digest: ${writeResult.digest}`);
+                                } else {
+                                    console.warn("WARNING: ADMIN_SECRET_KEY is not set. Skipping on-chain submission.");
+                                }
+                            } catch (error: any) {
+                                console.error("Error processing execution:", error.message);
                             }
-                        } catch (error: any) {
-                            console.error("Error processing execution:", error.message);
+                        }
+                    } else if (event.type.includes('VerificationRequested')) {
+                        console.log("\n--- New Verification Requested ---");
+                        const { project_id, function_name, walrus_blob_id, auditor_blob_id } = event.parsedJson as any;
+
+                        if (walrus_blob_id) {
+                            try {
+                                // Authorization Check: Prevent auditing functions for projects where this runner is not authorized
+                                if (!(await isRunnerAuthorized(project_id))) {
+                                    console.log(`[Listener] Skipping verification: Runner is not authorized for project: ${project_id}`);
+                                    continue;
+                                }
+
+                                // Security Rule: Enforce the global secure platform auditor for the shared runner fleet
+                                const DEFAULT_PLATFORM_AUDITOR = 'TJgeWW4t-MOv1K2klEsC0eDTDZbmcUu610eHptXD9mA';
+                                console.log(`[Security Policy] Overriding with Global Platform Auditor: ${DEFAULT_PLATFORM_AUDITOR} (Requested: ${auditor_blob_id})`);
+                                console.log(`Auditing function: ${function_name} (Blob: ${walrus_blob_id})`);
+                                
+                                // 1. Fetch the platform-wide secure auditor script code
+                                const auditorCode = await fetchFunctionCode(DEFAULT_PLATFORM_AUDITOR);
+                                
+                                // 2. Run the auditor script inside sandbox with target function blobId as input
+                                const inputObj = { blobId: walrus_blob_id };
+                                console.log(`Booting sandbox with auditor code...`);
+                                const auditResult = await executeInSandbox(auditorCode, JSON.stringify(inputObj));
+                                
+                                console.log("Audit Result:", auditResult);
+                                const approved = auditResult && auditResult.approved === true;
+                                
+                                // 3. Submit verification result back to Sui
+                                if (keypair) {
+                                    console.log(`Submitting audit verification response (Approved: ${approved}) to Move contract...`);
+                                    const tx = new Transaction();
+                                    const packageId = process.env.PACKAGE_ID || "0x0";
+                                    
+                                    tx.moveCall({
+                                        target: `${packageId}::trigger::confirm_verification`,
+                                        arguments: [
+                                            tx.object(project_id),
+                                            tx.pure.string(function_name),
+                                            tx.pure.bool(approved)
+                                        ]
+                                    });
+
+                                    const writeResult = await client.signAndExecuteTransaction({
+                                        signer: keypair,
+                                        transaction: tx
+                                    });
+                                    console.log(`Verification confirmed on-chain! Tx Digest: ${writeResult.digest}`);
+                                } else {
+                                    console.warn("WARNING: ADMIN_SECRET_KEY is not set. Skipping on-chain verification confirmation.");
+                                }
+                            } catch (error: any) {
+                                console.error("Error processing verification:", error.message);
+                            }
                         }
                     }
                 }

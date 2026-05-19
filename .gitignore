@@ -28,3 +28,7 @@ yarn-error.log*
 
 # Vite
 .vite/
+
+# Runner Cache
+runner/.cache/
+test_walrus.txt
