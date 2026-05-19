@@ -21,7 +21,7 @@ import { Transaction } from '@mysten/sui/transactions';
 // Consts
 const SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443';
 const PACKAGE_ID = '0x53636064fefacacc924df2766cd2e4678456d3163373ee084227e638aae3e76e';
-const PROJECT_ID = '0xbdbd6aa440b84b29ef2788d31fd465c066c4cda8c9aca14fa8c7e1e81d59ea7e';
+const PROJECT_ID = '0xe0fb5f86e48b898c9286c3964d0f7dd7ad241ac1985ce5b00ea334e47ed85676';
 
 interface Product {
   id: string;
