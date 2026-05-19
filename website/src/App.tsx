@@ -815,6 +815,116 @@ const App: React.FC = () => {
           </div>
         </section>
 
+        {/* ROADMAP SECTION */}
+        <section id="roadmap" className="mb-32 relative">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.1)]">
+              <Clock size={10} /> Development Roadmap
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+              The Path to Verifiable Off-Chain Compute
+            </h2>
+            <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
+              Scaling our isolated execution nodes to support heavy compute architectures, cryptographic proof generation, and confidential enclaves.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
+            {/* Phase 1 */}
+            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-orange/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 blur-[50px] rounded-full pointer-events-none" />
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase">
+                    Phase 1 (Live)
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">V8 Isolate Serverless</span>
+                </div>
+                <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center gap-2">
+                  <Code size={20} className="text-brand-orange" />
+                  Edge Isolates
+                </h3>
+                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
+                  Event-driven TypeScript/JavaScript execution environments with strict V8 heap allocations and execution limits. Deployed and monitored natively via Sui contracts and Walrus blobs.
+                </p>
+              </div>
+              <ul className="text-left font-mono text-[10px] text-slate-300 space-y-2 border-t border-brand-card-border/50 pt-4">
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-orange">✓</span> V8 sandboxed environments
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-orange">✓</span> On-chain trigger coordination
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-orange">✓</span> Immutable Walrus logic library
+                </li>
+              </ul>
+            </div>
+
+            {/* Phase 2 */}
+            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-blue/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-[50px] rounded-full pointer-events-none" />
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <span className="px-3.5 py-1.5 rounded-full bg-brand-blue-glow border border-brand-blue/20 text-[9px] font-mono font-bold text-brand-blue uppercase">
+                    Phase 2 (Q3 2026)
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">WebAssembly &amp; zkVM</span>
+                </div>
+                <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center gap-2">
+                  <Server size={20} className="text-brand-blue" />
+                  Verifiable Heavy Compute
+                </h3>
+                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
+                  Native compilation support for Rust/Go Wasm scripts. Integration with zkVM systems (RISC Zero / SP1) to generate execution proofs that are verified in Sui Move contracts, offloading massive compute requirements.
+                </p>
+              </div>
+              <ul className="text-left font-mono text-[10px] text-slate-300 space-y-2 border-t border-brand-card-border/50 pt-4">
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-blue">●</span> Compiled WebAssembly runtimes
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-blue">●</span> RISC Zero / SP1 zkVM proofs
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-blue">●</span> Mathematical verifiability
+                </li>
+              </ul>
+            </div>
+
+            {/* Phase 3 */}
+            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-green/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-green/5 blur-[50px] rounded-full pointer-events-none" />
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <span className="px-3.5 py-1.5 rounded-full bg-brand-green-glow border border-brand-green/20 text-[9px] font-mono font-bold text-brand-green uppercase">
+                    Phase 3 (Q4 2026)
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">Confidential TEE Enclaves</span>
+                </div>
+                <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center gap-2">
+                  <Shield size={20} className="text-brand-green" />
+                  Sovereign Enclaves
+                </h3>
+                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
+                  Integrate execution worker nodes inside Hardware TEEs (AWS Nitro / Intel SGX). Match Nautilus compute capabilities but offer one-click serverless deployments to store private API keys and models securely.
+                </p>
+              </div>
+              <ul className="text-left font-mono text-[10px] text-slate-300 space-y-2 border-t border-brand-card-border/50 pt-4">
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-green">●</span> Hardware-isolated enclaves
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-green">●</span> Encrypted environment variables
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-brand-green">●</span> Native Nautilus parity
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
         {/* CALL TO ACTION */}
         <section className="mb-24">
           <div className="relative rounded-[40px] border border-brand-card-border/80 overflow-hidden bg-brand-card/90 py-16 md:py-24 px-8 md:px-16 shadow-card-glow text-center">
