@@ -91,6 +91,15 @@ const Dashboard: React.FC = () => {
   const [newProjectDescription, setNewProjectDescription] = useState("");
   const [registerFunctionName, setRegisterFunctionName] = useState("");
   const [registerBlobId, setRegisterBlobId] = useState("");
+  const [registerTriggerType, setRegisterTriggerType] = useState<number>(0);
+  const [registerTriggerConfig, setRegisterTriggerConfig] = useState<string>("{}");
+
+  // Edit Trigger Config States
+  const [isEditTriggerModalOpen, setIsEditTriggerModalOpen] = useState(false);
+  const [editTriggerFunctionName, setEditTriggerFunctionName] = useState("");
+  const [editTriggerType, setEditTriggerType] = useState<number>(0);
+  const [editTriggerConfig, setEditTriggerConfig] = useState<string>("{}");
+  const [isUpdatingTrigger, setIsUpdatingTrigger] = useState(false);
 
   // Dashboard Stats & Logs States
   const [executionCount, setExecutionCount] = useState(0);
@@ -111,8 +120,32 @@ const Dashboard: React.FC = () => {
   const [triggerInputJson, setTriggerInputJson] = useState("{}");
   
   // My Functions State
-  const [myFunctions, setMyFunctions] = useState<{name: string, blobId: string, version: string, status: number}[]>([]);
+  const [myFunctions, setMyFunctions] = useState<{name: string, blobId: string, version: string, status: number, triggerType: number, triggerConfig: string}[]>([]);
   const [isLoadingFunctions, setIsLoadingFunctions] = useState(false);
+
+  // Toast State & Notification helper
+  interface ToastItem {
+    id: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+    title: string;
+    message: string;
+    txDigest?: string;
+  }
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  const showToast = (
+    type: ToastItem['type'],
+    title: string,
+    message: string,
+    txDigest?: string,
+    duration = 6000
+  ) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, type, title, message, txDigest }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, duration);
+  };
 
   // Help & Notification state
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
@@ -255,6 +288,19 @@ const Dashboard: React.FC = () => {
     prevAccountRef.current = account;
   }, [account]);
 
+  const getTriggerLabel = (type: number, configStr: string) => {
+    try {
+      const config = JSON.parse(configStr || "{}");
+      if (type === 0) return "Manual";
+      if (type === 1) return `Cron (${config.interval || 60}s)`;
+      if (type === 2) return `Sui Event (${config.eventName || "Event"})`;
+      if (type === 3) return `Price Drift (${(Number(config.drift_threshold || 0.001) * 100).toFixed(2)}%)`;
+    } catch (e) {
+      return "JSON Config";
+    }
+    return "Manual";
+  };
+
   // Fetch functions from Active Project Table
   const fetchMyFunctions = async () => {
     if (!client || !account || !activeProject) {
@@ -296,7 +342,9 @@ const Dashboard: React.FC = () => {
             name: field.name.value as string,
             blobId: metadata.walrus_blob_id,
             version: metadata.version,
-            status: metadata.status !== undefined ? Number(metadata.status) : 1
+            status: metadata.status !== undefined ? Number(metadata.status) : 1,
+            triggerType: metadata.trigger_type !== undefined ? Number(metadata.trigger_type) : 0,
+            triggerConfig: metadata.trigger_config as string || "{}"
           });
         }
       }
@@ -405,11 +453,12 @@ const Dashboard: React.FC = () => {
       { transaction: tx },
       {
         onSuccess: async (result) => {
+          const savedName = newProjectName;
+          const savedDesc = newProjectDescription;
+          showToast('success', 'Workspace Created', `Workspace "${savedName}" has been successfully created on-chain!`, result.digest);
           setLogs(prev => [`[Transaction] Workspace Minted: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsCreatingProject(false);
           setIsCreateProjectModalOpen(false);
-          const savedName = newProjectName;
-          const savedDesc = newProjectDescription;
           setNewProjectName("");
           setNewProjectDescription("");
           
@@ -471,7 +520,7 @@ const Dashboard: React.FC = () => {
           }, 1500);
         },
         onError: (err) => {
-          alert(`Workspace Creation Failed: ${err.message}`);
+          showToast('error', 'Workspace Creation Failed', err.message);
           setIsCreatingProject(false);
         }
       }
@@ -482,7 +531,7 @@ const Dashboard: React.FC = () => {
   const handleSaveSettings = () => {
     if (!account || !activeProject) return;
     if (!settingsRunnerAddress.trim()) {
-      alert("Runner address is required");
+      showToast('warning', 'Input Required', 'Runner address is required');
       return;
     }
     
@@ -501,6 +550,7 @@ const Dashboard: React.FC = () => {
       { transaction: tx },
       {
         onSuccess: (result) => {
+          showToast('success', 'Settings Saved', 'Runner address has been updated successfully!', result.digest);
           setLogs(prev => [`[Transaction] Workspace Settings Configured: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsSavingSettings(false);
           setIsSettingsModalOpen(false);
@@ -540,7 +590,7 @@ const Dashboard: React.FC = () => {
           }, 1500);
         },
         onError: (err) => {
-          alert(`Failed to save settings: ${err.message}`);
+          showToast('error', 'Settings Update Failed', err.message);
           setIsSavingSettings(false);
         }
       }
@@ -674,7 +724,7 @@ const Dashboard: React.FC = () => {
   // Register Function inside Active Project
   const handleRegister = () => {
     if (!account || !activeProject || !registerFunctionName.trim() || !registerBlobId.trim()) {
-      alert('Missing function registration details');
+      showToast('warning', 'Input Required', 'Missing function registration details');
       return;
     }
     
@@ -686,7 +736,9 @@ const Dashboard: React.FC = () => {
       arguments: [
         tx.object(activeProject.id),
         tx.pure.string(registerFunctionName),
-        tx.pure.string(registerBlobId)
+        tx.pure.string(registerBlobId),
+        tx.pure.u8(registerTriggerType),
+        tx.pure.string(registerTriggerConfig)
       ],
     });
 
@@ -694,11 +746,14 @@ const Dashboard: React.FC = () => {
       { transaction: tx },
       {
         onSuccess: (result) => {
+          showToast('success', 'Function Registered', `Function "${registerFunctionName}" has been successfully registered!`, result.digest);
           setLogs(prev => [`[Transaction] Function Registered: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsRegistering(false);
           setIsRegisterModalOpen(false);
           setRegisterFunctionName("");
           setRegisterBlobId("");
+          setRegisterTriggerType(0);
+          setRegisterTriggerConfig("{}");
           setIsBlobIdLocked(false);
           setUploadedFileName("");
           
@@ -714,7 +769,7 @@ const Dashboard: React.FC = () => {
           }, 1500);
         },
         onError: (err) => {
-          alert(`Registration Failed: ${err.message}`);
+          showToast('error', 'Registration Failed', err.message);
           setIsRegistering(false);
         }
       }
@@ -724,11 +779,11 @@ const Dashboard: React.FC = () => {
   // Request On-Chain Verification / Retrying Audit
   const handleRequestVerification = (functionName: string) => {
     if (!account) {
-      alert("Please connect your wallet first.");
+      showToast('warning', 'Wallet Required', 'Please connect your wallet first.');
       return;
     }
     if (!activeProject) {
-      alert("Please select a workspace project first.");
+      showToast('warning', 'Workspace Required', 'Please select a workspace project first.');
       return;
     }
     
@@ -747,6 +802,7 @@ const Dashboard: React.FC = () => {
       { transaction: tx },
       {
         onSuccess: (result) => {
+          showToast('success', 'Audit Requested', `Auditor safety review has been requested for "${functionName}"!`, result.digest);
           setLogs(prev => [`[Transaction] Verification Request Dispatched: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsRequestingVerification(null);
           setIsAuditWarningModalOpen(false);
@@ -760,8 +816,57 @@ const Dashboard: React.FC = () => {
           }, 1500);
         },
         onError: (err) => {
-          alert(`Verification Request Failed: ${err.message}`);
+          showToast('error', 'Verification Request Failed', err.message);
           setIsRequestingVerification(null);
+        }
+      }
+    );
+  };
+
+  // Update Trigger configuration of a function
+  const handleUpdateTrigger = () => {
+    if (!account || !activeProject || !editTriggerFunctionName) {
+      showToast('warning', 'Input Required', 'Missing wallet, project, or function details.');
+      return;
+    }
+    
+    setIsUpdatingTrigger(true);
+    const tx = new Transaction();
+    
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::update_trigger_config`,
+      arguments: [
+        tx.object(activeProject.id),
+        tx.pure.string(editTriggerFunctionName),
+        tx.pure.u8(editTriggerType),
+        tx.pure.string(editTriggerConfig)
+      ],
+    });
+
+    signAndExecute(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          showToast('success', 'Trigger Updated', `Trigger configuration for "${editTriggerFunctionName}" updated successfully!`, result.digest);
+          setLogs(prev => [`[Transaction] Trigger configuration updated: ${result.digest.slice(0, 10)}...`, ...prev]);
+          setIsUpdatingTrigger(false);
+          setIsEditTriggerModalOpen(false);
+          setEditTriggerFunctionName("");
+          setEditTriggerType(0);
+          setEditTriggerConfig("{}");
+          
+          // Poll to refresh the functions on-chain
+          fetchMyFunctions();
+          let count = 0;
+          const interval = setInterval(() => {
+            count++;
+            fetchMyFunctions();
+            if (count >= 4) clearInterval(interval);
+          }, 1500);
+        },
+        onError: (err) => {
+          showToast('error', 'Trigger Update Failed', err.message);
+          setIsUpdatingTrigger(false);
         }
       }
     );
@@ -770,12 +875,12 @@ const Dashboard: React.FC = () => {
   // Manual Trigger calling call_function inside Active Project
   const handleTrigger = (functionName: string) => {
     if (!activeProject) {
-      alert('Please select or create a project first.');
+      showToast('warning', 'Workspace Required', 'Please select or create a project first.');
       return;
     }
 
     if (!account) {
-      alert('Please connect your wallet to execute custom smart contract triggers.');
+      showToast('warning', 'Wallet Required', 'Please connect your wallet to execute triggers.');
       return;
     }
 
@@ -804,11 +909,12 @@ const Dashboard: React.FC = () => {
       { transaction: tx },
       {
         onSuccess: (result) => {
+          showToast('success', 'Function Triggered', `Function "${functionName}" has been manually executed on-chain!`, result.digest);
           setLogs(prev => [`[Transaction] Trigger Emitted: ${result.digest.slice(0, 10)}...`, ...prev]);
           setIsExecuting(false);
         },
         onError: (err) => {
-          alert(`Execution Failed: ${err.message}`);
+          showToast('error', 'Execution Failed', err.message);
           setIsExecuting(false);
         }
       }
@@ -857,19 +963,20 @@ const Dashboard: React.FC = () => {
           setRegisterBlobId(blobId);
           setIsBlobIdLocked(true);
           setUploadedFileName(file.name);
+          showToast('success', 'Walrus Upload Complete', `Successfully uploaded script to Walrus nodes!`);
         } catch (error: any) {
           console.error("Walrus response parsing error:", error);
-          alert(`Walrus upload failed: ${error.message}`);
+          showToast('error', 'Walrus Upload Failed', error.message);
         }
       } else {
-        alert(`Upload failed with status ${xhr.status}`);
+        showToast('error', 'Walrus Upload Failed', `Upload failed with status ${xhr.status}`);
       }
       setIsUploading(false);
     };
 
     xhr.onerror = () => {
       clearInterval(visualInterval);
-      alert("Network error occurred during Walrus upload.");
+      showToast('error', 'Walrus Upload Failed', 'Network error occurred during Walrus upload.');
       setIsUploading(false);
     };
 
@@ -1380,7 +1487,7 @@ const Dashboard: React.FC = () => {
                   <AlertTriangle size={20} />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white font-outfit font-bold">Action Required: Authorize a Runner</h4>
+                  <h4 className="text-sm font-bold text-white font-outfit">Action Required: Authorize a Runner</h4>
                   <p className="text-xs text-slate-300 leading-relaxed mt-1 text-left">
                     This project does not have an authorized runner configured yet. Off-chain execution and on-chain result write-backs will be skipped until you authorize a runner in the project settings.
                   </p>
@@ -1671,7 +1778,9 @@ const Dashboard: React.FC = () => {
                         <th className="pb-3.5">Invocations</th>
                         <th className="pb-3.5">Success Rate</th>
                         <th className="pb-3.5">Latency</th>
+                        <th className="pb-3.5">Trigger</th>
                         <th className="pb-3.5">Status</th>
+                        <th className="pb-3.5 text-right pr-2">Action</th>
                       </tr>
                     </thead>
                     <tbody className="text-xs text-slate-300 font-medium divide-y divide-[#252838]/50">
@@ -1729,6 +1838,9 @@ const Dashboard: React.FC = () => {
                             <td className="py-4 font-mono">{fnInvocations.toLocaleString()}</td>
                             <td className="py-4 text-emerald-400 font-mono font-bold">{fnRate}</td>
                             <td className="py-4 font-mono">{fnAvgLatency}</td>
+                            <td className="py-4 font-mono text-[11px] text-slate-400">
+                              {getTriggerLabel(fn.triggerType || 0, fn.triggerConfig || "{}")}
+                            </td>
                             <td className="py-4">
                               <div className="flex items-center gap-2">
                                 {fn.status === 0 && (
@@ -1761,6 +1873,20 @@ const Dashboard: React.FC = () => {
                                   </div>
                                 )}
                               </div>
+                            </td>
+                            <td className="py-4 text-right pr-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditTriggerFunctionName(fn.name);
+                                  setEditTriggerType(fn.triggerType || 0);
+                                  setEditTriggerConfig(fn.triggerConfig || "{}");
+                                  setIsEditTriggerModalOpen(true);
+                                }}
+                                className="px-2.5 py-1 text-[10px] font-bold uppercase rounded bg-[#252838] hover:bg-[#343850] text-[#F56910] hover:text-white transition-all cursor-pointer border border-[#F56910]/20"
+                              >
+                                Edit Trigger
+                              </button>
                             </td>
                           </tr>
                         );
@@ -1874,6 +2000,28 @@ const Dashboard: React.FC = () => {
                       <div className="bg-[#05060a] p-3 rounded-lg border border-[#252838]/60 flex items-center justify-between mb-3">
                         <span className="text-xs text-slate-300 font-mono truncate mr-4">Blob ID: {fn.blobId}</span>
                         <Play size={12} className="text-slate-300 group-hover:text-brand-orange transition-colors flex-shrink-0" />
+                      </div>
+
+                      <div className="bg-[#05060a]/60 p-3 rounded-lg border border-[#252838]/40 flex items-center justify-between mb-3 text-xs">
+                        <div className="flex items-center gap-2 text-slate-300">
+                          <Sliders size={12} className="text-[#F56910]" />
+                          <span className="font-semibold text-slate-400">Trigger:</span>
+                          <span className="font-mono text-white text-[11px]">
+                            {getTriggerLabel(fn.triggerType || 0, fn.triggerConfig || "{}")}
+                          </span>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditTriggerFunctionName(fn.name);
+                            setEditTriggerType(fn.triggerType || 0);
+                            setEditTriggerConfig(fn.triggerConfig || "{}");
+                            setIsEditTriggerModalOpen(true);
+                          }}
+                          className="text-[10px] text-[#F56910] hover:text-orange-400 font-bold uppercase transition-colors bg-transparent border-none cursor-pointer flex items-center gap-1"
+                        >
+                          <Settings size={10} /> Edit Trigger
+                        </button>
                       </div>
 
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#252838]/30">
@@ -2476,7 +2624,7 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto pr-1">
               {/* Scope Workspace Info */}
               <div className="bg-[#05060a] border border-[#252838] p-4 rounded-2xl flex items-center justify-between">
                 <div>
@@ -2566,12 +2714,135 @@ const Dashboard: React.FC = () => {
                 </span>
               </div>
 
+              <div>
+                <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Automation Trigger Type</label>
+                <select 
+                  value={registerTriggerType}
+                  onChange={(e) => {
+                    const type = Number(e.target.value);
+                    setRegisterTriggerType(type);
+                    if (type === 0) {
+                      setRegisterTriggerConfig("{}");
+                    } else if (type === 1) {
+                      setRegisterTriggerConfig(JSON.stringify({ interval: 60 }, null, 2));
+                    } else if (type === 2) {
+                      setRegisterTriggerConfig(JSON.stringify({ packageId: "0x...", eventName: "SwapEvent" }, null, 2));
+                    } else if (type === 3) {
+                      setRegisterTriggerConfig(JSON.stringify({ drift_threshold: 0.001 }, null, 2));
+                    }
+                  }}
+                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
+                >
+                  <option value={0}>Manual Trigger (On-Demand)</option>
+                  <option value={1}>Cron Trigger (Periodic execution)</option>
+                  <option value={2}>Sui Event Trigger (On event match)</option>
+                  <option value={3}>Drift Trigger (On price movement)</option>
+                </select>
+              </div>
+
+              {registerTriggerType > 0 && (
+                <div>
+                  <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Trigger Configuration (JSON)</label>
+                  <textarea 
+                    value={registerTriggerConfig}
+                    onChange={(e) => setRegisterTriggerConfig(e.target.value)}
+                    rows={4}
+                    placeholder="Enter configuration JSON parameters..."
+                    className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
+                  />
+                </div>
+              )}
+
               <button 
                 onClick={handleRegister}
                 disabled={isRegistering || !registerFunctionName.trim() || !registerBlobId.trim()}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {isRegistering ? "Syncing smart contracts..." : "Confirm Registration"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isEditTriggerModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md px-4">
+          <div 
+            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+              <div className="flex items-center gap-2">
+                <Settings size={18} className="text-[#F56910]" />
+                <span className="text-base font-bold text-white font-outfit">Edit Automation Trigger</span>
+              </div>
+              <button 
+                onClick={() => {
+                  setIsEditTriggerModalOpen(false);
+                  setEditTriggerFunctionName("");
+                  setEditTriggerType(0);
+                  setEditTriggerConfig("{}");
+                }}
+                className="text-slate-300 hover:text-white transition-colors bg-transparent border-none text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              <div className="bg-[#05060a] border border-[#252838] p-4 rounded-2xl flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-slate-300 font-bold uppercase tracking-wider block">Function Name</span>
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5 mt-1 font-mono">
+                     {editTriggerFunctionName}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Automation Trigger Type</label>
+                <select 
+                  value={editTriggerType}
+                  onChange={(e) => {
+                    const type = Number(e.target.value);
+                    setEditTriggerType(type);
+                    if (type === 0) {
+                      setEditTriggerConfig("{}");
+                    } else if (type === 1) {
+                      setEditTriggerConfig(JSON.stringify({ interval: 60 }, null, 2));
+                    } else if (type === 2) {
+                      setEditTriggerConfig(JSON.stringify({ packageId: "0x...", eventName: "SwapEvent" }, null, 2));
+                    } else if (type === 3) {
+                      setEditTriggerConfig(JSON.stringify({ drift_threshold: 0.001 }, null, 2));
+                    }
+                  }}
+                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
+                >
+                  <option value={0}>Manual Trigger (On-Demand)</option>
+                  <option value={1}>Cron Trigger (Periodic execution)</option>
+                  <option value={2}>Sui Event Trigger (On event match)</option>
+                  <option value={3}>Drift Trigger (On price movement)</option>
+                </select>
+              </div>
+
+              {editTriggerType > 0 && (
+                <div>
+                  <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Trigger Configuration (JSON)</label>
+                  <textarea 
+                    value={editTriggerConfig}
+                    onChange={(e) => setEditTriggerConfig(e.target.value)}
+                    rows={4}
+                    placeholder="Enter configuration JSON parameters..."
+                    className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
+                  />
+                </div>
+              )}
+
+              <button 
+                onClick={handleUpdateTrigger}
+                disabled={isUpdatingTrigger}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#F56910] to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+              >
+                {isUpdatingTrigger ? "Syncing smart contracts..." : "Save Trigger Configuration"}
               </button>
             </div>
           </div>
@@ -2715,6 +2986,51 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Toasts Container */}
+      <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-2xl border bg-slate-950/90 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.5)] transition-all duration-300 transform translate-y-0 animate-in slide-in-from-bottom-5 ${
+              toast.type === 'success'
+                ? 'border-emerald-500/35 shadow-emerald-950/20'
+                : toast.type === 'error'
+                ? 'border-red-500/35 shadow-red-950/20'
+                : toast.type === 'warning'
+                ? 'border-amber-500/35 shadow-amber-950/20'
+                : 'border-[#252838] shadow-black/40'
+            }`}
+          >
+            <div className="flex-shrink-0 mt-0.5">
+              {toast.type === 'success' && <CheckCircle size={18} className="text-emerald-400" />}
+              {toast.type === 'error' && <AlertTriangle size={18} className="text-red-400" />}
+              {toast.type === 'warning' && <AlertTriangle size={18} className="text-amber-500" />}
+              {toast.type === 'info' && <Info size={18} className="text-blue-400" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider font-outfit">{toast.title}</h4>
+              <p className="text-[11px] text-slate-300 mt-1 leading-normal font-medium font-sans">{toast.message}</p>
+              {toast.txDigest && (
+                <a
+                  href={`https://suiscan.xyz/testnet/tx/${toast.txDigest}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-2 text-[10px] text-brand-orange hover:text-orange-400 transition-colors font-semibold"
+                >
+                  View Transaction <ArrowUpRight size={10} />
+                </a>
+              )}
+            </div>
+            <button
+              onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+              className="flex-shrink-0 text-slate-400 hover:text-white transition-colors bg-transparent border-none cursor-pointer p-0.5"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
 
     </div>
   );

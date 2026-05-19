@@ -93,95 +93,266 @@ async function fetchSuiPrice(): Promise<number> {
     throw new Error("All SUI/USD price provider APIs failed");
 }
 
-/**
- * Background worker that monitors price deviation off-chain and triggers
- * on-chain execution if SUI drifts by more than 0.1% or 5 minutes heartbeat.
- */
-export async function startPriceDeviationWorker() {
-    const projectId = process.env.PROJECT_ID || process.env.REGISTRY_ID || "0x0";
-    const isZeroProject = !projectId || projectId === "0x0" || projectId.replace("0x", "").replace(/0/g, "") === "";
-    
-    if (isZeroProject) {
-        console.log("[Deviation Worker] SUI/USD Price Deviation Keeper disabled (PROJECT_ID is not configured or set to 0x0).");
+interface DBFunction {
+    name: string;
+    blobId: string;
+    version: number;
+    status: number;
+    triggerType: number;
+    triggerConfig: string;
+}
+
+const lastCronRunTimes = new Map<string, number>();
+const lastTriggeredPrices = new Map<string, number>();
+const lastProcessedEventTx = new Map<string, string>();
+
+async function fetchProjectFunctions(projectId: string): Promise<DBFunction[]> {
+    try {
+        const projectObj = await client.getObject({
+            id: projectId,
+            options: { showContent: true }
+        });
+        
+        const content = projectObj.data?.content as any;
+        const tableId = content?.fields?.functions?.fields?.id?.id;
+        
+        if (!tableId) return [];
+
+        const dynamicFields = await client.getDynamicFields({
+            parentId: tableId
+        });
+
+        const functionsList: DBFunction[] = [];
+        for (const field of dynamicFields.data) {
+            const fieldObj = await client.getDynamicFieldObject({
+                parentId: tableId,
+                name: field.name
+            });
+            
+            const metadata = fieldObj.data?.content as any;
+            const fieldsVal = metadata?.fields?.value?.fields;
+            if (fieldsVal) {
+                functionsList.push({
+                    name: field.name.value as string,
+                    blobId: fieldsVal.walrus_blob_id,
+                    version: Number(fieldsVal.version),
+                    status: fieldsVal.status !== undefined ? Number(fieldsVal.status) : 1,
+                    triggerType: fieldsVal.trigger_type !== undefined ? Number(fieldsVal.trigger_type) : 0,
+                    triggerConfig: fieldsVal.trigger_config as string || "{}"
+                });
+            }
+        }
+        return functionsList;
+    } catch (e: any) {
+        console.warn(`[Automation Engine] Error fetching project functions:`, e.message);
+        return [];
+    }
+}
+
+async function triggerFunctionExecution(projectId: string, functionName: string, inputData: string) {
+    if (!keypair) {
+        console.warn(`[Automation Engine] Cannot trigger "${functionName}": ADMIN_SECRET_KEY is not set.`);
+        return;
+    }
+    try {
+        const packageId = process.env.PACKAGE_ID || "0x0";
+        const tx = new Transaction();
+        tx.moveCall({
+            target: `${packageId}::trigger::call_function`,
+            arguments: [
+                tx.object(projectId),
+                tx.pure.string(functionName),
+                tx.pure.string(inputData)
+            ]
+        });
+
+        const result = await client.signAndExecuteTransaction({
+            signer: keypair,
+            transaction: tx
+        });
+        console.log(`[Automation Engine] Trigger transaction submitted for "${functionName}". Digest: ${result.digest}`);
+    } catch (e: any) {
+        console.error(`[Automation Engine] Failed to trigger function "${functionName}":`, e.message);
+    }
+}
+
+export async function startDynamicAutomationEngine() {
+    const packageId = process.env.PACKAGE_ID || "0x0";
+    if (packageId === "0x0") {
+        console.warn("[Automation Engine] Dynamic Automation Engine disabled (PACKAGE_ID is not configured).");
         return;
     }
 
-    console.log("[Deviation Worker] Starting SUI/USD Price Deviation Keeper for project:", projectId);
-    
-    const DEVIATION_THRESHOLD = 0.001; // 0.1% drift for high demo responsiveness
-    const HEARTBEAT_INTERVAL = 5 * 60 * 1000; // 5 minutes heartbeat
-    const CHECK_INTERVAL = 15 * 1000; // Check off-chain price every 15 seconds
-    
-    let lastSubmittedPrice: number | null = null;
-    let lastSubmittedTime = 0;
+    if (!keypair) {
+        console.warn("[Automation Engine] Dynamic Automation Engine disabled (ADMIN_SECRET_KEY is not configured).");
+        return;
+    }
 
-    async function checkPrice() {
+    const runnerAddress = keypair.toSuiAddress();
+    console.log(`[Automation Engine] Starting dynamic engine for runner: ${runnerAddress}`);
+    const CHECK_INTERVAL = 15 * 1000; // Check rules every 15 seconds
+
+    async function discoverProjects(): Promise<string[]> {
         try {
-            // Fetch live price off-chain (completely free and robust)
-            const livePrice = await fetchSuiPrice();
-            
-            const now = Date.now();
-            let shouldTrigger = false;
+            const createdEvents = await client.queryEvents({
+                query: { MoveEventType: `${packageId}::trigger::ProjectCreated` },
+                limit: 100
+            });
+            const deletedEvents = await client.queryEvents({
+                query: { MoveEventType: `${packageId}::trigger::ProjectDeleted` },
+                limit: 100
+            });
 
-            if (lastSubmittedPrice === null) {
-                console.log(`[Deviation Worker] Initializing... Live SUI price: $${livePrice}`);
-                lastSubmittedPrice = livePrice;
-                lastSubmittedTime = now;
-                shouldTrigger = true; // Trigger first price update on runner start
-            } else {
-                const diff = Math.abs(livePrice - lastSubmittedPrice);
-                const percentDiff = diff / lastSubmittedPrice;
-                const timeSinceLastUpdate = now - lastSubmittedTime;
+            const deletedIds = new Set(deletedEvents.data.map(ev => {
+                const fields = ev.parsedJson as any;
+                return fields?.project_id;
+            }).filter(Boolean));
 
-                console.log(`[Deviation Worker] SUI Live: $${livePrice.toFixed(4)} | Last Written: $${lastSubmittedPrice.toFixed(4)} | Drift: ${(percentDiff * 100).toFixed(3)}%`);
+            const activeIds = createdEvents.data
+                .map(ev => {
+                    const fields = ev.parsedJson as any;
+                    return fields?.project_id;
+                })
+                .filter(id => id && !deletedIds.has(id));
 
-                if (percentDiff >= DEVIATION_THRESHOLD) {
-                    console.log(`[Deviation Worker] Price drift detected! Drift: ${(percentDiff * 100).toFixed(3)}% >= threshold: ${(DEVIATION_THRESHOLD * 100).toFixed(2)}%`);
-                    shouldTrigger = true;
-                } else if (timeSinceLastUpdate >= HEARTBEAT_INTERVAL) {
-                    console.log(`[Deviation Worker] Heartbeat tick reached (${(HEARTBEAT_INTERVAL / 60000)} mins elapsed).`);
-                    shouldTrigger = true;
-                }
-            }
-
-            if (shouldTrigger && keypair) {
-                console.log(`[Deviation Worker] Automatically triggering on-chain function execution...`);
-                
-                const projectId = process.env.PROJECT_ID || process.env.REGISTRY_ID || "0x0";
-                const packageId = process.env.PACKAGE_ID || "0x0";
-                
-                const tx = new Transaction();
-                tx.moveCall({
-                    target: `${packageId}::trigger::call_function`,
-                    arguments: [
-                        tx.object(projectId),
-                        tx.pure.string("SUI USD Oracle"),
-                        tx.pure.string("{}")
-                    ]
-                });
-
-                const result = await client.signAndExecuteTransaction({
-                    signer: keypair,
-                    transaction: tx
-                });
-                
-                console.log(`[Deviation Worker] Successfully triggered on-chain execution! Tx Digest: ${result.digest}`);
-                
-                // Advance tracking state
-                lastSubmittedPrice = livePrice;
-                lastSubmittedTime = now;
-            } else if (!keypair) {
-                console.warn("[Deviation Worker] Skipping trigger: ADMIN_SECRET_KEY is not configured.");
-            }
-        } catch (error: any) {
-            console.error("[Deviation Worker] Error in price tick:", error.message);
-        } finally {
-            setTimeout(checkPrice, CHECK_INTERVAL);
+            return Array.from(new Set(activeIds));
+        } catch (e: any) {
+            console.error("[Automation Engine] Failed to discover projects via events:", e.message);
+            return [];
         }
     }
 
-    // Initialize loop
-    checkPrice();
+    async function checkTriggers() {
+        try {
+            const activeIds = await discoverProjects();
+            
+            for (const projectId of activeIds) {
+                // Verify if this runner is authorized for this project
+                let isAuthorized = false;
+                try {
+                    isAuthorized = await isRunnerAuthorized(projectId);
+                } catch (err: any) {
+                    // Fail silently or log check warning
+                }
+
+                if (!isAuthorized) {
+                    continue;
+                }
+
+                const functions = await fetchProjectFunctions(projectId);
+                const verifiedFunctions = functions.filter(fn => fn.status === 1);
+
+                for (const fn of verifiedFunctions) {
+                    const { name, triggerType, triggerConfig } = fn;
+                    const trackerKey = `${projectId}::${name}`;
+                    const now = Date.now();
+
+                    // 1. Cron Trigger
+                    if (triggerType === 1) {
+                        try {
+                            const config = JSON.parse(triggerConfig);
+                            const interval = config.interval || 60; // in seconds
+                            const lastRun = lastCronRunTimes.get(trackerKey) || 0;
+
+                            if (now - lastRun >= interval * 1000) {
+                                console.log(`[Automation Engine] Cron trigger fired for "${name}" under project ${projectId} (interval: ${interval}s)`);
+                                lastCronRunTimes.set(trackerKey, now);
+                                await triggerFunctionExecution(projectId, name, "{}");
+                            }
+                        } catch (e: any) {
+                            console.warn(`[Automation Engine] Invalid Cron config for "${name}":`, e.message);
+                        }
+                    }
+
+                    // 2. Sui Event Trigger
+                    else if (triggerType === 2) {
+                        try {
+                            const config = JSON.parse(triggerConfig);
+                            const eventPackageId = config.packageId;
+                            const eventModuleName = config.moduleName || "trigger";
+                            const eventName = config.eventName;
+
+                            if (eventPackageId && eventName) {
+                                const eventsResult = await client.queryEvents({
+                                    query: { 
+                                        MoveModule: {
+                                            package: eventPackageId,
+                                            module: eventModuleName
+                                        }
+                                    },
+                                    order: 'descending',
+                                    limit: 5
+                                });
+
+                                const matchingEvents = eventsResult.data.filter(ev => ev.type.includes(eventName));
+                                if (matchingEvents.length > 0) {
+                                    const latestEvent = matchingEvents[0];
+                                    const lastDigest = lastProcessedEventTx.get(trackerKey);
+
+                                    if (lastDigest !== latestEvent.id.txDigest) {
+                                        // Make sure we don't trigger on stale events on startup
+                                        if (lastDigest !== undefined) {
+                                            console.log(`[Automation Engine] Event trigger matched for "${name}" on event "${latestEvent.type}"`);
+                                            await triggerFunctionExecution(projectId, name, JSON.stringify(latestEvent.parsedJson || {}));
+                                        }
+                                        lastProcessedEventTx.set(trackerKey, latestEvent.id.txDigest);
+                                    }
+                                }
+                            }
+                        } catch (e: any) {
+                            console.warn(`[Automation Engine] Invalid Event config for "${name}":`, e.message);
+                        }
+                    }
+
+                    // 3. Price Drift Trigger
+                    else if (triggerType === 3) {
+                        try {
+                            const config = JSON.parse(triggerConfig);
+                            const drift_threshold = config.drift_threshold || 0.001; // 0.1% default
+                            const lastPrice = lastTriggeredPrices.get(trackerKey);
+                            const lastRun = lastCronRunTimes.get(trackerKey) || 0;
+                            const livePrice = await fetchSuiPrice();
+
+                            let shouldTrigger = false;
+                            if (lastPrice === undefined) {
+                                console.log(`[Automation Engine] Initializing price tracker for "${name}" (Project: ${projectId}). Live price: $${livePrice}`);
+                                lastTriggeredPrices.set(trackerKey, livePrice);
+                                lastCronRunTimes.set(trackerKey, now);
+                                shouldTrigger = true; // trigger initially
+                            } else {
+                                const diff = Math.abs(livePrice - lastPrice);
+                                const drift = diff / lastPrice;
+                                console.log(`[Automation Engine] Price check for "${name}" (Project: ${projectId}): Live=$${livePrice.toFixed(4)}, Last=$${lastPrice.toFixed(4)}, Drift=${(drift * 100).toFixed(3)}%`);
+
+                                if (drift >= drift_threshold) {
+                                    console.log(`[Automation Engine] Drift threshold exceeded for "${name}" (Project: ${projectId}): ${(drift * 100).toFixed(3)}% >= ${(drift_threshold * 100).toFixed(3)}%`);
+                                    shouldTrigger = true;
+                                } else if (now - lastRun >= 5 * 60 * 1000) {
+                                    // 5 minute heartbeat
+                                    console.log(`[Automation Engine] Heartbeat limit reached for "${name}" (Project: ${projectId})`);
+                                    shouldTrigger = true;
+                                }
+                            }
+
+                            if (shouldTrigger) {
+                                lastTriggeredPrices.set(trackerKey, livePrice);
+                                lastCronRunTimes.set(trackerKey, now);
+                                await triggerFunctionExecution(projectId, name, JSON.stringify({ price: livePrice, timestamp: new Date().toISOString() }));
+                            }
+                        } catch (e: any) {
+                            console.warn(`[Automation Engine] Invalid Drift config for "${name}":`, e.message);
+                        }
+                    }
+                }
+            }
+        } catch (error: any) {
+            console.error("[Automation Engine] Error during check:", error.message);
+        } finally {
+            setTimeout(checkTriggers, CHECK_INTERVAL);
+        }
+    }
+
+    checkTriggers();
 }
 
 /**
@@ -191,8 +362,8 @@ export async function startPriceDeviationWorker() {
 export async function startPolling(packageId: string) {
     console.log(`Starting Sui-Functions Polling Listener for package: ${packageId}...`);
     
-    // Start automated price deviation worker in the background
-    startPriceDeviationWorker();
+    // Start automated dynamic trigger engine in the background
+    startDynamicAutomationEngine();
     
     let cursor: any = null;
     let isPolling = false;

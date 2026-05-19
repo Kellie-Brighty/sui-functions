@@ -35,7 +35,9 @@ module sui_functions::trigger {
         walrus_blob_id: String,
         version: u64,
         owner: address,
-        status: u8
+        status: u8,
+        trigger_type: u8,
+        trigger_config: String
     }
 
     /// Event emitted when a new project is created
@@ -114,6 +116,8 @@ module sui_functions::trigger {
         project: &mut Project,
         name: String,
         walrus_blob_id: String,
+        trigger_type: u8,
+        trigger_config: String,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
@@ -126,7 +130,9 @@ module sui_functions::trigger {
             walrus_blob_id,
             version: 1,
             owner: sender,
-            status
+            status,
+            trigger_type,
+            trigger_config
         };
         table::add(&mut project.functions, name, metadata);
 
@@ -207,6 +213,23 @@ module sui_functions::trigger {
             walrus_blob_id: new_walrus_blob_id,
             auditor_blob_id: std::string::utf8(GLOBAL_AUDITOR_BLOB_ID)
         });
+    }
+
+    /// Update trigger type and config for an existing function
+    public entry fun update_trigger_config(
+        project: &mut Project,
+        name: String,
+        new_trigger_type: u8,
+        new_trigger_config: String,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(project.owner == sender, ENotOwner);
+        assert!(table::contains(&project.functions, name), EFunctionNotFound);
+
+        let metadata = table::borrow_mut(&mut project.functions, name);
+        metadata.trigger_type = new_trigger_type;
+        metadata.trigger_config = new_trigger_config;
     }
 
     /// Re-request verification for a function
