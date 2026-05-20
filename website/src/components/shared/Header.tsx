@@ -7,16 +7,43 @@ interface HeaderProps {
   onDemoClick?: () => void;
   onBenefitsClick?: () => void;
   onConnectClick?: () => void;
+  viewMode?: 'landing' | 'docs';
+  onDocsClick?: () => void;
+  onHomeClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick, onConnectClick }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  onDemoClick, 
+  onBenefitsClick, 
+  onConnectClick,
+  viewMode = 'landing',
+  onDocsClick,
+  onHomeClick
+}) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, target: 'home' | 'docs', callback?: () => void) => {
+    e.preventDefault();
+    if (target === 'home') {
+      onHomeClick?.();
+    } else if (target === 'docs') {
+      onDocsClick?.();
+    }
+    if (callback) {
+      // Give a tiny timeout if switching viewMode to allow target section to mount before scrolling
+      setTimeout(() => callback(), 50);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-brand-dark/80 backdrop-blur-xl border-b border-brand-card-border/50 px-6 lg:px-16 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo Section */}
-        <a href="/" className="flex items-center gap-3.5 group">
+        <a 
+          href="/" 
+          onClick={(e) => handleNavClick(e, 'home')}
+          className="flex items-center gap-3.5 group"
+        >
           <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-brand-card border border-brand-card-border flex items-center justify-center group-hover:border-brand-orange/40 transition-colors duration-300">
             <img 
               src="/sui-func-logo.png" 
@@ -29,44 +56,21 @@ export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick, on
           </span>
         </a>
 
-        {/* Navigation Links (Desktop) */}
-        <nav className="hidden md:flex items-center gap-8">
-          <a 
-            href="#network" 
-            onClick={onBenefitsClick}
-            className="text-sm font-semibold text-slate-200 hover:text-brand-orange transition-colors duration-200"
-          >
-            Network
-          </a>
+        {/* Action Buttons (Desktop) */}
+        <div className="hidden md:flex items-center gap-4">
           <a 
             href="#docs" 
-            className="text-sm font-semibold text-slate-200 hover:text-brand-orange transition-colors duration-200"
+            onClick={(e) => handleNavClick(e, 'docs')}
+            className={`text-sm font-bold transition-all duration-200 px-4 py-2 rounded-lg ${viewMode === 'docs' ? 'text-brand-orange bg-brand-orange/10 border border-brand-orange/20' : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             Docs
           </a>
-          <a 
-            href="#security" 
-            className="text-sm font-semibold text-slate-200 hover:text-brand-orange transition-colors duration-200"
-          >
-            Security
-          </a>
-          <a 
-            href="#scaling" 
-            onClick={onDemoClick}
-            className="text-sm font-semibold text-slate-200 hover:text-brand-orange transition-colors duration-200"
-          >
-            Scaling
-          </a>
-        </nav>
-
-        {/* Action Buttons (Desktop) */}
-        <div className="hidden md:flex items-center">
           <div className="relative">
             <Button 
               onClick={onConnectClick}
               variant="primary" 
               size="md"
-              className="!px-5 !py-2.5 flex items-center justify-center gap-2"
+              className="!px-5 !py-2.5 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,126,33,0.3)] hover:shadow-[0_0_30px_rgba(255,126,33,0.5)] transition-shadow"
             >
               <span>Deploy Now</span>
               <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />
@@ -87,32 +91,11 @@ export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick, on
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-[73px] left-0 w-full bg-brand-dark/95 border-b border-brand-card-border/80 px-6 py-6 flex flex-col gap-5 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
           <a 
-            href="#network" 
-            onClick={() => { setMobileMenuOpen(false); onBenefitsClick?.(); }}
-            className="text-lg font-semibold text-slate-200 hover:text-brand-orange py-1"
-          >
-            Network
-          </a>
-          <a 
             href="#docs" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-lg font-semibold text-slate-200 hover:text-brand-orange py-1"
+            onClick={(e) => { setMobileMenuOpen(false); handleNavClick(e, 'docs'); }}
+            className={`text-lg font-semibold py-1 ${viewMode === 'docs' ? 'text-brand-orange' : 'text-slate-200 hover:text-brand-orange'}`}
           >
             Docs
-          </a>
-          <a 
-            href="#security" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-lg font-semibold text-slate-200 hover:text-brand-orange py-1"
-          >
-            Security
-          </a>
-          <a 
-            href="#scaling" 
-            onClick={() => { setMobileMenuOpen(false); onDemoClick?.(); }}
-            className="text-lg font-semibold text-slate-200 hover:text-brand-orange py-1"
-          >
-            Scaling
           </a>
           <hr className="border-brand-card-border/60 my-1" />
           <div className="pt-2">
@@ -120,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({ onDemoClick, onBenefitsClick, on
               onClick={() => { setMobileMenuOpen(false); onConnectClick?.(); }}
               variant="primary" 
               size="md"
-              className="!w-full !justify-center !px-5 !py-3 flex items-center gap-2"
+              className="!w-full !justify-center !px-5 !py-3 flex items-center gap-2 shadow-[0_0_20px_rgba(255,126,33,0.2)]"
             >
               <span>Deploy Now</span>
               <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />

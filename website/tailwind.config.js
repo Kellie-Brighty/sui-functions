@@ -32,11 +32,30 @@ export default {
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 6s ease-in-out infinite',
+        'float-slow': 'float 8s ease-in-out infinite',
+        'float-medium': 'float 7s ease-in-out infinite reverse',
+        'float-reverse': 'float 6s ease-in-out infinite reverse',
+        'aurora': 'aurora 15s linear infinite',
+        'shimmer': 'shimmer 3s infinite linear',
+        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-12px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        aurora: {
+          '0%': { transform: 'translateX(-50%) rotate(-8deg) scale(1)' },
+          '50%': { transform: 'translateX(-40%) rotate(-5deg) scale(1.1)' },
+          '100%': { transform: 'translateX(-50%) rotate(-8deg) scale(1)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% center' },
+          '100%': { backgroundPosition: '-200% center' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(30px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         }
       }
     },

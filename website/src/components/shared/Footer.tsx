@@ -28,48 +28,13 @@ export const Footer: React.FC = () => {
         {/* Right Side: Links */}
         <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3">
           <a 
-            href="https://status.sui-functions.network" 
+            href="https://x.com/sui_functions?s=20" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="text-xs font-semibold text-slate-200 hover:text-brand-orange transition-colors"
+            className="text-sm font-bold text-slate-300 hover:text-brand-orange transition-colors flex items-center gap-2"
           >
-            Status
-          </a>
-          <a 
-            href="https://twitter.com/SuiFunctions" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-xs font-semibold text-slate-200 hover:text-brand-orange transition-colors"
-          >
-            Twitter
-          </a>
-          <a 
-            href="https://github.com/Kellie-Brighty/sui-functions" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-xs font-semibold text-slate-200 hover:text-brand-orange transition-colors"
-          >
-            GitHub
-          </a>
-          <a 
-            href="https://discord.gg/suifunctions" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-xs font-semibold text-slate-200 hover:text-brand-orange transition-colors"
-          >
-            Discord
-          </a>
-          <a 
-            href="#terms" 
-            className="text-xs font-semibold text-slate-200 hover:text-brand-orange transition-colors"
-          >
-            Terms
-          </a>
-          <a 
-            href="#privacy" 
-            className="text-xs font-semibold text-slate-200 hover:text-brand-orange transition-colors"
-          >
-            Privacy
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+            Follow on X
           </a>
         </div>
 

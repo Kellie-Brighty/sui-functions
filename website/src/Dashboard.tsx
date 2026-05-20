@@ -32,17 +32,13 @@ import {
   Check,
   X,
   Shield,
-  Copy
+  Copy,
+  BookOpen
 } from 'lucide-react';
-import { 
-  useCurrentAccount, 
-  useDisconnectWallet, 
-  useSuiClient, 
-  useSignAndExecuteTransaction, 
-  useSuiClientQuery 
-} from '@mysten/dapp-kit';
+import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { PACKAGE_ID } from './constants';
+import { DocsView } from './components/DocsView';
 
 const Dashboard: React.FC = () => {
   const account = useCurrentAccount();
@@ -1467,6 +1463,18 @@ const Dashboard: React.FC = () => {
                   <HardDrive size={16} />
                   Storage
                 </button>
+
+                <button 
+                  onClick={() => setActiveMenu('6')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '6' 
+                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <BookOpen size={16} />
+                  Documentation
+                </button>
               </nav>
             </div>
           </div>
@@ -2336,6 +2344,13 @@ const Dashboard: React.FC = () => {
                   </table>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Menu Panel 6: Documentation Portal */}
+          {activeMenu === '6' && (
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+              <DocsView isDashboardView={true} />
             </div>
           )}
 

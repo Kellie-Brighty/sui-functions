@@ -4,6 +4,7 @@ import { useCurrentAccount, ConnectModal } from '@mysten/dapp-kit';
 import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users } from 'lucide-react';
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
+import { DocsView } from './components/DocsView';
 
 const App: React.FC = () => {
   const account = useCurrentAccount();
@@ -11,6 +12,7 @@ const App: React.FC = () => {
   const [demoStatus, setDemoStatus] = useState<'idle' | 'running' | 'success'>('idle');
   const [logs, setLogs] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(-1);
+  const [viewMode, setViewMode] = useState<'landing' | 'docs'>('landing');
 
   // If wallet is connected, show the complete SUI Dashboard
   if (account) {
@@ -83,13 +85,23 @@ const App: React.FC = () => {
       {/* Content layer above background */}
       <div className="relative z-10">
       {/* Navbar Header */}
-      <Header onDemoClick={scrollToDemo} onBenefitsClick={scrollToBenefits} onConnectClick={() => setShowConnectModal(true)} />
+      <Header 
+        onDemoClick={scrollToDemo} 
+        onBenefitsClick={scrollToBenefits} 
+        onConnectClick={() => setShowConnectModal(true)} 
+        viewMode={viewMode}
+        onDocsClick={() => setViewMode('docs')}
+        onHomeClick={() => setViewMode('landing')}
+      />
 
       {/* Main Container */}
       <main className="w-full px-6 lg:px-16 pt-12 pb-24">
         <div className="max-w-7xl mx-auto">
         
-        {/* HERO SECTION */}
+        {viewMode === 'docs' ? (
+          <DocsView onBackToLanding={() => setViewMode('landing')} />
+        ) : (
+          <>
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
           <div className="lg:col-span-7 flex flex-col items-start text-left">
 
@@ -169,53 +181,71 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* STATISTICS BAR */}
-        <section className="mb-24">
-          <Card hoverEffect={false} className="bg-brand-card/75 border-brand-card-border/80">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-brand-card-border/60">
+        {/* STATISTICS BAR (Control Panel) */}
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-24"
+        >
+          <Card hoverEffect={false} className="!bg-[#040508]/80 !backdrop-blur-3xl border border-[#1A1C29] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+            {/* Glossy top edge highlight */}
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-slate-500/20 to-transparent" />
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-[#1A1C29]">
               <div className="flex flex-col items-center md:items-start md:pl-4 pt-4 md:pt-0">
-                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Total Invocations</span>
-                <span className="text-2xl sm:text-3xl font-extrabold text-brand-orange font-outfit tracking-tight animate-pulse">1.2B+</span>
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Total Invocations</span>
+                <span className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 font-outfit tracking-tight">1.2B+</span>
               </div>
               <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Network Status</span>
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-brand-green shadow-[0_0_10px_rgba(16,185,129,0.6)] animate-pulse" />
-                  <span className="text-xl sm:text-2xl font-extrabold text-[#10B981] font-outfit tracking-tight">Operational</span>
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Network Status</span>
+                <div className="flex items-center gap-2.5 bg-brand-green/5 border border-brand-green/20 px-3 py-1 rounded-full mt-1">
+                  <span className="w-2 h-2 rounded-full bg-brand-green shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
+                  <span className="text-[11px] font-bold text-[#10B981] font-mono tracking-wider uppercase">Operational</span>
                 </div>
               </div>
               <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Avg. Cold Start</span>
-                <span className="text-2xl sm:text-3xl font-extrabold text-amber-400 font-outfit tracking-tight">&lt; 14ms</span>
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Avg. Cold Start</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-extrabold text-white font-outfit tracking-tight">&lt; 14</span>
+                  <span className="text-amber-500 font-bold font-mono text-sm">ms</span>
+                </div>
               </div>
               <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mb-1.5">Active Workers</span>
-                <span className="text-2xl sm:text-3xl font-extrabold text-white font-outfit tracking-tight">12,402</span>
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Active Workers</span>
+                <span className="text-3xl font-extrabold text-white font-outfit tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">12,402</span>
               </div>
             </div>
           </Card>
-        </section>
+        </motion.section>
 
         {/* POWERED BY / CORE INFRASTRUCTURE SECTION */}
-        <section className="mb-32 animate-fade-in-up">
-          <div className="bg-[#050608]/50 backdrop-blur-md border border-brand-card-border/40 rounded-[24px] p-8 md:p-12 text-center relative overflow-hidden shadow-inner">
-            <div className="absolute top-0 left-1/2 -translate-y-1/2 w-96 h-20 bg-brand-orange/5 blur-[50px] pointer-events-none" />
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-32"
+        >
+          <div className="bg-[#050608]/80 backdrop-blur-3xl border border-[#1A1C29] rounded-[32px] p-8 md:p-14 text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+            <div className="absolute top-0 left-1/2 -translate-y-1/2 w-[600px] h-32 bg-brand-orange/5 blur-[80px] pointer-events-none" />
             
-            <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[9px] font-mono font-bold uppercase tracking-widest text-brand-orange inline-block mb-6">
+            <span className="px-3.5 py-1.5 rounded-full bg-brand-orange/5 border border-brand-orange/20 text-[10px] font-mono font-bold uppercase tracking-widest text-brand-orange inline-block mb-6">
               Core Protocol Infrastructure
             </span>
             
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4 font-outfit">
-              Powered by the Sui Stack
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+              Powered by the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-blue-400 to-brand-orange">Sui Stack</span>
             </h2>
             <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed font-medium mb-12">
               Sui-Functions merges next-generation layer-1 consensus with decentralized object storage to create a secure, serverless edge compute environment.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-              {/* Partner 1: Sui */}
-              <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-[#0a0c10]/40 border border-brand-card-border/30 rounded-2xl hover:border-brand-blue/30 transition-all duration-300 text-left group">
-                <div className="w-16 h-16 rounded-2xl bg-[#0d1624] border border-[#1e2f4d] flex items-center justify-center flex-shrink-0 shadow-[0_4px_20px_rgba(59,130,246,0.15)] group-hover:scale-105 transition-transform duration-300">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto items-stretch">
+              {/* Partner 1: Sui (Bento Box) */}
+              <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-blue/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
+                <div className="w-16 h-16 rounded-[18px] bg-[#0A101C] border border-[#162544] flex items-center justify-center shadow-[0_10px_30px_rgba(59,130,246,0.1)] group-hover:shadow-[0_10px_30px_rgba(59,130,246,0.25)] group-hover:scale-105 transition-all duration-500">
                   <img 
                     src="https://www.google.com/s2/favicons?domain=sui.io&sz=128" 
                     alt="Sui Network Logo" 
@@ -223,19 +253,19 @@ const App: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white font-outfit mb-1.5 flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center justify-between w-full">
                     Sui Network
-                    <span className="px-2 py-0.5 rounded bg-brand-blue-glow border border-brand-blue/20 text-[8px] font-mono font-bold text-brand-blue uppercase">Coordination</span>
+                    <span className="px-2.5 py-1 rounded bg-brand-blue/10 border border-brand-blue/20 text-[9px] font-mono font-bold text-brand-blue uppercase tracking-wider">Coordination</span>
                   </h3>
-                  <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                  <p className="text-slate-400 text-sm leading-relaxed font-medium group-hover:text-slate-300 transition-colors">
                     Acts as our state coordinator and event bus. Move smart contracts manage the dynamic trigger registry and commit completed execution receipts securely on-chain.
                   </p>
                 </div>
               </div>
 
-              {/* Partner 2: Walrus */}
-              <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-[#0a0c10]/40 border border-brand-card-border/30 rounded-2xl hover:border-brand-orange/30 transition-all duration-300 text-left group">
-                <div className="w-16 h-16 rounded-2xl bg-[#2a1d12] border border-[#5a3a1e] flex items-center justify-center flex-shrink-0 shadow-[0_4px_20px_rgba(255,126,33,0.25)] group-hover:scale-105 transition-transform duration-300">
+              {/* Partner 2: Walrus (Bento Box) */}
+              <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-orange/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
+                <div className="w-16 h-16 rounded-[18px] bg-[#160f08] border border-[#3b2311] flex items-center justify-center shadow-[0_10px_30px_rgba(255,126,33,0.1)] group-hover:shadow-[0_10px_30px_rgba(255,126,33,0.25)] group-hover:scale-105 transition-all duration-500">
                   <img 
                     src="https://www.google.com/s2/favicons?domain=walrus.xyz&sz=128" 
                     alt="Walrus Protocol Logo" 
@@ -243,18 +273,18 @@ const App: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white font-outfit mb-1.5 flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center justify-between w-full">
                     Walrus Protocol
-                    <span className="px-2 py-0.5 rounded bg-brand-orange-glow border border-brand-orange/20 text-[8px] font-mono font-bold text-brand-orange uppercase">Logic Library</span>
+                    <span className="px-2.5 py-1 rounded bg-brand-orange/10 border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase tracking-wider">Logic Library</span>
                   </h3>
-                  <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                  <p className="text-slate-400 text-sm leading-relaxed font-medium group-hover:text-slate-300 transition-colors">
                     Serves as our immutable logic repository. Script files are pinned permanently to Walrus storage nodes, uniquely identified by cryptographic content-addressed Blob IDs.
                   </p>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* FEATURES SECTION (SPLIT-GRID INTERACTIVE ROW LAYOUT) */}
         <section id="network" className="mb-32">
@@ -351,7 +381,14 @@ const App: React.FC = () => {
         </section>
 
         {/* THREE PILLARS ARCHITECTURE SECTION */}
-        <section id="docs" className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mb-32 py-8">
+        <motion.section 
+          id="docs" 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mb-32 py-12"
+        >
           {/* Left: Info */}
           <div className="lg:col-span-5 flex flex-col items-start text-left">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-8">
@@ -359,41 +396,41 @@ const App: React.FC = () => {
               <span className="text-brand-orange">Architecture</span>
             </h2>
 
-            <div className="flex flex-col gap-8 w-full">
+            <div className="flex flex-col gap-5 w-full">
               {/* Bullet 1 */}
-              <div className="flex items-start gap-4">
-                <div className="w-6 h-6 rounded-full bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0 mt-1.5">
-                  <CheckCircle2 size={14} />
+              <div className="flex items-start gap-5 p-6 bg-[#090A10] border border-[#1A1C29] rounded-2xl hover:border-brand-green/40 hover:bg-[#0C0E16] transition-all shadow-inner group">
+                <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 size={18} />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-white mb-1.5 font-outfit">1. Trigger Event Bus (Sui Ledger)</h4>
-                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                  <h4 className="text-lg font-bold text-white mb-2 font-outfit">1. Trigger Event Bus (Sui Ledger)</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed font-medium">
                     Move smart contracts manage a shared dynamic registry using Sui's high-speed tables, recording execution receipts securely on-chain.
                   </p>
                 </div>
               </div>
 
               {/* Bullet 2 */}
-              <div className="flex items-start gap-4">
-                <div className="w-6 h-6 rounded-full bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0 mt-1.5">
-                  <CheckCircle2 size={14} />
+              <div className="flex items-start gap-5 p-6 bg-[#090A10] border border-[#1A1C29] rounded-2xl hover:border-brand-green/40 hover:bg-[#0C0E16] transition-all shadow-inner group">
+                <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 size={18} />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-white mb-1.5 font-outfit">2. Logic Library (Walrus Storage)</h4>
-                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                  <h4 className="text-lg font-bold text-white mb-2 font-outfit">2. Logic Library (Walrus Storage)</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed font-medium">
                     Functions are stored permanently on Walrus as immutable, content-addressed blobs. Guarantees 100% logic integrity.
                   </p>
                 </div>
               </div>
 
               {/* Bullet 3 */}
-              <div className="flex items-start gap-4">
-                <div className="w-6 h-6 rounded-full bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0 mt-1.5">
-                  <CheckCircle2 size={14} />
+              <div className="flex items-start gap-5 p-6 bg-[#090A10] border border-[#1A1C29] rounded-2xl hover:border-brand-green/40 hover:bg-[#0C0E16] transition-all shadow-inner group">
+                <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 size={18} />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-white mb-1.5 font-outfit">3. Isolated Workers (Secure Sandboxes)</h4>
-                  <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                  <h4 className="text-lg font-bold text-white mb-2 font-outfit">3. Isolated Workers (Secure Sandboxes)</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed font-medium">
                     TypeScript worker daemons listen for triggers, assemble blobs, and run logic securely inside Google V8 runtime sandboxes.
                   </p>
                 </div>
@@ -405,73 +442,79 @@ const App: React.FC = () => {
           <div className="lg:col-span-7 flex justify-center items-center w-full">
             <CodeWindow filename="trigger.move" className="w-full max-w-2xl" />
           </div>
-        </section>
+        </motion.section>
 
         {/* SOVEREIGN DEVOPS & GOVERNANCE SECTION */}
-        <section className="mb-32 py-12 relative overflow-hidden">
+        <motion.section 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-32 py-12 relative overflow-hidden"
+        >
           {/* Decorative glowing background elements */}
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-72 h-72 rounded-full bg-brand-orange/5 blur-[100px] pointer-events-none" />
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none" />
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             {/* Left: Interactive Visual Representation */}
             <div className="lg:col-span-6 order-2 lg:order-1 flex justify-center items-center w-full">
-              <div className="w-full max-w-lg bg-[#08090e]/90 border border-brand-card-border/80 rounded-[24px] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
+              <div className="w-full max-w-lg bg-[#040508]/90 border border-[#1A1C29] rounded-[24px] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
                 {/* Visual Header */}
-                <div className="flex items-center justify-between border-b border-brand-card-border pb-4 mb-6">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-300">Upgrade Request Proposal</span>
+                <div className="flex items-center justify-between border-b border-[#1A1C29] pb-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Upgrade Request Proposal</span>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono font-bold text-[9px]">AWAITING SIGS</span>
+                  <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono font-bold text-[9px] uppercase tracking-wider">Awaiting Sigs</span>
                 </div>
 
                 {/* Proposal Metadata */}
-                <div className="flex flex-col gap-4 font-mono text-[11px] mb-6">
-                  <div className="flex justify-between items-center py-2 border-b border-brand-card-border/40">
-                    <span className="text-slate-400">TARGET FUNCTION:</span>
+                <div className="flex flex-col gap-0 font-mono text-[12px] mb-6 border border-[#1A1C29] rounded-xl overflow-hidden">
+                  <div className="flex justify-between items-center px-4 py-3 bg-[#0A0C13] border-b border-[#1A1C29]">
+                    <span className="text-slate-500 font-bold">TARGET FUNCTION:</span>
                     <span className="text-white font-bold">sui_usd_oracle.js</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-brand-card-border/40">
-                    <span className="text-slate-400">CURRENT BLOB ID:</span>
+                  <div className="flex justify-between items-center px-4 py-3 bg-[#07080D] border-b border-[#1A1C29]">
+                    <span className="text-slate-500 font-bold">CURRENT BLOB ID:</span>
                     <span className="text-brand-blue font-bold select-all">K9YtZ1pL0L8q...</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-brand-card-border/40">
-                    <span className="text-slate-400">PROPOSED BLOB ID:</span>
+                  <div className="flex justify-between items-center px-4 py-3 bg-[#07080D]">
+                    <span className="text-slate-500 font-bold">PROPOSED BLOB ID:</span>
                     <span className="text-brand-orange font-bold select-all">W7VwX2jrIH5y...</span>
                   </div>
                 </div>
 
                 {/* Multi-Sig Approvals Track */}
                 <div className="flex flex-col gap-3.5 mb-6">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Consensus Progress (2/3 Approved)</span>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 pl-1">Consensus Progress (2/3 Approved)</span>
                   
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-brand-green/5 border border-brand-green/20">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-5 h-5 rounded-full bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green">✓</div>
-                      <span className="text-[11px] font-mono font-medium text-slate-200">0x8a4c...4086 (Lead Dev)</span>
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#090A10] border border-[#1A1C29]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-md bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
+                      <span className="text-[12px] font-mono font-medium text-slate-300">0x8a4c...4086 (Lead Dev)</span>
                     </div>
-                    <span className="text-[9px] font-mono font-bold text-brand-green uppercase">APPROVED</span>
+                    <span className="text-[10px] font-mono font-bold text-brand-green uppercase">Approved</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-brand-green/5 border border-brand-green/20">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-5 h-5 rounded-full bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green">✓</div>
-                      <span className="text-[11px] font-mono font-medium text-slate-200">0x2528...9832 (Security Auditor)</span>
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#090A10] border border-[#1A1C29]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-md bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
+                      <span className="text-[12px] font-mono font-medium text-slate-300">0x2528...9832 (Security Auditor)</span>
                     </div>
-                    <span className="text-[9px] font-mono font-bold text-brand-green uppercase">APPROVED</span>
+                    <span className="text-[10px] font-mono font-bold text-brand-green uppercase">Approved</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 font-mono text-[9px] animate-pulse">●</span>
-                      <span className="text-[11px] font-mono font-medium text-slate-300">0xf767...1104 (Sponsor Treasury)</span>
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#0A0C13] border border-[#1A1C29]">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-md bg-amber-500/5 border border-amber-500/20 flex items-center justify-center text-amber-500 font-mono text-[10px] animate-pulse">●</span>
+                      <span className="text-[12px] font-mono font-medium text-slate-400">0xf767...1104 (Sponsor Treasury)</span>
                     </div>
-                    <span className="text-[9px] font-mono font-bold text-amber-500 uppercase animate-pulse">PENDING</span>
+                    <span className="text-[10px] font-mono font-bold text-amber-500 uppercase animate-pulse">Pending</span>
                   </div>
                 </div>
 
                 {/* Explanatory visual note */}
-                <div className="p-3 bg-brand-orange-glow border border-brand-orange/20 rounded-xl text-[10px] text-slate-300 leading-relaxed font-medium">
+                <div className="p-4 bg-brand-orange/5 border border-brand-orange/20 rounded-xl text-[11px] text-slate-400 leading-relaxed font-medium">
                   Sui layer-1 smart contracts natively block updates to edge runners until the registered Multisig object triggers a verified state change transaction.
                 </div>
               </div>
@@ -529,24 +572,33 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* INTERACTIVE DEMO / NETWORKING SANDBOX */}
-        <section id="demo" className="mb-32">
-          <div className="bg-[#08090E]/80 backdrop-blur-md border border-brand-card-border/80 rounded-[32px] p-8 md:p-16 relative overflow-hidden shadow-card-glow">
+        <motion.section 
+          id="demo" 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-32"
+        >
+          <div 
+            className="bg-[#050608]/80 backdrop-blur-3xl border border-[#1A1C29] rounded-[32px] p-8 md:p-16 relative overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.7)] group"
+          >
             {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-brand-blue/5 blur-[120px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none transition-all duration-700 group-hover:bg-brand-orange/10" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-brand-blue/5 blur-[120px] pointer-events-none transition-all duration-700 group-hover:bg-brand-blue/10" />
 
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto relative z-10">
               <div className="text-center mb-12">
-                <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[10px] font-extrabold uppercase tracking-widest text-brand-orange inline-block mb-4 font-mono">
+                <span className="px-3.5 py-1.5 rounded-full bg-brand-orange/5 border border-brand-orange/20 text-[10px] font-bold uppercase tracking-widest text-brand-orange inline-block mb-4 font-mono">
                   DeFi Price Oracle Showcase
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
                   Verifiable Price-Feed Sandbox
                 </h2>
-                <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
+                <p className="text-slate-400 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
                   Check SUI/USD off-chain prices dynamically. When deviation drifts, trigger a sandboxed oracle worker to pull the immutable script from Walrus and submit validated results back on-chain.
                 </p>
               </div>
@@ -701,7 +753,7 @@ const App: React.FC = () => {
 
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* LIVE DEMO SHOWCASE */}
         <section className="mb-32">
@@ -965,6 +1017,8 @@ const App: React.FC = () => {
 
           </div>
         </section>
+          </>
+        )}
 
         </div>
       </main>
