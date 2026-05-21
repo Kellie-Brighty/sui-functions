@@ -2042,6 +2042,18 @@ const Dashboard: React.FC = () => {
                   <BookOpen size={16} />
                   Documentation
                 </button>
+
+                <button 
+                  onClick={() => setActiveMenu('7')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '7' 
+                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <Wallet size={16} />
+                  Billing & Vault
+                </button>
               </nav>
             </div>
           </div>
@@ -2927,7 +2939,7 @@ const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl md:text-2xl font-bold text-white font-outfit mb-1 tracking-wide">Workspace Vault & Billing</h2>
-                  <p className="text-xs text-slate-400 max-w-lg">Manage your project's pre-funded SUI balance to sponsor compute executions and network gas for your users.</p>
+                  <p className="text-xs text-slate-400 max-w-lg">Manage your project's pre-funded SUI balance to sponsor compute executions for your users.</p>
                 </div>
               </div>
 
@@ -2976,15 +2988,15 @@ const Dashboard: React.FC = () => {
                         </div>
                         <div>
                           <div className="text-xs font-bold text-white">0.05 SUI / Exec</div>
-                          <div className="text-[10px] text-slate-400 mt-0.5">Compute Runner Fee (95%)</div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">Compute Runner Fee (85%)</div>
                         </div>
                       </li>
-                      <li className="flex items-start gap-2">
+                      <li className="flex items-start gap-2 opacity-50">
                         <div className="w-4 h-4 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0 mt-0.5">
                           <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">Network Gas</div>
+                          <div className="text-xs font-bold text-white flex items-center gap-2">Network Gas <span className="px-1.5 py-0.5 rounded border border-brand-orange/30 bg-brand-orange/10 text-brand-orange text-[8px] font-extrabold tracking-wider uppercase">Coming Soon</span></div>
                           <div className="text-[10px] text-slate-400 mt-0.5">Sponsored by Gas Station</div>
                         </div>
                       </li>
@@ -2994,7 +3006,7 @@ const Dashboard: React.FC = () => {
                         </div>
                         <div>
                           <div className="text-xs font-bold text-white">Protocol Cut</div>
-                          <div className="text-[10px] text-slate-400 mt-0.5">Treasury (5%)</div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">Treasury (15%)</div>
                         </div>
                       </li>
                     </ul>

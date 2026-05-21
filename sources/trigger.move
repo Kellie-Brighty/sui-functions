@@ -364,12 +364,12 @@ module sui_functions::trigger {
         // Extract fee
         let mut extracted_fee = balance::split(&mut project.vault, compute_fee);
 
-        // 5% to protocol treasury
-        let protocol_cut = 2_500_000;
+        // 15% to protocol treasury
+        let protocol_cut = 7_500_000;
         let protocol_fee = balance::split(&mut extracted_fee, protocol_cut);
         balance::join(&mut treasury.balance, protocol_fee);
 
-        // 95% to runner
+        // 85% to runner
         let runner_payment = coin::from_balance(extracted_fee, ctx);
         transfer::public_transfer(runner_payment, sender);
         
