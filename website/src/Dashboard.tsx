@@ -34,7 +34,8 @@ import {
   Menu,
   Shield,
   Copy,
-  BookOpen
+  BookOpen,
+  Wallet
 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
@@ -1807,6 +1808,18 @@ const Dashboard: React.FC = () => {
                     <BookOpen size={16} />
                     Documentation
                   </button>
+
+                  <button 
+                    onClick={() => { setActiveMenu('7'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '7' 
+                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <Wallet size={16} />
+                    Billing & Vault
+                  </button>
                 </nav>
               </div>
             </div>
@@ -2905,6 +2918,90 @@ const Dashboard: React.FC = () => {
           {activeMenu === '6' && (
             <div id="docs-portal" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
               <DocsView isDashboardView={true} />
+            </div>
+          )}
+
+          {/* Menu Panel 7: Billing & Vault */}
+          {activeMenu === '7' && (
+            <div id="billing-vault" className="flex flex-col gap-6 animate-in fade-in duration-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-white font-outfit mb-1 tracking-wide">Workspace Vault & Billing</h2>
+                  <p className="text-xs text-slate-400 max-w-lg">Manage your project's pre-funded SUI balance to sponsor compute executions and network gas for your users.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 group-hover:bg-brand-orange/10 transition-colors duration-700 pointer-events-none" />
+                  <div className="relative z-10 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Wallet size={16} className="text-brand-orange" />
+                        <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit">Current Balance</h3>
+                      </div>
+                      <div className="flex items-end gap-3 mb-2">
+                        <span className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-outfit">0.00</span>
+                        <span className="text-lg text-brand-orange font-bold font-mono pb-1">SUI</span>
+                      </div>
+                      <p className="text-xs text-slate-400 font-medium">Estimated 0 executions remaining</p>
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1.5">Deposit Amount</div>
+                        <div className="relative">
+                          <input 
+                            type="number" 
+                            placeholder="e.g. 5.0"
+                            className="w-full bg-[#050608] border border-[#252838] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-orange/50 transition-colors"
+                          />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">SUI</div>
+                        </div>
+                      </div>
+                      <button className="mt-5 bg-brand-orange hover:bg-[#F76707] text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_4px_15px_rgba(255,126,33,0.3)] hover:shadow-[0_6px_20px_rgba(255,126,33,0.4)] transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer disabled:opacity-50">
+                        <ArrowUpRight size={16} /> Deposit Funds
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-6">
+                  <div className="bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-5 shadow-xl flex-1 flex flex-col justify-center">
+                    <h4 className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-3">Fee Structure</h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start gap-2">
+                        <div className="w-4 h-4 rounded-full bg-brand-orange/10 border border-brand-orange/30 flex items-center justify-center shrink-0 mt-0.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white">0.05 SUI / Exec</div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">Compute Runner Fee (95%)</div>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-4 h-4 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0 mt-0.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white">Network Gas</div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">Sponsored by Gas Station</div>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-4 h-4 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0 mt-0.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white">Protocol Cut</div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">Treasury (5%)</div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
             </div>
           )}
 

@@ -4,6 +4,9 @@ module sui_functions::trigger {
     use sui::tx_context::{Self, TxContext};
     use sui::object::{Self, UID, ID};
     use sui::table::{Self, Table};
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
     use std::string::{String};
 
     /// Errors
@@ -11,6 +14,7 @@ module sui_functions::trigger {
     const ENotOwner: u64 = 1;
     const ENotAuthorizedRunner: u64 = 2;
     const EFunctionNotVerified: u64 = 3;
+    const EInsufficientFunds: u64 = 4;
 
     /// Status constants
     const STATUS_PENDING: u8 = 0;
@@ -27,7 +31,14 @@ module sui_functions::trigger {
         description: String,
         owner: address,
         runner_address: address,
-        functions: Table<String, FunctionMetadata>
+        functions: Table<String, FunctionMetadata>,
+        vault: Balance<SUI>
+    }
+
+    /// Global treasury to collect protocol fees
+    public struct ProtocolTreasury has key {
+        id: UID,
+        balance: Balance<SUI>
     }
 
     /// Metadata for a registered function
@@ -88,7 +99,8 @@ module sui_functions::trigger {
             description,
             owner,
             runner_address: @0x0,
-            functions: table::new(ctx)
+            functions: table::new(ctx),
+            vault: balance::zero()
         };
 
         event::emit(ProjectCreated {
@@ -98,6 +110,25 @@ module sui_functions::trigger {
         });
 
         transfer::public_share_object(project);
+    }
+
+    /// Initialize the protocol treasury (usually called once by protocol admin)
+    fun init(ctx: &mut TxContext) {
+        let treasury = ProtocolTreasury {
+            id: object::new(ctx),
+            balance: balance::zero()
+        };
+        transfer::share_object(treasury);
+    }
+
+    /// Deposit SUI coins into a project's vault
+    public entry fun deposit_funds(
+        project: &mut Project,
+        payment: Coin<SUI>,
+        _ctx: &mut TxContext
+    ) {
+        let coin_balance = coin::into_balance(payment);
+        balance::join(&mut project.vault, coin_balance);
     }
 
     /// Update the authorized runner address for the project
@@ -279,12 +310,17 @@ module sui_functions::trigger {
             description: _,
             owner,
             runner_address: _,
-            functions
+            functions,
+            vault
         } = project;
 
         let project_id = object::uid_to_inner(&id);
         object::delete(id);
         table::destroy_empty(functions);
+
+        // Refund any remaining balance to the owner
+        let remaining_coin = coin::from_balance(vault, ctx);
+        transfer::public_transfer(remaining_coin, owner);
 
         event::emit(ProjectDeleted {
             project_id,
@@ -311,7 +347,8 @@ module sui_functions::trigger {
     }
 
     public entry fun submit_result(
-        project: &Project,
+        project: &mut Project,
+        treasury: &mut ProtocolTreasury,
         name: String,
         result_data: String,
         ctx: &mut TxContext
@@ -319,6 +356,23 @@ module sui_functions::trigger {
         let sender = tx_context::sender(ctx);
         assert!(project.runner_address == sender, ENotAuthorizedRunner);
         assert!(table::contains(&project.functions, name), EFunctionNotFound);
+
+        // Constant fee mapping (e.g. 0.05 SUI = 50_000_000 MIST)
+        let compute_fee = 50_000_000;
+        assert!(balance::value(&project.vault) >= compute_fee, EInsufficientFunds);
+
+        // Extract fee
+        let mut extracted_fee = balance::split(&mut project.vault, compute_fee);
+
+        // 5% to protocol treasury
+        let protocol_cut = 2_500_000;
+        let protocol_fee = balance::split(&mut extracted_fee, protocol_cut);
+        balance::join(&mut treasury.balance, protocol_fee);
+
+        // 95% to runner
+        let runner_payment = coin::from_balance(extracted_fee, ctx);
+        transfer::public_transfer(runner_payment, sender);
+        
         
         event::emit(ExecutionCompleted {
             project_id: object::id(project),
