@@ -442,13 +442,15 @@ export async function startPolling(packageId: string) {
                                     console.log(`Submitting result back to Sui...`);
                                     const tx = new Transaction();
                                     const packageId = process.env.PACKAGE_ID || "0x0";
+                                    const treasuryId = process.env.PROTOCOL_TREASURY_ID || "0x0";
                                     
                                     tx.moveCall({
                                         target: `${packageId}::trigger::submit_result`,
                                         arguments: [
                                             tx.object(project_id),
                                             tx.pure.string(function_name),
-                                            tx.pure.string(JSON.stringify(executionResult) ?? "null")
+                                            tx.pure.string(JSON.stringify(executionResult) ?? "null"),
+                                            tx.object(treasuryId)
                                         ]
                                     });
 
