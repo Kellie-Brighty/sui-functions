@@ -122,7 +122,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
 
           <div className="bg-[#0b0c15] border border-brand-card-border p-5 rounded-2xl space-y-3">
             <h4 className="text-white font-bold text-sm uppercase tracking-wider font-mono">Core Specifications</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
               <div className="p-3 bg-brand-dark rounded-xl border border-brand-card-border">
                 <div className="text-slate-500 mb-1">Runtime Engine</div>
                 <div className="text-brand-orange font-bold">V8 Isolate (isolated-vm)</div>
@@ -853,7 +853,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white">Troubleshooting Matrix</h3>
             
-            <div className="border border-brand-card-border rounded-xl overflow-hidden text-xs">
+            <div className="border border-brand-card-border rounded-xl overflow-x-auto text-xs">
               <table className="w-full text-left border-collapse font-mono">
                 <thead>
                   <tr className="bg-brand-card border-b border-brand-card-border text-slate-300">
@@ -954,7 +954,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
           </div>
 
           {/* Sidebar Menu Panel */}
-          <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-4 space-y-2 backdrop-blur-md sticky top-24">
+          <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-4 space-y-2 backdrop-blur-md lg:sticky lg:top-24">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono px-3">
               Sections
             </span>
@@ -1001,28 +1001,28 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
             </div>
 
             {/* Global Audience Toggle */}
-            <div className="bg-brand-dark/80 p-1.5 rounded-xl border border-brand-card-border flex items-center gap-1 w-fit shrink-0">
+            <div className="bg-brand-dark/80 p-1.5 rounded-xl border border-brand-card-border flex items-center gap-1 w-full sm:w-fit shrink-0">
               <button
                 onClick={() => setAudienceMode('layman')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
                   audienceMode === 'layman'
                     ? 'bg-brand-orange/10 text-brand-orange border border-brand-orange/20 shadow-orange-glow'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <span>💡</span>
-                <span>Layman Metaphors</span>
+                <span className="truncate">Layman Metaphors</span>
               </button>
               <button
                 onClick={() => setAudienceMode('developer')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
                   audienceMode === 'developer'
                     ? 'bg-brand-orange/10 text-brand-orange border border-brand-orange/20 shadow-orange-glow'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <span>💻</span>
-                <span>Developer View</span>
+                <span className="truncate">Developer View</span>
               </button>
             </div>
           </div>

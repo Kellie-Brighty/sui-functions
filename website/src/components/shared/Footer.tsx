@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
           </div>
           <p className="text-xs text-slate-300 text-center md:text-left leading-relaxed max-w-md font-medium">
             © 2026 Sui-Functions. Architectural Precision in Decentralized Execution.<br />
-            <span className="text-[11px] text-slate-400 block mt-1.5 font-normal">Built for the Sui Overflow 2026 Hackathon. The future is unstoppable.</span>
+            <span className="text-[11px] text-slate-400 block mt-1.5 font-normal">Built for the Sui Overflow 2026 Hackathon. Advancing the Sui infrastructure stack.</span>
           </p>
         </div>
 

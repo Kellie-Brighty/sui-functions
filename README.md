@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">
-  <strong>Decentralized, unstoppable serverless execution for the Sui ecosystem.</strong>
+  <strong>Decentralized compute backbone for the Agentic Web.</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Sui%20Overflow-2026-ff7e21?style=for-the-badge&logo=sui&logoColor=white" alt="Sui Overflow 2026" />
+  <img src="https://img.shields.io/badge/Agentic%20Web-Infrastructure-ff7e21?style=for-the-badge&logo=sui&logoColor=white" alt="Agentic Web Infrastructure" />
   <img src="https://img.shields.io/badge/Storage-Walrus%20Protocol-3b82f6?style=for-the-badge&logo=buffer&logoColor=white" alt="Walrus Protocol" />
   <img src="https://img.shields.io/badge/Runtime-V8%20Isolates-10b981?style=for-the-badge&logo=javascript&logoColor=white" alt="V8 Isolates" />
   <img src="https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge" alt="License MIT" />
@@ -17,24 +17,24 @@
 
 ## 💡 What is Sui-Functions?
 
-Sui-Functions is a next-generation decentralized serverless execution engine built for the **Sui Overflow 2026 Hackathon**. By marrying the security of the **Sui Blockchain** with the high-performance decentralized storage of the **Walrus Protocol**, Sui-Functions lets developers deploy and execute serverless code with **zero central dependencies**, **unhackable multi-sig deployment lifecycles**, and **near-zero execution overhead**.
+Sui-Functions is an experimental protocol architecture that demonstrates the next frontier of decentralized compute and sovereign data storage. By marrying the security of the **Sui Blockchain** with the high-performance decentralized storage of the **Walrus Protocol**, Sui-Functions provides the essential agentic compute layer, allowing autonomous agents to execute, react, and store state without centralized cloud middleware.
 
 ---
 
 ## 🏛️ The Three Pillars Architecture
 
-Sui-Functions decouples state coordination, logic immutability, and execution environments to achieve a secure, trustless serverless workflow:
+Sui-Functions decouples state coordination, logic immutability, and execution environments to achieve a secure, trustless workflow:
 
 ```mermaid
 graph TD
     subgraph Client App
-        A[SuiNode E-Commerce Storefront]
+        A[Autonomous DeFi Agent Showcase]
     end
     subgraph Sui Ledger [Pillar 1: Trigger Event Bus]
         B[Move Registry Contract]
         C[Call Event Triggered]
     end
-    subgraph Walrus Storage [Pillar 2: Logic Library]
+    subgraph Walrus Storage [Pillar 2: Logic Registry]
         D[Immutable V8 Javascript Blob]
     end
     subgraph Runner Daemon [Pillar 3: Isolated Worker]
@@ -52,8 +52,8 @@ graph TD
 
 1. **Pillar 1: The Trigger Event Bus (Sui Ledger)**
    * Move smart contracts coordinate the function registries, project ownership, dynamic trigger options, and execution receipts securely on-chain.
-2. **Pillar 2: The Logic Library (Walrus Storage)**
-   * Serverless JS/TS files are stored permanently on Walrus as immutable, content-addressed storage blobs, making supply-chain script poisoning attacks physically impossible.
+2. **Pillar 2: The Logic Registry (Walrus Storage)**
+   * We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution.
 3. **Pillar 3: The Isolated Workers (Secure Sandboxes)**
    * Lightweight daemon workers listen to Sui contract events, download the function blobs directly from Walrus nodes, and run them inside secure Google V8 sandbox execution environments (`isolated-vm`) with strict CPU and heap limits.
 
@@ -63,7 +63,7 @@ graph TD
 
 * **🛡️ Sandboxed V8 execution**: Enforces strict `128MB` memory heap limits, filesystem-blocking shims, and `5000ms` CPU timeouts to block exploit vectors.
 * **🔒 Sovereign Upgrade Governance**: Project updates can be held by multi-sig wallets or DAO smart contracts. No single compromised API key can modify running code.
-* **🌐 Decentralized Storefront Demo**: The repository comes with a full **SuiNode E-Commerce Storefront** where product price feeds and checkout discounts are validated on-chain in real-time.
+* **🤖 Autonomous DeFi Agent Showcase**: The repository comes with a showcase of an autonomous DeFi agent utilizing on-chain triggers to audit live inventory valuations and evaluate market deviations within secure V8 sandboxes.
 * **💻 Interactive Developer Dashboard**: A rich web app built with React, TypeScript, and Ant Design that allows developers to manage projects, register/upgrade scripts, and trace execution logs.
 
 ---
@@ -94,14 +94,12 @@ sui client publish --gas-budget 100000000
 ### 2. Runner Configuration
 Go to the `runner` folder to start the listener worker:
 ```bash
-cd runner
-npm install
-
 # Setup environment config
 # Configure package / registry ids inside .env
 cp .env.example .env
 
 # Run listener worker
+npm install
 npm run dev
 ```
 
@@ -131,8 +129,9 @@ npm run dev
 
 ---
 
-## 🏆 Hackathon Details
-Sui-Functions was developed for the **Sui Overflow 2026 Hackathon**. Our goal is to provide a fully open-source, trustless, and robust serverless option to eliminate Web2 cloud lock-ins and security liabilities.
+## 🎯 Project Objectives
+
+Sui-Functions is built to advance the Sui infrastructure stack. Our goal is to provide a fully open-source, trustless, and robust option to eliminate Web2 cloud lock-ins and security liabilities, establishing a new paradigm for decentralized compute on the Agentic Web.
 
 ---
 

@@ -51,8 +51,9 @@ export const Header: React.FC<HeaderProps> = ({
               className="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-300"
             />
           </div>
-          <span className="text-xl font-bold tracking-tight text-white group-hover:text-brand-orange transition-colors duration-300 font-outfit">
-            Sui-Functions
+          <span className="text-xl font-bold tracking-tight text-white group-hover:text-brand-orange transition-colors duration-300 font-outfit flex items-center">
+            <span className="max-[360px]:hidden whitespace-nowrap">Sui</span>
+            <span className="hidden min-[480px]:inline whitespace-nowrap">-Functions</span>
           </span>
         </a>
 

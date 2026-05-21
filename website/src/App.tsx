@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCurrentAccount, ConnectModal } from '@mysten/dapp-kit';
-import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users } from 'lucide-react';
+import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users, Loader2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 import { DocsView } from './components/DocsView';
@@ -9,50 +9,73 @@ import { DocsView } from './components/DocsView';
 const App: React.FC = () => {
   const account = useCurrentAccount();
   const [showConnectModal, setShowConnectModal] = useState(false);
-  const [demoStatus, setDemoStatus] = useState<'idle' | 'running' | 'success'>('idle');
-  const [logs, setLogs] = useState<string[]>([]);
-  const [currentStep, setCurrentStep] = useState(-1);
   const [viewMode, setViewMode] = useState<'landing' | 'docs'>('landing');
+  const [activePillar, setActivePillar] = useState<'trigger' | 'logic' | 'worker'>('trigger');
+  
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simulationLogs, setSimulationLogs] = useState<string[]>([]);
+  const [logIndex, setLogIndex] = useState(0);
+
+  const logsMap = {
+    trigger: [
+      '🚀 Connecting to Sui Event Bus on Mainnet...',
+      '📡 Listening for tx triggers on usd_functions::kinetic_handler...',
+      '📥 RECEIVED: Transaction Trigger event emitted.',
+      '🔗 TX DIGEST: 0x9b1b7...a3f4e (Gas: 0.0012 SUI)',
+      '📦 DISPATCH: Forwarding execution request to Walrus blob: 0x5f71e...'
+    ],
+    logic: [
+      '🔍 Querying Walrus Storage Network for blob metadata...',
+      '📂 FOUND blob: "usd_oracle_logic" (Size: 43.5 KB)',
+      '🛡️ INTEGRITY: Verifying cryptographic hash sha256-4c7b8d...',
+      '✅ MATCH: Cryptographic integrity confirmed (100% logic safety).',
+      '💾 CACHE: Loaded compiled WebAssembly blob into memory isolate.'
+    ],
+    worker: [
+      '⚡ Initializing worker daemon in secure sandbox...',
+      '🔒 Google V8 isolate container started (Heap Limit: 128MB, net: isolated)',
+      '⚙️ Executing entrypoint: usd_oracle_logic::main() in WASM runtime...',
+      '🕒 RUNTIME: Executed successfully in 2.14ms.',
+      '📝 POST: Transaction receipt submitted back to Sui Event Bus.'
+    ]
+  };
+
+  useEffect(() => {
+    setIsSimulating(false);
+    setSimulationLogs([]);
+    setLogIndex(0);
+  }, [activePillar]);
+
+  useEffect(() => {
+    if (!isSimulating) return;
+
+    const currentLogs = logsMap[activePillar];
+    if (logIndex < currentLogs.length) {
+      const delay = logIndex === 0 ? 300 : 700;
+      const timer = setTimeout(() => {
+        setSimulationLogs((prev) => [...prev, currentLogs[logIndex]]);
+        setLogIndex((prev) => prev + 1);
+      }, delay);
+      return () => clearTimeout(timer);
+    } else {
+      setIsSimulating(false);
+    }
+  }, [isSimulating, logIndex, activePillar]);
+
+  const startSimulation = () => {
+    if (isSimulating) return;
+    setIsSimulating(true);
+    setSimulationLogs([]);
+    setLogIndex(0);
+  };
 
   // If wallet is connected, show the complete SUI Dashboard
   if (account) {
     return <Dashboard />;
   }
 
-  const runDemo = () => {
-    setDemoStatus('running');
-    setLogs(['[System] Initializing Price Oracle deviation checker...']);
-    setCurrentStep(0);
-    
-    setTimeout(() => {
-      setLogs(prev => [...prev, '[Blockchain] SUI/USD Price deviation >0.1% detected. Emitting call_function() event...']);
-      setCurrentStep(1);
-    }, 1200);
-
-    setTimeout(() => {
-      setLogs(prev => [...prev, '[Storage] Pulling immutable \'sui_usd_oracle.js\' script from Walrus Blob: W7VwX...']);
-      setCurrentStep(2);
-    }, 2800);
-
-    setTimeout(() => {
-      setLogs(prev => [
-        ...prev, 
-        '[Sandbox] Booting Google V8 isolate VM (128MB Memory Heap cap)...',
-        '[VM] ⚡ Execution Success! SUI Price: $2.45 USD. Submitting cryptographically signed result to Sui event bus...'
-      ]);
-      setCurrentStep(3);
-      setDemoStatus('success');
-    }, 4800);
-  };
-
-  const resetDemo = () => {
-    setDemoStatus('idle');
-    setLogs([]);
-    setCurrentStep(-1);
-  };
-
   const scrollToDemo = () => {
-    document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('docs')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const scrollToBenefits = () => {
@@ -112,9 +135,9 @@ const App: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-outfit text-white leading-[1.1] mb-6"
             >
-              A Decentralized, <br />
+              Decentralized Compute <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
-                Serverless Lambda Platform
+                Backbone for the Agentic Web
               </span>
             </motion.h1>
 
@@ -125,7 +148,7 @@ const App: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-slate-200 leading-relaxed mb-10 max-w-2xl font-medium"
             >
-              Deploy verifiably secure, censorship-resistant serverless microservices powered by Sui's real-time events and Walrus's immutable storage. Run zero-trust VM isolates with zero central cloud dependencies.
+              Sui-Functions provides the essential agentic compute layer, allowing autonomous agents to execute, react, and store state without centralized cloud middleware. We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution.
             </motion.p>
 
             {/* Buttons */}
@@ -239,7 +262,7 @@ const App: React.FC = () => {
               Powered by the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-blue-400 to-brand-orange">Sui Stack</span>
             </h2>
             <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed font-medium mb-12">
-              Sui-Functions merges next-generation layer-1 consensus with decentralized object storage to create a secure, serverless edge compute environment.
+              Sui-Functions merges next-generation layer-1 consensus with decentralized object storage to create a secure, sovereign edge compute backbone for autonomous agentic workflows.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto items-stretch">
@@ -275,10 +298,10 @@ const App: React.FC = () => {
                 <div>
                   <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center justify-between w-full">
                     Walrus Protocol
-                    <span className="px-2.5 py-1 rounded bg-brand-orange/10 border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase tracking-wider">Logic Library</span>
+                    <span className="px-2.5 py-1 rounded bg-brand-orange/10 border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase tracking-wider">Logic Registry</span>
                   </h3>
                   <p className="text-slate-400 text-sm leading-relaxed font-medium group-hover:text-slate-300 transition-colors">
-                    Serves as our immutable logic repository. Script files are pinned permanently to Walrus storage nodes, uniquely identified by cryptographic content-addressed Blob IDs.
+                    We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution via cryptographic Blob IDs.
                   </p>
                 </div>
               </div>
@@ -302,7 +325,7 @@ const App: React.FC = () => {
                 </span>
               </h2>
               <p className="text-slate-300 text-sm leading-relaxed font-medium mb-6 max-w-md">
-                Sui-Functions decouples state, compute, and logic to deliver a trustless serverless execution environment without compromising execution speed.
+                Sui-Functions decouples state, compute, and logic to deliver a trustless, sovereign execution environment for agentic applications without compromising speed.
               </p>
               <div className="flex items-center gap-3 text-brand-orange font-bold text-[10px] uppercase tracking-wider font-mono">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-orange animate-ping" />
@@ -368,10 +391,10 @@ const App: React.FC = () => {
                 {/* Description */}
                 <div>
                   <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-green transition-colors duration-200">
-                    Walrus Logic Library
+                    Walrus Logic Registry
                   </h3>
                   <p className="text-slate-200 text-sm leading-relaxed font-medium">
-                    Upload serverless edge code directly to the Walrus Storage Network as permanent, immutable, content-addressed and cryptographically secure storage blobs.
+                    Upload agentic logic and edge code directly to the Walrus Storage Network as permanent, immutable, content-addressed, and cryptographically secure storage blobs.
                   </p>
                 </div>
               </div>
@@ -387,60 +410,259 @@ const App: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mb-32 py-12"
+          className="flex flex-col mb-32 py-12"
         >
-          {/* Left: Info */}
-          <div className="lg:col-span-5 flex flex-col items-start text-left">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-8">
-              Three Pillars <br />
-              <span className="text-brand-orange">Architecture</span>
-            </h2>
-
-            <div className="flex flex-col gap-5 w-full">
-              {/* Bullet 1 */}
-              <div className="flex items-start gap-5 p-6 bg-[#090A10] border border-[#1A1C29] rounded-2xl hover:border-brand-green/40 hover:bg-[#0C0E16] transition-all shadow-inner group">
-                <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <CheckCircle2 size={18} />
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-2 font-outfit">1. Trigger Event Bus (Sui Ledger)</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                    Move smart contracts manage a shared dynamic registry using Sui's high-speed tables, recording execution receipts securely on-chain.
-                  </p>
-                </div>
-              </div>
-
-              {/* Bullet 2 */}
-              <div className="flex items-start gap-5 p-6 bg-[#090A10] border border-[#1A1C29] rounded-2xl hover:border-brand-green/40 hover:bg-[#0C0E16] transition-all shadow-inner group">
-                <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <CheckCircle2 size={18} />
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-2 font-outfit">2. Logic Library (Walrus Storage)</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                    Functions are stored permanently on Walrus as immutable, content-addressed blobs. Guarantees 100% logic integrity.
-                  </p>
-                </div>
-              </div>
-
-              {/* Bullet 3 */}
-              <div className="flex items-start gap-5 p-6 bg-[#090A10] border border-[#1A1C29] rounded-2xl hover:border-brand-green/40 hover:bg-[#0C0E16] transition-all shadow-inner group">
-                <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <CheckCircle2 size={18} />
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-2 font-outfit">3. Isolated Workers (Secure Sandboxes)</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                    TypeScript worker daemons listen for triggers, assemble blobs, and run logic securely inside Google V8 runtime sandboxes.
-                  </p>
-                </div>
-              </div>
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 text-left">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-3">
+                Three Pillars <span className="text-brand-orange">Architecture</span>
+              </h2>
+              <p className="text-slate-400 text-sm max-w-xl leading-relaxed">
+                Experience the decentralized agentic execution cycle step-by-step: from fast blockchain triggers to immutable storage retrieval and secure sandbox execution.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[10px] text-slate-500 bg-[#090A10]/60 px-4 py-2 border border-[#1A1C29] rounded-xl self-start">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+              SYSTEM PROTOCOL STATUS: OPERATIONAL
             </div>
           </div>
 
-          {/* Right: Code Window */}
-          <div className="lg:col-span-7 flex justify-center items-center w-full">
-            <CodeWindow filename="trigger.move" className="w-full max-w-2xl" />
+          {/* Horizontal Step Pipeline (3 Columns) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-12 relative select-none">
+            {/* Visual connector line behind steps (MD and above) */}
+            <div className="absolute top-1/2 left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-brand-orange via-brand-blue to-brand-green opacity-15 -translate-y-1/2 hidden md:block z-0" />
+            
+            {/* Step 1 Tab Card */}
+            <button 
+              onClick={() => setActivePillar('trigger')}
+              className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${
+                activePillar === 'trigger'
+                  ? 'border-brand-orange/45 bg-[#0b0705] shadow-[0_0_25px_rgba(255,126,33,0.1)] scale-[1.01]'
+                  : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 01</span>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                  activePillar === 'trigger' ? 'bg-brand-orange/15 text-brand-orange scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
+                }`}>
+                  <Zap size={14} />
+                </div>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-white font-outfit mb-1">Trigger Event Bus</h4>
+                <p className="text-xs text-slate-455 leading-relaxed">Sui Ledger Move smart contracts orchestrate and verify execution receipts on-chain.</p>
+              </div>
+            </button>
+
+            {/* Step 2 Tab Card */}
+            <button 
+              onClick={() => setActivePillar('logic')}
+              className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${
+                activePillar === 'logic'
+                  ? 'border-brand-blue/45 bg-[#05070c] shadow-[0_0_25px_rgba(59,130,246,0.1)] scale-[1.01]'
+                  : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 02</span>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                  activePillar === 'logic' ? 'bg-brand-blue/15 text-brand-blue scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
+                }`}>
+                  <Server size={14} />
+                </div>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-white font-outfit mb-1">Logic Library</h4>
+                <p className="text-xs text-slate-455 leading-relaxed">Permanent, content-addressed WebAssembly code blobs stored cryptographically on Walrus.</p>
+              </div>
+            </button>
+
+            {/* Step 3 Tab Card */}
+            <button 
+              onClick={() => setActivePillar('worker')}
+              className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${
+                activePillar === 'worker'
+                  ? 'border-brand-green/45 bg-[#050c08] shadow-[0_0_25px_rgba(16,185,129,0.1)] scale-[1.01]'
+                  : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 03</span>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                  activePillar === 'worker' ? 'bg-brand-green/15 text-brand-green scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
+                }`}>
+                  <Shield size={14} />
+                </div>
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-white font-outfit mb-1">Isolated Workers</h4>
+                <p className="text-xs text-slate-455 leading-relaxed">TypeScript worker daemons invoke highly secure, airgapped Google V8 isolates dynamically.</p>
+              </div>
+            </button>
+          </div>
+
+          {/* Lower Grid: Editor + Telemetry Panel (12-Cols) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch w-full text-left">
+            {/* Left: Code Editor (8/12) */}
+            <div className="lg:col-span-8 flex flex-col w-full">
+              <CodeWindow 
+                activePillar={activePillar} 
+                onPillarChange={setActivePillar}
+                className="w-full h-full flex-grow" 
+              />
+            </div>
+
+            {/* Right: Diagnostics & Console Widget (4/12) */}
+            <div className="lg:col-span-4 flex w-full">
+              <div className="w-full bg-[#06070a] border border-[#1d2033] rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col justify-between relative overflow-hidden">
+                {/* Panel Header */}
+                <div>
+                  <div className="flex items-center justify-between border-b border-[#141624] pb-4 mb-6 select-none">
+                    <div className="flex items-center gap-2">
+                      <Terminal size={14} className={activePillar === 'trigger' ? 'text-brand-orange' : activePillar === 'logic' ? 'text-brand-blue' : 'text-brand-green'} />
+                      <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">Diagnostics Console</h3>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold border uppercase tracking-wider ${
+                      isSimulating 
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/25 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.2)]' 
+                        : activePillar === 'trigger' 
+                        ? 'bg-brand-orange/10 text-brand-orange border-brand-orange/20' 
+                        : activePillar === 'logic' 
+                        ? 'bg-brand-blue/10 text-brand-blue border-brand-blue/20' 
+                        : 'bg-brand-green/10 text-brand-green border-brand-green/20'
+                    }`}>
+                      {isSimulating ? 'Active' : 'Idle'}
+                    </span>
+                  </div>
+
+                  {/* Dynamic Metric Parameters */}
+                  <div className="grid grid-cols-2 gap-3 mb-6 select-none">
+                    {activePillar === 'trigger' && (
+                      <>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Network</span>
+                          <span className="text-xs font-bold text-white">Sui Mainnet</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Consensus</span>
+                          <span className="text-xs font-bold text-white">Mysticeti</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Throughput</span>
+                          <span className="text-xs font-bold text-white">100K+ TPS</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Tx Latency</span>
+                          <span className="text-xs font-bold text-brand-orange">~390ms</span>
+                        </div>
+                      </>
+                    )}
+
+                    {activePillar === 'logic' && (
+                      <>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Storage</span>
+                          <span className="text-xs font-bold text-white">Walrus Blob</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Blob Integrity</span>
+                          <span className="text-xs font-bold text-white">SHA-256</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Logic Size</span>
+                          <span className="text-xs font-bold text-white">43.5 KB (wasm)</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Model</span>
+                          <span className="text-xs font-bold text-brand-blue">Permanent Store</span>
+                        </div>
+                      </>
+                    )}
+
+                    {activePillar === 'worker' && (
+                      <>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Isolate Engine</span>
+                          <span className="text-xs font-bold text-white">Google V8</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Cold Start</span>
+                          <span className="text-xs font-bold text-white">~0ms</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Isolation</span>
+                          <span className="text-xs font-bold text-white">Airgapped VM</span>
+                        </div>
+                        <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
+                          <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Isolate Heap</span>
+                          <span className="text-xs font-bold text-brand-green">128 MB Limit</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Terminal Log Screen inside Panel */}
+                  <div className="bg-[#010204] border border-[#141624] p-4 font-mono text-[11px] h-48 rounded-xl overflow-y-auto leading-relaxed flex flex-col justify-start">
+                    {simulationLogs.length === 0 && !isSimulating ? (
+                      <div className="text-slate-650 italic select-none flex items-center justify-center h-full text-center">
+                        Click "SIMULATE PROCESS" below to verify the runtime environment logs.
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        {simulationLogs.map((log, index) => {
+                          let colorClass = 'text-slate-400';
+                          if (log.includes('🚀') || log.includes('🔍') || log.includes('⚡')) colorClass = 'text-amber-400';
+                          if (log.includes('✅') || log.includes('OK') || log.includes('SUCCESS')) colorClass = 'text-brand-green';
+                          if (log.includes('RECEIVED:') || log.includes('FOUND') || log.includes('🔒')) colorClass = 'text-sky-400';
+
+                          return (
+                            <div key={index} className={`${colorClass} flex items-start gap-1 font-mono`}>
+                              <span className="text-slate-700 flex-shrink-0 select-none">&gt;</span>
+                              <span>{log}</span>
+                            </div>
+                          );
+                        })}
+                        {isSimulating && (
+                          <div className="text-brand-orange flex items-center gap-1 select-none font-mono">
+                            <span className="text-slate-700 flex-shrink-0">&gt;</span>
+                            <span className="w-1.5 h-3 bg-brand-orange animate-pulse inline-block" />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Simulated Trigger action button */}
+                <button
+                  onClick={startSimulation}
+                  disabled={isSimulating}
+                  className={`w-full mt-6 py-3.5 rounded-xl font-mono text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none ${
+                    isSimulating
+                      ? 'bg-slate-800/40 text-slate-500 border border-slate-700/20 cursor-not-allowed'
+                      : activePillar === 'trigger'
+                      ? 'bg-brand-orange/10 hover:bg-brand-orange/20 text-brand-orange border border-brand-orange/20 shadow-[0_0_15px_rgba(255,126,33,0.08)]'
+                      : activePillar === 'logic'
+                      ? 'bg-brand-blue/10 hover:bg-brand-blue/20 text-brand-blue border border-brand-blue/20 shadow-[0_0_15px_rgba(59,130,246,0.08)]'
+                      : 'bg-brand-green/10 hover:bg-brand-green/20 text-brand-green border border-brand-green/20 shadow-[0_0_15px_rgba(16,185,129,0.08)]'
+                  }`}
+                >
+                  {isSimulating ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>SIMULATING SYSTEM FLOW...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play size={12} fill="currentColor" />
+                      <span>SIMULATE PROCESS</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </motion.section>
 
@@ -530,7 +752,7 @@ const App: React.FC = () => {
                 <span className="text-brand-orange">Controlled by Consensus</span>
               </h2>
               <p className="text-slate-200 text-sm leading-relaxed font-medium mb-6">
-                Unlike traditional Web2 cloud functions, where a single hacked developer key or hijacked CI/CD pipeline can secretly poison serverless code, Sui-Functions introduces an unhackable deployment lifecycle.
+                Unlike traditional Web2 cloud functions, where a single hacked developer key or hijacked CI/CD pipeline can secretly poison hosted code, Sui-Functions introduces an unhackable deployment lifecycle for agentic logic.
               </p>
               
               <div className="flex flex-col gap-6 w-full mb-6">
@@ -574,195 +796,14 @@ const App: React.FC = () => {
           </div>
         </motion.section>
 
-        {/* INTERACTIVE DEMO / NETWORKING SANDBOX */}
-        <motion.section 
-          id="demo" 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6 }}
-          className="mb-32"
-        >
-          <div 
-            className="bg-[#050608]/80 backdrop-blur-3xl border border-[#1A1C29] rounded-[32px] p-8 md:p-16 relative overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.7)] group"
-          >
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none transition-all duration-700 group-hover:bg-brand-orange/10" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-brand-blue/5 blur-[120px] pointer-events-none transition-all duration-700 group-hover:bg-brand-blue/10" />
-
-            <div className="max-w-4xl mx-auto relative z-10">
-              <div className="text-center mb-12">
-                <span className="px-3.5 py-1.5 rounded-full bg-brand-orange/5 border border-brand-orange/20 text-[10px] font-bold uppercase tracking-widest text-brand-orange inline-block mb-4 font-mono">
-                  DeFi Price Oracle Showcase
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
-                  Verifiable Price-Feed Sandbox
-                </h2>
-                <p className="text-slate-400 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
-                  Check SUI/USD off-chain prices dynamically. When deviation drifts, trigger a sandboxed oracle worker to pull the immutable script from Walrus and submit validated results back on-chain.
-                </p>
-              </div>
-
-              {/* Main Demo Console Cards Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mt-8">
-                
-                {/* Left side: Process steps timeline visualizer */}
-                <div className="lg:col-span-5 flex flex-col justify-between bg-[#040509] border border-brand-card-border/60 rounded-2xl p-6 relative">
-                  <div className="absolute top-4 right-4 text-[9px] text-slate-350 font-extrabold uppercase tracking-wider font-mono">Process Pipeline</div>
-                  <div className="flex flex-col gap-8 h-full justify-center">
-                    
-                    {/* Process Step 1 */}
-                    <div className="flex items-center gap-4 relative">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-bold transition-all duration-500 ${
-                        currentStep >= 1 ? 'bg-brand-green/20 text-brand-green border-brand-green' :
-                        currentStep === 0 ? 'bg-brand-orange/20 text-brand-orange border-brand-orange animate-pulse' :
-                        'bg-[#0C0D16] text-slate-300 border-brand-card-border'
-                      }`}>
-                        {currentStep >= 1 ? <CheckCircle2 size={20} /> : <Zap size={20} />}
-                      </div>
-                      <div className="text-left">
-                        <span className={`block text-xs font-bold uppercase tracking-wider ${currentStep >= 0 ? 'text-white' : 'text-slate-400'}`}>
-                          Sui Trigger Event
-                        </span>
-                        <span className="text-[10px] text-slate-300 font-mono">Node consensus verification</span>
-                      </div>
-                      {/* Connector Line 1 */}
-                      <div className="absolute left-6 top-12 w-0.5 h-8 bg-brand-card-border/60">
-                        <div className={`w-full bg-brand-orange transition-all duration-[1000ms] ${currentStep >= 1 ? 'h-full' : 'h-0'}`} />
-                      </div>
-                    </div>
-
-                    {/* Process Step 2 */}
-                    <div className="flex items-center gap-4 relative">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-bold transition-all duration-500 ${
-                        currentStep >= 2 ? 'bg-brand-green/20 text-brand-green border-brand-green' :
-                        currentStep === 1 ? 'bg-brand-orange/20 text-brand-orange border-brand-orange animate-pulse' :
-                        'bg-[#0C0D16] text-slate-300 border-brand-card-border'
-                      }`}>
-                        {currentStep >= 2 ? <CheckCircle2 size={20} /> : <Server size={20} />}
-                      </div>
-                      <div className="text-left">
-                        <span className={`block text-xs font-bold uppercase tracking-wider ${currentStep >= 1 ? 'text-white' : 'text-slate-400'}`}>
-                          Walrus Storage Fetch
-                        </span>
-                        <span className="text-[10px] text-slate-300 font-mono">Slices assembled &amp; decoded</span>
-                      </div>
-                      {/* Connector Line 2 */}
-                      <div className="absolute left-6 top-12 w-0.5 h-8 bg-brand-card-border/60">
-                        <div className={`w-full bg-brand-orange transition-all duration-[1000ms] ${currentStep >= 2 ? 'h-full' : 'h-0'}`} />
-                      </div>
-                    </div>
-
-                    {/* Process Step 3 */}
-                    <div className="flex items-center gap-4 relative">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border font-bold transition-all duration-500 ${
-                        currentStep >= 3 ? 'bg-brand-green/20 text-brand-green border-brand-green shadow-[0_0_15px_rgba(16,185,129,0.2)]' :
-                        currentStep === 2 ? 'bg-brand-orange/20 text-brand-orange border-brand-orange animate-pulse' :
-                        'bg-[#0C0D16] text-slate-300 border-brand-card-border'
-                      }`}>
-                        {currentStep >= 3 ? <CheckCircle2 size={20} /> : <Code size={20} />}
-                      </div>
-                      <div className="text-left">
-                        <span className={`block text-xs font-bold uppercase tracking-wider ${currentStep >= 2 ? 'text-white' : 'text-slate-400'}`}>
-                          Sandboxed Execution
-                        </span>
-                        <span className="text-[10px] text-slate-300 font-mono">Isolated VM execution success</span>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Right side: Sleek Terminal display */}
-                <div className="lg:col-span-7 flex flex-col justify-between bg-[#040509] border border-brand-card-border/60 rounded-2xl overflow-hidden min-h-[300px]">
-                  
-                  {/* Console Header */}
-                  <div className="bg-[#090A11] px-5 py-3 border-b border-brand-card-border/50 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-slate-500" />
-                    </div>
-                    <span className="text-[10px] text-slate-200 font-extrabold font-mono uppercase tracking-wider select-none flex items-center gap-1">
-                      <Terminal size={10} /> console_stream
-                    </span>
-                  </div>
-
-                  {/* Console Logs Stream */}
-                  <div className="p-6 font-mono text-xs leading-relaxed text-left flex-1 min-h-[200px] overflow-y-auto max-h-[220px]">
-                    <AnimatePresence>
-                      {logs.map((log, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className={`mb-2.5 flex items-start gap-3.5 ${
-                            log.includes('[VM]') ? 'text-brand-green font-bold' : 
-                            log.includes('[Blockchain]') ? 'text-[#ff9242] font-semibold' :
-                            'text-slate-100'
-                          }`}
-                        >
-                          <span className="text-slate-400 select-none text-[10px] mt-0.5">{index + 1}</span>
-                          <span>{log}</span>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                    {logs.length === 0 && (
-                      <div className="flex flex-col items-center justify-center h-full opacity-60 py-12">
-                        <Terminal size={24} className="mb-2.5 animate-pulse text-slate-300" />
-                        <span className="text-xs font-semibold text-slate-300 font-mono">Waiting for client execution trigger...</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Console Trigger Bar */}
-                  <div className="p-4 bg-[#090A11] border-t border-brand-card-border/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 text-left self-start sm:self-auto pl-1">
-                      <div className="w-2.5 h-2.5 rounded-full bg-brand-orange" />
-                      <div>
-                        <div className="text-[10px] font-bold text-white font-mono">hello_world.js</div>
-                        <div className="text-[8px] text-slate-300 font-extrabold font-mono uppercase">Walrus Blob ID: W7VwX...</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3.5 w-full sm:w-auto">
-                      {demoStatus === 'success' && (
-                        <Button 
-                          onClick={resetDemo}
-                          variant="ghost"
-                          size="sm"
-                          className="h-10 text-[11px] text-slate-200 hover:text-white font-mono underline"
-                        >
-                          Reset Logs
-                        </Button>
-                      )}
-                      <Button
-                        onClick={runDemo}
-                        variant="primary"
-                        size="sm"
-                        disabled={demoStatus === 'running'}
-                        className="h-10 px-6 text-xs w-full sm:w-auto font-bold rounded-lg"
-                      >
-                        {demoStatus === 'idle' ? 'Execute Now' : demoStatus === 'running' ? 'Executing...' : 'Execution Success!'}
-                      </Button>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-        </motion.section>
-
         {/* LIVE DEMO SHOWCASE */}
         <section className="mb-32">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.1)]">
-              <Zap size={10} /> Dynamic Showcases
+              <Zap size={10} /> Use Case
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
-              Sovereign Demo Ecosystem
+              Use Cases
             </h2>
             <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
               Explore dynamic, high-performance web applications powered entirely by secure V8 execution isolates and immutable Walrus data publishing.
@@ -786,16 +827,16 @@ const App: React.FC = () => {
                 </div>
                 
                 <h3 className="text-xl font-bold text-white font-outfit mb-3 group-hover:text-brand-blue transition-colors">
-                  SuiNode E-Commerce
+                  Autonomous DeFi Agent
                 </h3>
                 <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
-                  A high-end web3 storefront featuring live inventory valuations driven by real-time SUI price deviation oracles and decentralized promo validation scripts run in secure V8 sandboxes.
+                  A protocol showcase of an autonomous DeFi agent utilizing on-chain triggers to audit live inventory valuations and evaluate market deviations within secure V8 sandboxes.
                 </p>
                 
                 <div className="flex flex-wrap gap-2 mb-8">
-                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">isolated-vm</span>
-                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Walrus Receipting</span>
-                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Sui Testnet</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Agentic Web</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Walrus Logic Registry</span>
+                  <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Sui Event Bus</span>
                 </div>
               </div>
 
@@ -810,7 +851,7 @@ const App: React.FC = () => {
                   size="sm" 
                   className="w-full justify-center gap-2 border border-brand-blue/30 hover:bg-brand-blue/10 text-brand-blue hover:text-white font-bold h-11"
                 >
-                  <span>Launch Storefront</span>
+                  <span>Launch Agent Showcase</span>
                   <ArrowRight size={14} />
                 </Button>
               </a>
@@ -831,7 +872,7 @@ const App: React.FC = () => {
               Ubiquitous Sovereign Compute
             </h2>
             <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed mb-16 font-medium">
-              Expanding the serverless compute boundary beyond Web3 to unlock massive global physical infrastructure and enterprise SaaS pipelines.
+              Expanding the sovereign compute boundary beyond Web3 to unlock massive global physical infrastructure and enterprise SaaS pipelines.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
@@ -881,98 +922,224 @@ const App: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
-            {/* Phase 1 */}
-            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-orange/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 blur-[50px] rounded-full pointer-events-none" />
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase">
-                    Phase 1 (Live)
+          <div className="relative max-w-5xl mx-auto mt-24 px-6 md:px-12">
+            {/* The vertical timeline line (centered on desktop, left-aligned on mobile) */}
+            <div className="absolute left-[24px] lg:left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-brand-orange via-brand-blue to-brand-green/20 -translate-x-[1px] lg:-translate-x-1/2 z-0 opacity-40" />
+            
+            <div className="space-y-24 relative z-10">
+              
+              {/* Phase 1 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                {/* Left Side: Content */}
+                <div className="pl-12 lg:pl-0 lg:pr-16 text-left lg:text-right relative">
+                  {/* Timeline node icon */}
+                  <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-orange flex items-center justify-center shadow-[0_0_15px_rgba(255,126,33,0.4)] z-20">
+                    <CheckCircle2 size={16} className="text-brand-orange" />
+                  </div>
+                  
+                  <span className="inline-block px-3 py-1 rounded-full bg-brand-orange/5 border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase tracking-wider mb-3">
+                    Phase 1 (Live) • V8 Isolate Compute
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">V8 Isolate Serverless</span>
+                  <h3 className="text-2xl font-bold text-white font-outfit mb-3">
+                    Edge Isolates
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium">
+                    Event-driven TypeScript/JavaScript execution environments with strict V8 heap allocations and execution limits. Deployed and monitored natively via Sui contracts and Walrus blobs.
+                  </p>
+                  <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-orange">✓</span> V8 sandboxed environments
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-orange">✓</span> On-chain trigger coordination
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-orange">✓</span> Immutable Walrus logic library
+                    </li>
+                  </ul>
                 </div>
-                <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center gap-2">
-                  <Code size={20} className="text-brand-orange" />
-                  Edge Isolates
-                </h3>
-                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
-                  Event-driven TypeScript/JavaScript execution environments with strict V8 heap allocations and execution limits. Deployed and monitored natively via Sui contracts and Walrus blobs.
-                </p>
-              </div>
-              <ul className="text-left font-mono text-[10px] text-slate-300 space-y-2 border-t border-brand-card-border/50 pt-4">
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-orange">✓</span> V8 sandboxed environments
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-orange">✓</span> On-chain trigger coordination
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-orange">✓</span> Immutable Walrus logic library
-                </li>
-              </ul>
-            </div>
 
-            {/* Phase 2 */}
-            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-blue/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-[50px] rounded-full pointer-events-none" />
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="px-3.5 py-1.5 rounded-full bg-brand-blue-glow border border-brand-blue/20 text-[9px] font-mono font-bold text-brand-blue uppercase">
-                    Phase 2 (Q3 2026)
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400">WebAssembly &amp; zkVM</span>
+                {/* Right Side: Visual terminal */}
+                <div className="pl-12 lg:pl-16">
+                  <div className="bg-[#050608]/90 border border-brand-orange/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-brand-orange opacity-40" />
+                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse" />
+                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Isolate Daemon Log</span>
+                      </div>
+                      <span className="text-[8px] text-slate-600 font-mono">active</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="text-brand-orange font-semibold">[init] Google V8 Isolate initialized</div>
+                      <div className="text-slate-400">[mem] Heap limit set to 128MB</div>
+                      <div className="text-slate-400">[exec] Running script blob 0x5f71e...</div>
+                      <div className="text-brand-green font-semibold">[done] Execution success: 2.14ms</div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center gap-2">
-                  <Server size={20} className="text-brand-blue" />
-                  Verifiable Heavy Compute
-                </h3>
-                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
-                  Native compilation support for Rust/Go Wasm scripts. Integration with zkVM systems (RISC Zero / SP1) to generate execution proofs that are verified in Sui Move contracts, offloading massive compute requirements.
-                </p>
               </div>
-              <ul className="text-left font-mono text-[10px] text-slate-300 space-y-2 border-t border-brand-card-border/50 pt-4">
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-blue">●</span> Compiled WebAssembly runtimes
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-blue">●</span> RISC Zero / SP1 zkVM proofs
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-blue">●</span> Mathematical verifiability
-                </li>
-              </ul>
-            </div>
 
-            {/* Phase 3 */}
-            <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-green/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-green/5 blur-[50px] rounded-full pointer-events-none" />
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="px-3.5 py-1.5 rounded-full bg-brand-green-glow border border-brand-green/20 text-[9px] font-mono font-bold text-brand-green uppercase">
-                    Phase 3 (Q4 2026)
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400">Confidential TEE Enclaves</span>
+              {/* Phase 2 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                {/* Left Side: Visual terminal */}
+                <div className="pl-12 lg:pl-0 lg:pr-16 order-2 lg:order-1">
+                  <div className="bg-[#050608]/90 border border-brand-blue/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-brand-blue opacity-40" />
+                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
+                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">zkVM &amp; Market Terminal</span>
+                      </div>
+                      <span className="text-[8px] text-slate-600 font-mono">in_dev</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="text-brand-blue font-semibold">[market] Purchasing function 0x4f12...</div>
+                      <div className="text-slate-400">[fees] Routing: 95% operator, 5% protocol treasury</div>
+                      <div className="text-slate-400">[proof] Executing SP1 zkVM cycle count</div>
+                      <div className="text-brand-green font-semibold">[verify] Execution verified &amp; payout settled</div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center gap-2">
-                  <Shield size={20} className="text-brand-green" />
-                  Sovereign Enclaves
-                </h3>
-                <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
-                  Integrate execution worker nodes inside Hardware TEEs (AWS Nitro / Intel SGX). Match Nautilus compute capabilities but offer one-click serverless deployments to store private API keys and models securely.
-                </p>
+
+                {/* Right Side: Content */}
+                <div className="pl-12 lg:pl-16 text-left order-1 lg:order-2 relative">
+                  {/* Timeline node icon */}
+                  <div className="absolute top-1 left-[-42px] lg:left-[-52px] lg:-translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-blue flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)] z-20">
+                    <div className="w-3 h-3 rounded-full bg-brand-blue animate-ping opacity-75 absolute" />
+                    <div className="w-2 h-2 rounded-full bg-brand-blue relative z-10" />
+                  </div>
+                  
+                  <span className="inline-block px-3 py-1 rounded-full bg-brand-blue/5 border border-brand-blue/20 text-[9px] font-mono font-bold text-brand-blue uppercase tracking-wider mb-3">
+                    Phase 2 (Q3 2026) • Compute Marketplace
+                  </span>
+                  <h3 className="text-2xl font-bold text-white font-outfit mb-3">
+                    Compute &amp; Functions Marketplace
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium">
+                    Native compilation support for Rust/Go Wasm scripts. Launch of the Sui-Functions Marketplace enabling developers to deploy verified compute blocks for sale, backed by automatic protocol fee routing and shared runner compensation splits.
+                  </p>
+                  <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-blue">●</span> Compiled WebAssembly runtimes
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-blue">●</span> RISC Zero / SP1 zkVM proofs
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-blue">●</span> Verified Functions Marketplace
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-blue">●</span> Protocol fee &amp; operator rewards
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <ul className="text-left font-mono text-[10px] text-slate-300 space-y-2 border-t border-brand-card-border/50 pt-4">
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-green">●</span> Hardware-isolated enclaves
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-green">●</span> Encrypted environment variables
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-brand-green">●</span> Native Nautilus parity
-                </li>
-              </ul>
+
+              {/* Phase 3 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                {/* Left Side: Content */}
+                <div className="pl-12 lg:pl-0 lg:pr-16 text-left lg:text-right relative">
+                  {/* Timeline node icon */}
+                  <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-purple-500/30 flex items-center justify-center text-purple-400 z-20">
+                    <Server size={16} />
+                  </div>
+                  
+                  <span className="inline-block px-3 py-1 rounded-full bg-purple-500/5 border border-purple-500/20 text-[9px] font-mono font-bold text-purple-400 uppercase tracking-wider mb-3">
+                    Phase 3 (Q4 2026) • zkVM Integration
+                  </span>
+                  <h3 className="text-2xl font-bold text-white font-outfit mb-3">
+                    Verifiable Heavy Compute
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium">
+                    Native compilation support for Rust/Go Wasm scripts. Integration with zkVM systems (RISC Zero / SP1) to generate execution proofs that are verified in Sui Move contracts, offloading massive compute requirements.
+                  </p>
+                  <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
+                    <li className="flex items-center gap-2">
+                      <span className="text-purple-400">●</span> Compiled WebAssembly runtimes
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-purple-400">●</span> RISC Zero / SP1 zkVM proofs
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-purple-400">●</span> Mathematical verifiability
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Right Side: Visual terminal */}
+                <div className="pl-12 lg:pl-16">
+                  <div className="bg-[#050608]/90 border border-purple-500/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-purple-500 opacity-40" />
+                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">zkVM Prover Terminal</span>
+                      </div>
+                      <span className="text-[8px] text-slate-600 font-mono">future</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="text-purple-400 font-semibold">[prove] Generating RISC Zero receipt...</div>
+                      <div className="text-slate-400">[compute] 250M cycle count reached</div>
+                      <div className="text-slate-400">[verify] Publishing Groth16 proof to Sui</div>
+                      <div className="text-brand-green font-semibold">[chain] Execution mathematically verified</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phase 4 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                {/* Left Side: Visual terminal */}
+                <div className="pl-12 lg:pl-0 lg:pr-16 order-2 lg:order-1">
+                  <div className="bg-[#050608]/90 border border-brand-green/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-brand-green opacity-40" />
+                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
+                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Secure Enclave Monitor</span>
+                      </div>
+                      <span className="text-[8px] text-slate-600 font-mono">future</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="text-brand-green font-semibold">[tee] AWS Nitro Enclave handshakes active</div>
+                      <div className="text-slate-400">[env] Loading encrypted environment variables</div>
+                      <div className="text-slate-400">[key] Ephemeral key generated in hardware memory</div>
+                      <div className="text-brand-green font-semibold">[secure] Isolated execution pipeline sealed</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Content */}
+                <div className="pl-12 lg:pl-16 text-left order-1 lg:order-2 relative">
+                  {/* Timeline node icon */}
+                  <div className="absolute top-1 left-[-42px] lg:left-[-52px] lg:-translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-green/30 flex items-center justify-center text-brand-green z-20">
+                    <Shield size={16} />
+                  </div>
+                  
+                  <span className="inline-block px-3 py-1 rounded-full bg-brand-green/5 border border-brand-green/20 text-[9px] font-mono font-bold text-brand-green uppercase tracking-wider mb-3">
+                    Phase 4 (Q1 2027) • Confidential TEE Enclaves
+                  </span>
+                  <h3 className="text-2xl font-bold text-white font-outfit mb-3">
+                    Sovereign Enclaves
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium">
+                    Integrate execution worker nodes inside Hardware TEEs (AWS Nitro / Intel SGX). Match Nautilus compute capabilities but offer one-click secure deployments to store private API keys and agent models safely.
+                  </p>
+                  <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-green">●</span> Hardware-isolated enclaves
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-green">●</span> Encrypted environment variables
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-brand-green">●</span> Native Nautilus parity
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
@@ -986,10 +1153,10 @@ const App: React.FC = () => {
             
             <div className="relative z-10 max-w-3xl mx-auto">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
-                Build the Unstoppable Cloud
+                Power the Agentic Web
               </h2>
               <p className="text-slate-200 text-base leading-relaxed mb-10 max-w-2xl mx-auto font-medium">
-                Deploy mathematically secure, censorship-resistant serverless functions powered by Sui and Walrus. Eliminate the centralized cloud tax forever.
+                Deploy mathematically secure, censorship-resistant agentic logic powered by Sui and Walrus. Eliminate the centralized cloud tax forever.
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-5">

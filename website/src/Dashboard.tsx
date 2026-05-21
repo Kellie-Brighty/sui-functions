@@ -31,6 +31,7 @@ import {
   Info,
   Check,
   X,
+  Menu,
   Shield,
   Copy,
   BookOpen
@@ -39,6 +40,129 @@ import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecute
 import { Transaction } from '@mysten/sui/transactions';
 import { PACKAGE_ID } from './constants';
 import { DocsView } from './components/DocsView';
+
+interface SearchItem {
+  title: string;
+  description: string;
+  tab: string;
+  anchorId: string;
+  keywords: string[];
+}
+
+const SEARCH_ITEMS: SearchItem[] = [
+  {
+    title: "Cluster Health",
+    description: "Check status and health of Sui-Functions operator nodes",
+    tab: "1",
+    anchorId: "metric-cluster-health",
+    keywords: ["health", "status", "cluster", "operator", "operational", "stable", "nodes"]
+  },
+  {
+    title: "Execution Latency",
+    description: "P99 round-trip telemetry lag on live executions",
+    tab: "1",
+    anchorId: "metric-avg-latency",
+    keywords: ["latency", "p99", "speed", "lag", "time", "performance", "metric"]
+  },
+  {
+    title: "Success Rate",
+    description: "Success percentage of dynamic verification runs",
+    tab: "1",
+    anchorId: "metric-success-rate",
+    keywords: ["success", "rate", "completions", "errors", "ok", "validation", "metric"]
+  },
+  {
+    title: "Total Invocations",
+    description: "Total count of on-chain compute events triggered",
+    tab: "1",
+    anchorId: "metric-total-invocations",
+    keywords: ["invocations", "total", "calls", "triggers", "traffic", "metric"]
+  },
+  {
+    title: "Execution Volume Chart",
+    description: "Visual breakdown of Sui vs. Walrus workload telemetry",
+    tab: "1",
+    anchorId: "overview-execution-volume",
+    keywords: ["volume", "chart", "graph", "workload", "sui", "walrus", "telemetry"]
+  },
+  {
+    title: "Active Incident Alerts",
+    description: "View real-time security warnings and audit failures",
+    tab: "1",
+    anchorId: "overview-active-alerts",
+    keywords: ["alerts", "warnings", "incidents", "errors", "severity", "audit", "security"]
+  },
+  {
+    title: "Top Performing Functions",
+    description: "Analytics table of active registered functions",
+    tab: "1",
+    anchorId: "overview-top-functions",
+    keywords: ["top", "performance", "table", "functions", "verified", "active"]
+  },
+  {
+    title: "Registered Functions",
+    description: "View and manage functions uploaded to Walrus storage",
+    tab: "2",
+    anchorId: "functions-header",
+    keywords: ["functions", "register", "upload", "sync", "delete", "list", "my functions"]
+  },
+  {
+    title: "Deploy & Register Function",
+    description: "Upload code scripts to Walrus and publish to Sui registry",
+    tab: "2",
+    anchorId: "functions-controls",
+    keywords: ["upload", "new", "deploy", "register", "create", "add"]
+  },
+  {
+    title: "Execution Sandbox Logs",
+    description: "Real-time VM logs console and audit trail",
+    tab: "3",
+    anchorId: "logs-terminal",
+    keywords: ["logs", "terminal", "console", "sandbox", "audit", "output", "stream"]
+  },
+  {
+    title: "Live Execution Sandbox Controller",
+    description: "Manually execute functions with custom JSON payload blocks",
+    tab: "3",
+    anchorId: "logs-controller",
+    keywords: ["execute", "trigger", "run", "payload", "json", "controller", "sandbox"]
+  },
+  {
+    title: "Compute Specifications",
+    description: "VM runner configuration details, heap limits, and timeouts",
+    tab: "4",
+    anchorId: "compute-header",
+    keywords: ["compute", "memory", "cpu", "vm", "specs", "limits", "allocation"]
+  },
+  {
+    title: "VM Isolation Audits",
+    description: "V8 isolate core startup performance logs",
+    tab: "4",
+    anchorId: "compute-performance",
+    keywords: ["isolation", "v8", "auditing", "engine", "sandbox", "mitigation", "vm"]
+  },
+  {
+    title: "Walrus Storage Layer",
+    description: "Immutable storage publisher settings and epoch policies",
+    tab: "5",
+    anchorId: "storage-header",
+    keywords: ["storage", "walrus", "immutable", "blob", "publisher", "epoch"]
+  },
+  {
+    title: "Active Blob Cache",
+    description: "Active script cache table stored across decentralized storage shards",
+    tab: "5",
+    anchorId: "storage-blob-cache",
+    keywords: ["cache", "blob", "shards", "registry", "persistent", "epoch"]
+  },
+  {
+    title: "Developer Documentation Guide",
+    description: "API global reference manual and V8 restrictions",
+    tab: "6",
+    anchorId: "docs-portal",
+    keywords: ["docs", "documentation", "guide", "api", "reference", "manual", "help"]
+  }
+];
 
 const Dashboard: React.FC = () => {
   const account = useCurrentAccount();
@@ -113,8 +237,99 @@ const Dashboard: React.FC = () => {
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [activeMenu, setActiveMenu] = useState('1'); // 1 = Overview, 2 = Functions, 3 = Logs, 4 = Compute, 5 = Storage
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [triggerFunctionName, setTriggerFunctionName] = useState("");
   const [triggerInputJson, setTriggerInputJson] = useState("{}");
+  
+  // In-App SEO Search Bar State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  const suggestions = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase().trim();
+    return SEARCH_ITEMS.filter(item => 
+      item.title.toLowerCase().includes(query) ||
+      item.description.toLowerCase().includes(query) ||
+      item.keywords.some(keyword => keyword.toLowerCase().includes(query))
+    );
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (scrollTarget) {
+      const element = document.getElementById(scrollTarget);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setScrollTarget(null);
+      } else {
+        const timer = setTimeout(() => {
+          const el = document.getElementById(scrollTarget);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          setScrollTarget(null);
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [scrollTarget, activeMenu]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedSuggestionIndex(prev => (prev + 1) % suggestions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedSuggestionIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < suggestions.length) {
+        handleSuggestionClick(suggestions[selectedSuggestionIndex]);
+      } else if (suggestions.length > 0) {
+        handleSuggestionClick(suggestions[0]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (item: SearchItem) => {
+    setActiveMenu(item.tab);
+    setScrollTarget(item.anchorId);
+    setSearchQuery("");
+    setShowSuggestions(false);
+    setIsMobileSearchOpen(false);
+  };
+
+  const getTabLabel = (tab: string) => {
+    switch (tab) {
+      case '1': return 'Overview';
+      case '2': return 'Functions';
+      case '3': return 'Logs';
+      case '4': return 'Compute';
+      case '5': return 'Storage';
+      case '6': return 'Docs';
+      default: return 'Tab';
+    }
+  };
   
   // My Functions State
   const [myFunctions, setMyFunctions] = useState<{name: string, blobId: string, version: string, status: number, triggerType: number, triggerConfig: string}[]>([]);
@@ -1220,54 +1435,154 @@ const Dashboard: React.FC = () => {
       )}
       
       {/* 1. Global Header Bar */}
-      <header className="h-16 w-full border-b border-[#252838] px-6 flex items-center justify-between bg-[#08090d]/65 backdrop-blur-xl sticky top-0 z-40">
-        {/* Brand Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-brand-dark border border-[#252838] flex items-center justify-center">
-            <img src="/sui-func-logo.png" alt="Sui-Functions Logo" className="w-6 h-6 object-contain" />
+      <header className="h-16 w-full border-b border-[#252838] px-2.5 sm:px-6 flex items-center justify-between bg-[#08090d]/65 backdrop-blur-xl sticky top-0 z-40">
+        {isMobileSearchOpen ? (
+          <div ref={searchRef} className="flex items-center gap-2 w-full">
+            <div className="relative flex-1">
+              <Search size={16} className="text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input 
+                type="text" 
+                placeholder="Search functions, logs, metrics..." 
+                value={searchQuery}
+                autoFocus
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(true);
+                  setSelectedSuggestionIndex(-1);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                className="w-full bg-[#0c0d14]/70 border border-[#252838] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0c0d14]/95 border border-[#252838] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] backdrop-blur-xl z-50 max-h-80 overflow-y-auto font-mono text-[11px] divide-y divide-[#252838]/50">
+                  {suggestions.map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handleSuggestionClick(item)}
+                      onMouseEnter={() => setSelectedSuggestionIndex(idx)}
+                      className={`p-3 cursor-pointer transition-colors flex items-center justify-between gap-3 text-left ${
+                        idx === selectedSuggestionIndex ? 'bg-white/5 text-white border-l-2 border-brand-orange' : 'text-slate-300 hover:bg-white/5'
+                      }`}
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-slate-200">{item.title}</span>
+                        <span className="text-[10px] text-slate-400 font-sans">{item.description}</span>
+                      </div>
+                      <span className="bg-[#252838] text-[9px] font-black uppercase px-2 py-0.5 rounded text-slate-300 shrink-0">
+                        {getTabLabel(item.tab)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={() => {
+                setIsMobileSearchOpen(false);
+                setSearchQuery("");
+              }}
+              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#252838]/60 hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
+            >
+              <X size={16} />
+            </button>
           </div>
-          <span className="text-lg font-bold tracking-tight text-white font-outfit">
-            Sui-Functions
-          </span>
-        </div>
+        ) : (
+          <>
+            {/* Brand Logo & Mobile Toggle */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <button
+                onClick={() => setIsMobileMenuOpen(prev => !prev)}
+                className="lg:hidden p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#252838]/60 hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
+                aria-label="Toggle Navigation Menu"
+              >
+                {isMobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+              </button>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-brand-dark border border-[#252838] flex items-center justify-center shrink-0">
+                <img src="/sui-func-logo.png" alt="Sui-Functions Logo" className="w-5 h-5 sm:w-6 sm:h-6 object-contain" />
+              </div>
+              <span className="text-sm sm:text-base md:text-lg font-bold tracking-tight text-white font-outfit select-none flex items-center">
+                <span className="max-[360px]:hidden whitespace-nowrap">Sui</span>
+                <span className="hidden min-[480px]:inline whitespace-nowrap">-Functions</span>
+              </span>
+            </div>
 
-        {/* Global Search */}
-        <div className="hidden md:flex items-center relative w-96">
-          <Search size={16} className="text-slate-300 absolute left-3.5" />
-          <input 
-            type="text" 
-            placeholder="Search functions, logs, or metrics..." 
-            className="w-full bg-[#0c0d14]/70 border border-[#252838] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
-          />
-        </div>
+            {/* Global Search */}
+            <div ref={searchRef} className="hidden md:flex items-center relative w-96 shrink-0">
+              <Search size={16} className="text-slate-300 absolute left-3.5" />
+              <input 
+                type="text" 
+                placeholder="Search functions, logs, or metrics..." 
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(true);
+                  setSelectedSuggestionIndex(-1);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                className="w-full bg-[#0c0d14]/70 border border-[#252838] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0c0d14]/95 border border-[#252838] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] backdrop-blur-xl z-50 max-h-80 overflow-y-auto font-mono text-[11px] divide-y divide-[#252838]/50">
+                  {suggestions.map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handleSuggestionClick(item)}
+                      onMouseEnter={() => setSelectedSuggestionIndex(idx)}
+                      className={`p-3 cursor-pointer transition-colors flex items-center justify-between gap-3 text-left ${
+                        idx === selectedSuggestionIndex ? 'bg-white/5 text-white border-l-2 border-brand-orange' : 'text-slate-300 hover:bg-white/5'
+                      }`}
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-slate-200">{item.title}</span>
+                        <span className="text-[10px] text-slate-400 font-sans">{item.description}</span>
+                      </div>
+                      <span className="bg-[#252838] text-[9px] font-black uppercase px-2 py-0.5 rounded text-slate-300 shrink-0">
+                        {getTabLabel(item.tab)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-        {/* Right Controls */}
-        <div className="flex items-center gap-4 relative">
-          <button 
-            onClick={() => setIsNotificationDropdownOpen(prev => !prev)}
-            className="p-2 text-slate-200 hover:text-white transition-colors relative border-none bg-transparent cursor-pointer"
-          >
-            <Bell size={18} />
-            {activeAlerts.length > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-orange shadow-[0_0_8px_#FF7E21]"></span>
-            )}
-          </button>
+            {/* Right Controls */}
+            <div className="flex items-center gap-1 sm:gap-3 relative shrink-0">
+              <button 
+                onClick={() => setIsMobileSearchOpen(true)}
+                className="md:hidden p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#252838]/60 hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
+                aria-label="Open Search"
+              >
+                <Search size={16} />
+              </button>
+
+              <button 
+                onClick={() => setIsNotificationDropdownOpen(prev => !prev)}
+                className="p-1.5 text-slate-200 hover:text-white transition-colors relative border-none bg-transparent cursor-pointer shrink-0"
+              >
+                <Bell size={18} />
+                {activeAlerts.length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-orange shadow-[0_0_8px_#FF7E21]"></span>
+                )}
+              </button>
           
           <button 
             onClick={() => setIsHelpModalOpen(prev => !prev)}
-            className="p-2 text-slate-200 hover:text-white transition-colors border-none bg-transparent cursor-pointer"
+            className="hidden sm:block p-1.5 text-slate-200 hover:text-white transition-colors border-none bg-transparent cursor-pointer shrink-0"
           >
             <HelpCircle size={18} />
           </button>
 
           {/* Active Connected User Profile SUI gas balance pill */}
-          <div className="flex items-center gap-2 pl-2 border-l border-[#252838]">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/30 rounded-xl transition-all duration-300">
-              <div className="w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center font-black text-[8px] text-white">
+          <div className="flex items-center gap-1 pl-1 sm:pl-2 border-l border-[#252838] shrink-0">
+            <div className="flex items-center gap-1 px-1.5 py-1 sm:gap-1.5 sm:px-2.5 sm:py-1.5 bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/30 rounded-xl transition-all duration-300 shrink-0">
+              <div className="w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center font-black text-[8px] text-white shrink-0">
                 S
               </div>
-              <span className="text-xs font-mono font-bold text-blue-300 select-all">
-                {suiBalance} SUI
+              <span className="text-[10px] sm:text-xs font-mono font-bold text-blue-300 select-all whitespace-nowrap">
+                {suiBalance}
+                <span className="hidden min-[400px]:inline"> SUI</span>
               </span>
             </div>
           </div>
@@ -1308,9 +1623,248 @@ const Dashboard: React.FC = () => {
                 )}
               </div>
             </div>
-          )}
+            )}
+          </div>
+        </>
+      )}
+    </header>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="w-[280px] max-w-[80vw] h-full bg-[#05060a] border-r border-[#252838] flex flex-col justify-between p-5 animate-in slide-in-from-left duration-300 shadow-[5px_0_30px_rgba(0,0,0,0.8)] overflow-y-auto">
+            {/* Drawer Header with Title and close button */}
+            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-4">
+              <span className="text-sm font-bold text-white font-outfit">Navigation</span>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent rounded-lg cursor-pointer transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="flex flex-col flex-1 min-h-0 gap-6">
+              {/* Active Workspace Block */}
+              <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-4 relative group shrink-0">
+                <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Sovereign Compute</div>
+                
+                {isLoadingProjects ? (
+                  <div className="text-xs text-slate-300 font-semibold py-1 animate-pulse">Syncing smart contracts...</div>
+                ) : myProjects.length === 0 ? (
+                  <button 
+                    onClick={() => {
+                      setIsCreateProjectModalOpen(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 border border-dashed border-[#252838] text-slate-300 hover:text-brand-orange hover:border-brand-orange/40 py-2.5 rounded-xl text-xs font-bold transition-all bg-white/5"
+                  >
+                    <Plus size={14} /> Create Project
+                  </button>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <div className="relative">
+                      <select
+                        value={activeProject?.id || ''}
+                        onChange={(e) => {
+                          const proj = myProjects.find(p => p.id === e.target.value);
+                          if (proj) setActiveProject(proj);
+                        }}
+                        className="w-full bg-[#0c0d14] border border-[#252838] text-white rounded-xl h-10 pl-3 pr-8 font-bold text-xs cursor-pointer hover:border-brand-orange/40 transition-colors focus:outline-none appearance-none"
+                      >
+                        {myProjects.map(p => (
+                          <option key={p.id} value={p.id} className="bg-slate-950 text-slate-200 font-semibold text-xs">
+                            {p.name.length > 20 ? `${p.name.slice(0, 20)}...` : p.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown size={14} className="text-slate-300 absolute right-3 top-3 pointer-events-none" />
+                    </div>
+                    
+                    {/* Package and Project IDs for quick copy */}
+                    <div className="flex flex-col gap-1.5 mt-1 pt-1.5 border-t border-[#252838]/40">
+                      <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                        <div className="flex flex-col">
+                          <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Package ID</span>
+                          <span className="text-[10px] font-mono text-slate-200 mt-0.5">{PACKAGE_ID.slice(0, 6)}...{PACKAGE_ID.slice(-4)}</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(PACKAGE_ID);
+                            showToast('success', 'Package ID Copied', 'Package ID has been copied to your clipboard.');
+                          }}
+                          title="Copy Package ID"
+                          className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                        >
+                          <Copy size={11} />
+                        </button>
+                      </div>
+
+                      {activeProject && (
+                        <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                          <div className="flex flex-col">
+                            <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Project ID</span>
+                            <span className="text-[10px] font-mono text-slate-200 mt-0.5">{activeProject.id.slice(0, 6)}...{activeProject.id.slice(-4)}</span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(activeProject.id);
+                              showToast('success', 'Project ID Copied', 'Project ID has been copied to your clipboard.');
+                            }}
+                            title="Copy Project ID"
+                            className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                          >
+                            <Copy size={11} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        setIsCreateProjectModalOpen(true);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-orange/40 hover:border-brand-orange text-brand-orange hover:bg-brand-orange/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-orange/5"
+                    >
+                      <Plus size={14} /> New Workspace
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation list */}
+              <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#252838] scrollbar-track-transparent">
+                <nav className="flex flex-col gap-1.5">
+                  <button 
+                    onClick={() => { setActiveMenu('1'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '1' 
+                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <LayoutDashboard size={16} />
+                    Dashboard
+                  </button>
+
+                  <button 
+                    onClick={() => { setActiveMenu('2'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '2' 
+                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <Code size={16} />
+                    Functions
+                  </button>
+
+                  <button 
+                    onClick={() => { setActiveMenu('3'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '3' 
+                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <Terminal size={16} />
+                    Logs
+                  </button>
+
+                  <button 
+                    onClick={() => { setActiveMenu('4'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '4' 
+                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <Cpu size={16} />
+                    Compute
+                  </button>
+
+                  <button 
+                    onClick={() => { setActiveMenu('5'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '5' 
+                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <HardDrive size={16} />
+                    Storage
+                  </button>
+
+                  <button 
+                    onClick={() => { setActiveMenu('6'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '6' 
+                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <BookOpen size={16} />
+                    Documentation
+                  </button>
+                </nav>
+              </div>
+            </div>
+
+            {/* Sidebar Footer Operations */}
+            <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4 shrink-0 mt-4">
+              <button 
+                onClick={() => {
+                  if (!activeProject) {
+                    alert("Create or select a workspace first!");
+                    return;
+                  }
+                  setIsRegisterModalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                disabled={!activeProject}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Plus size={16} /> Deploy New Function
+              </button>
+
+              <button 
+                onClick={() => {
+                  setIsSettingsModalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                disabled={!activeProject}
+                className="w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] hover:border-brand-orange/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
+              </button>
+
+              {/* Wallet Connector Details */}
+              <div className="bg-[#0a0b10] border border-[#252838] rounded-xl p-3 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  </div>
+                  <span className="text-xs text-slate-200 font-bold font-mono truncate w-36">
+                    {account ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : "Disconnected"}
+                  </span>
+                </div>
+                <button 
+                  onClick={() => {
+                    setIsDisconnectModalOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 bg-red-950/20 hover:bg-red-900/30 border border-red-900/35 hover:border-red-500 text-red-400 hover:text-white py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm shadow-red-900/10 mt-1"
+                >
+                  <LogOut size={12} /> Disconnect Wallet
+                </button>
+              </div>
+            </div>
+          </div>
+          {/* Overlay background to tap-to-close */}
+          <div className="flex-1 h-full" onClick={() => setIsMobileMenuOpen(false)}></div>
         </div>
-      </header>
+      )}
 
       {/* Main Content Layout */}
       <div className="flex flex-1">
@@ -1582,7 +2136,7 @@ const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 
                 {/* 1. Cluster Health */}
-                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-cluster-health" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Cluster Health</span>
                     <Activity size={16} className="text-emerald-400" />
@@ -1596,17 +2150,17 @@ const Dashboard: React.FC = () => {
                   <div className="flex gap-[4px] mt-5">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <div 
-                        key={s} 
-                        className={`h-1.5 flex-1 rounded-full ${
-                          totalInvocations > 0 && totalCompletions === 0 && s === 5 ? 'bg-amber-500/20' : 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
-                        }`}
+                      key={s} 
+                      className={`h-1.5 flex-1 rounded-full ${
+                        totalInvocations > 0 && totalCompletions === 0 && s === 5 ? 'bg-amber-500/20' : 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
+                      }`}
                       ></div>
                     ))}
                   </div>
                 </div>
 
                 {/* 2. Avg Latency */}
-                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-avg-latency" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Avg Latency (P99)</span>
                     <Cpu size={16} className="text-blue-400" />
@@ -1623,9 +2177,9 @@ const Dashboard: React.FC = () => {
                       const heightVal = Math.min(100, Math.max(25, (val / maxVal) * 100));
                       return (
                         <div 
-                          key={i} 
-                          style={{ height: `${heightVal}%` }} 
-                          className="w-full rounded-sm bg-gradient-to-t from-blue-500/20 to-blue-400/80 hover:to-blue-300 transition-all duration-300"
+                        key={i} 
+                        style={{ height: `${heightVal}%` }} 
+                        className="w-full rounded-sm bg-gradient-to-t from-blue-500/20 to-blue-400/80 hover:to-blue-300 transition-all duration-300"
                         ></div>
                       );
                     })}
@@ -1633,7 +2187,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* 3. Success Rate */}
-                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-success-rate" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Success Rate</span>
                     <CheckCircle size={16} className="text-emerald-400" />
@@ -1649,7 +2203,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* 4. Total Invocations */}
-                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-total-invocations" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Total Invocations</span>
                     <Sparkles size={16} className="text-brand-orange" />
@@ -1676,7 +2230,7 @@ const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 
                 {/* Stacked Chart container */}
-                <div className="xl:col-span-2 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
+                <div id="overview-execution-volume" className="xl:col-span-2 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
                       Execution Volume (Global)
@@ -1739,7 +2293,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Active Alerts Widget */}
-                <div className="xl:col-span-1 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 flex flex-col">
+                <div id="overview-active-alerts" className="xl:col-span-1 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 flex flex-col">
                   <div className="flex items-center justify-between mb-5">
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-outfit">
                       Active Alerts
@@ -1810,7 +2364,7 @@ const Dashboard: React.FC = () => {
               </div>
 
               {/* Bottom Section: Top Performing Functions Table */}
-              <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
+              <div id="overview-top-functions" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
                     Top Performing Functions
@@ -1959,7 +2513,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 2: Registered Functions */}
           {activeMenu === '2' && (
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300">
+            <div id="functions-header" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300">
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
@@ -1969,7 +2523,7 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
                 
-                <div className="flex items-center gap-3">
+                <div id="functions-controls" className="flex items-center gap-3">
                   <button 
                     onClick={fetchMyFunctions} 
                     disabled={!activeProject}
@@ -2130,7 +2684,7 @@ const Dashboard: React.FC = () => {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in fade-in duration-300">
               
               {/* Massive Logs Terminal */}
-              <div className="xl:col-span-2">
+              <div id="logs-terminal" className="xl:col-span-2">
                 <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-5">
                     <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit flex items-center gap-2">
@@ -2177,7 +2731,7 @@ const Dashboard: React.FC = () => {
               </div>
 
               {/* Quick Trigger Sandbox controller */}
-              <div className="xl:col-span-1">
+              <div id="logs-controller" className="xl:col-span-1">
                 <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 flex flex-col">
                   <h3 className="text-sm font-bold text-white font-outfit uppercase tracking-wider mb-2">Live Execution Controller</h3>
                   <p className="text-xs text-slate-300 leading-relaxed mb-6">
@@ -2226,7 +2780,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 4: Compute Sandbox Settings */}
           {activeMenu === '4' && (
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+            <div id="compute-header" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">Sovereign Worker Compute Specs</h2>
                 <p className="text-xs text-slate-300 mt-1">
@@ -2259,7 +2813,7 @@ const Dashboard: React.FC = () => {
 
               </div>
 
-              <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
+              <div id="compute-performance" className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
                 <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit block mb-4">
                   VM Isolation Performance Auditing
                 </span>
@@ -2275,7 +2829,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 5: Walrus Storage Details */}
           {activeMenu === '5' && (
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+            <div id="storage-header" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">Walrus Immutable Storage Layer</h2>
                 <p className="text-xs text-slate-200 mt-1 font-medium">
@@ -2311,7 +2865,7 @@ const Dashboard: React.FC = () => {
 
               </div>
 
-              <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
+              <div id="storage-blob-cache" className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
                 <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit block mb-4">
                   Active Blob Registry Cache
                 </span>
@@ -2349,7 +2903,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 6: Documentation Portal */}
           {activeMenu === '6' && (
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+            <div id="docs-portal" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
               <DocsView isDashboardView={true} />
             </div>
           )}

@@ -32,3 +32,4 @@ yarn-error.log*
 # Runner Cache
 runner/.cache/
 test_walrus.txt
+video/
