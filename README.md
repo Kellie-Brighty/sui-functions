@@ -3,6 +3,10 @@
 </p>
 
 <p align="center">
+  <video src="./video/out/sui-functions-motion-graphics.mp4" width="800" controls autoplay loop muted></video>
+</p>
+
+<p align="center">
   <strong>Decentralized compute backbone for the Agentic Web.</strong>
 </p>
 
