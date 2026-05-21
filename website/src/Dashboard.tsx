@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID } from './constants';
+import { PACKAGE_ID, PROTOCOL_TREASURY_ID, ADMIN_CAP_TYPE } from './constants';
 import { DocsView } from './components/DocsView';
 
 interface SearchItem {
@@ -172,8 +172,9 @@ const Dashboard: React.FC = () => {
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
   // Multi-Project States
-  const [myProjects, setMyProjects] = useState<{id: string, name: string, description: string, runnerAddress: string, auditorBlobId: string}[]>([]);
-  const [activeProject, setActiveProject] = useState<{id: string, name: string, description: string, runnerAddress: string, auditorBlobId: string} | null>(null);
+  const [myProjects, setMyProjects] = useState<{id: string, name: string, description: string, runnerAddress: string, auditorBlobId: string, vault: string}[]>([]);
+  const [activeProject, setActiveProject] = useState<{id: string, name: string, description: string, runnerAddress: string, auditorBlobId: string, vault: string} | null>(null);
+  const [globalComputeFee, setGlobalComputeFee] = useState<number>(0.007);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
   const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
@@ -198,7 +199,7 @@ const Dashboard: React.FC = () => {
     isOpen: boolean;
     title: string;
     message: string;
-    actionType: 'delete_project' | 'delete_function' | null;
+    actionType: 'delete_project' | 'delete_function' | 'admin_delete_workspace' | null;
     targetName: string;
   }>({
     isOpen: false,
@@ -242,6 +243,44 @@ const Dashboard: React.FC = () => {
   const [triggerFunctionName, setTriggerFunctionName] = useState("");
   const [triggerInputJson, setTriggerInputJson] = useState("{}");
   
+  const handleUpdateComputeFee = async () => {
+    if (!adminCapId || !newComputeFee) return;
+    
+    setIsUpdatingFee(true);
+    try {
+      const feeInMist = Math.floor(parseFloat(newComputeFee) * 1e9);
+      const tx = new Transaction();
+      
+      tx.moveCall({
+        target: `${PACKAGE_ID}::trigger::update_compute_fee`,
+        arguments: [
+          tx.object(adminCapId),
+          tx.object(PROTOCOL_TREASURY_ID),
+          tx.pure.u64(feeInMist)
+        ]
+      });
+
+      signAndExecute(
+        { transaction: tx },
+        {
+          onSuccess: (result) => {
+            showToast('success', 'Fee Updated Successfully', `New base compute fee set to ${newComputeFee} SUI`, result.digest);
+            setGlobalComputeFee(parseFloat(newComputeFee));
+            setNewComputeFee("");
+            setIsUpdatingFee(false);
+          },
+          onError: (error) => {
+            showToast('error', 'Update Failed', error.message.split('}')[0] + '}');
+            setIsUpdatingFee(false);
+          }
+        }
+      );
+    } catch (e: any) {
+      showToast('error', 'Invalid Format', 'Please enter a valid number for the fee');
+      setIsUpdatingFee(false);
+    }
+  };
+
   // In-App SEO Search Bar State
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -402,6 +441,27 @@ const Dashboard: React.FC = () => {
 
   const suiBalance = balanceData ? (Number(balanceData.totalBalance) / 1e9).toFixed(2) : "0.00";
 
+  // Check if user is Admin
+  const { data: adminCaps } = useSuiClientQuery(
+    'getOwnedObjects',
+    { owner: account?.address as string, filter: { StructType: ADMIN_CAP_TYPE } },
+    { enabled: !!account?.address, refetchInterval: 30000 }
+  );
+  
+  const isAdmin = adminCaps && adminCaps.data && adminCaps.data.length > 0;
+  const adminCapId = isAdmin ? adminCaps.data[0].data?.objectId : null;
+
+  // Admin states
+  const [allProjects, setAllProjects] = useState<{id: string, name: string, description: string, owner: string, vault: string}[]>([]);
+  const [treasuryBalance, setTreasuryBalance] = useState("0");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [isUpdatingFee, setIsUpdatingFee] = useState(false);
+  const [newComputeFee, setNewComputeFee] = useState("");
+
+  const [depositAmount, setDepositAmount] = useState("");
+  const [isDepositing, setIsDepositing] = useState(false);
+
   // Fetch Shared/Owned Projects
   const fetchMyProjects = async () => {
     if (!client || !account) return;
@@ -442,20 +502,42 @@ const Dashboard: React.FC = () => {
         .filter(obj => obj.data !== null && obj.data !== undefined)
         .map(obj => {
           const fields = (obj.data?.content as any)?.fields;
+          const vaultStr = fields?.vault || "0";
+          const vaultValue = (Number(vaultStr) / 1e9).toFixed(2);
           return {
             id: obj.data?.objectId as string,
             name: fields?.name || "Unnamed Project",
             description: fields?.description || "",
             runnerAddress: fields?.runner_address || "",
-            auditorBlobId: fields?.auditor_blob_id || ""
+            auditorBlobId: fields?.auditor_blob_id || "",
+            vault: vaultValue
           };
         });
 
-      setMyProjects(projectsList);
+      setMyProjects(prev => {
+        const missingInFetch = prev.filter(p => !projectsList.some(pl => pl.id === p.id));
+        return [...projectsList, ...missingInFetch];
+      });
       
+      try {
+        const treasuryObj = await client.getObject({
+          id: PROTOCOL_TREASURY_ID,
+          options: { showContent: true }
+        });
+        const fields = (treasuryObj.data?.content as any)?.fields;
+        if (fields?.base_compute_fee) {
+          setGlobalComputeFee(Number(fields.base_compute_fee) / 1e9);
+        }
+      } catch (e) {
+        console.warn("Failed to fetch global compute fee", e);
+      }
+
       setActiveProject(prev => {
-        if (prev && projectsList.some(p => p.id === prev.id)) {
-          return projectsList.find(p => p.id === prev.id) || null;
+        if (prev) {
+          const found = projectsList.find(p => p.id === prev.id);
+          if (found) return found;
+          // Optimistic state retention
+          return prev;
         }
         return projectsList[0] || null;
       });
@@ -466,11 +548,57 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchAllProjects = async () => {
+    if (!client || !isAdmin) return;
+    try {
+      const events = await client.queryEvents({
+        query: { MoveEventType: `${PACKAGE_ID}::trigger::ProjectCreated` },
+        order: 'descending',
+        limit: 100
+      });
+      const allProjectIds = Array.from(new Set(events.data.map((e: any) => e.parsedJson?.project_id as string)));
+      if (allProjectIds.length === 0) return setAllProjects([]);
+      const projectObjects = await client.multiGetObjects({
+        ids: allProjectIds,
+        options: { showContent: true }
+      });
+      const projectsList = projectObjects
+        .filter(obj => obj.data !== null && obj.data !== undefined)
+        .map(obj => {
+          const fields = (obj.data?.content as any)?.fields;
+          return {
+            id: obj.data?.objectId as string,
+            name: fields?.name || "Unnamed",
+            description: fields?.description || "",
+            owner: fields?.owner || "",
+            vault: fields?.vault ? (Number(fields.vault) / 1e9).toFixed(2) : "0"
+          };
+        });
+      setAllProjects(projectsList);
+
+      const treasuryObj = await client.getObject({
+        id: PROTOCOL_TREASURY_ID,
+        options: { showContent: true }
+      });
+      if (treasuryObj.data) {
+        const tFields = (treasuryObj.data.content as any)?.fields;
+        if (tFields && tFields.balance) {
+          setTreasuryBalance((Number(tFields.balance) / 1e9).toFixed(4));
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     if (account && client) {
       fetchMyProjects();
+      if (isAdmin) {
+        fetchAllProjects();
+      }
     }
-  }, [account, client]);
+  }, [account?.address, client, isAdmin]);
 
   useEffect(() => {
     if (activeProject) {
@@ -540,7 +668,7 @@ const Dashboard: React.FC = () => {
         parentId: tableId
       });
 
-      const functionsList = [];
+      const functionsList: {name: string, blobId: string, version: string, status: number, triggerType: number, triggerConfig: string}[] = [];
       for (const field of dynamicFields.data) {
         const fieldObj = await client.getDynamicFieldObject({
           parentId: tableId,
@@ -562,7 +690,10 @@ const Dashboard: React.FC = () => {
         }
       }
       
-      setMyFunctions(functionsList);
+      setMyFunctions(prev => {
+        const missingInFetch = prev.filter(f => !functionsList.some(fl => fl.name === f.name));
+        return [...functionsList, ...missingInFetch];
+      });
     } catch (error) {
       console.error("Error fetching functions:", error);
     } finally {
@@ -654,11 +785,14 @@ const Dashboard: React.FC = () => {
     setIsCreatingProject(true);
     const tx = new Transaction();
     
+    const [projectFee] = tx.splitCoins(tx.gas, [tx.pure.u64(100_000_000)]);
     tx.moveCall({
       target: `${PACKAGE_ID}::trigger::create_project`,
       arguments: [
         tx.pure.string(newProjectName),
-        tx.pure.string(newProjectDescription || "")
+        tx.pure.string(newProjectDescription || ""),
+        tx.object(PROTOCOL_TREASURY_ID),
+        projectFee
       ]
     });
 
@@ -701,12 +835,15 @@ const Dashboard: React.FC = () => {
               });
               
               const fields = (projectObj.data?.content as any)?.fields;
+              const vaultStr = fields?.vault || "0";
+              const vaultValue = (Number(vaultStr) / 1e9).toFixed(2);
               const newProj = {
                 id: newProjectId,
                 name: fields?.name || savedName,
                 description: fields?.description || savedDesc,
                 runnerAddress: fields?.runner_address || "",
-                auditorBlobId: fields?.auditor_blob_id || ""
+                auditorBlobId: fields?.auditor_blob_id || "",
+                vault: vaultValue
               };
               
               setMyProjects(prevProjects => {
@@ -934,6 +1071,96 @@ const Dashboard: React.FC = () => {
     );
   };
 
+  const handleWithdraw = () => {
+    if (!account || !adminCapId || !withdrawAmount) return;
+    setIsWithdrawing(true);
+    const tx = new Transaction();
+    // amount in MIST
+    const amountInMist = parseFloat(withdrawAmount) * 1e9;
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::withdraw_fees`,
+      arguments: [
+        tx.object(adminCapId),
+        tx.object(PROTOCOL_TREASURY_ID),
+        tx.pure.u64(Math.floor(amountInMist))
+      ]
+    });
+    signAndExecute({ transaction: tx }, {
+      onSuccess: () => {
+        setIsWithdrawing(false);
+        setWithdrawAmount("");
+        fetchAllProjects();
+        showToast('success', 'Withdrawal successful!', 'Treasury funds withdrawn to your wallet.');
+      },
+      onError: (err) => {
+        setIsWithdrawing(false);
+        showToast('error', 'Withdrawal failed', err.message);
+      }
+    });
+  };
+
+  const handleDeposit = () => {
+    if (!activeProject || !depositAmount) return;
+    setIsDepositing(true);
+    const tx = new Transaction();
+    const amountInMist = parseFloat(depositAmount) * 1e9;
+    
+    const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(Math.floor(amountInMist))]);
+    
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::deposit_funds`,
+      arguments: [
+        tx.object(activeProject.id),
+        coin
+      ]
+    });
+    
+    signAndExecute({ transaction: tx }, {
+      onSuccess: () => {
+        setIsDepositing(false);
+        setDepositAmount("");
+        fetchAllProjects();
+        showToast('success', 'Deposit Successful', `Successfully deposited ${depositAmount} SUI to vault.`);
+      },
+      onError: (err) => {
+        setIsDepositing(false);
+        showToast('error', 'Deposit Failed', err.message);
+      }
+    });
+  };
+
+  const handleAdminDeleteProject = (projectId: string) => {
+    if (!account || !adminCapId) return;
+    setConfirmModal({
+      isOpen: true,
+      title: 'Force Delete Workspace',
+      message: 'Are you sure you want to FORCE DELETE this workspace? This action is permanent and refunds the vault to the owner.',
+      actionType: 'admin_delete_workspace',
+      targetName: projectId
+    });
+  };
+
+  const executeAdminDeleteProject = (projectId: string) => {
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
+    const tx = new Transaction();
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::admin_delete_workspace`,
+      arguments: [
+        tx.object(adminCapId!),
+        tx.object(projectId)
+      ]
+    });
+    signAndExecute({ transaction: tx }, {
+      onSuccess: () => {
+        showToast('success', 'Workspace Deleted', 'Workspace forcefully deleted and vault refunded.');
+        fetchAllProjects();
+      },
+      onError: (err) => {
+        showToast('error', 'Deletion Failed', err.message);
+      }
+    });
+  };
+
   // Register Function inside Active Project
   const handleRegister = () => {
     if (!account || !activeProject || !registerFunctionName.trim() || !registerBlobId.trim()) {
@@ -944,6 +1171,7 @@ const Dashboard: React.FC = () => {
     setIsRegistering(true);
     const tx = new Transaction();
     
+    const [deployFee] = tx.splitCoins(tx.gas, [tx.pure.u64(50_000_000)]);
     tx.moveCall({
       target: `${PACKAGE_ID}::trigger::register_function`,
       arguments: [
@@ -951,7 +1179,9 @@ const Dashboard: React.FC = () => {
         tx.pure.string(registerFunctionName),
         tx.pure.string(registerBlobId),
         tx.pure.u8(registerTriggerType),
-        tx.pure.string(registerTriggerConfig)
+        tx.pure.string(registerTriggerConfig),
+        tx.object(PROTOCOL_TREASURY_ID),
+        deployFee
       ],
     });
 
@@ -1103,6 +1333,11 @@ const Dashboard: React.FC = () => {
       setAuditWarningStatus(targetFn.status === 0 ? "Pending Audit" : "Rejected");
       setAuditWarningBlobId(targetFn.blobId || "");
       setIsAuditWarningModalOpen(true);
+      return;
+    }
+
+    if (Number(activeProject.vault) < globalComputeFee) {
+      showToast('error', 'Insufficient Vault Balance', `Please deposit at least ${globalComputeFee} SUI in the Billing tab to run this function.`);
       return;
     }
     
@@ -1294,15 +1529,43 @@ const Dashboard: React.FC = () => {
     // Scan recent completions
     projectCompletions.slice(-3).forEach((comp, idx) => {
       const funcName = (comp.parsedJson as any).function_name;
-      const result = (comp.parsedJson as any).result_data;
+      const resultStr = (comp.parsedJson as any).result_data;
       const timeString = new Date(Number(comp.timestampMs)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      alertsList.push({
-        id: `comp-${idx}`,
-        title: `VM Isolate Completed`,
-        time: timeString,
-        desc: `Executed ${funcName} successfully inside V8 sandbox. Output: ${result.slice(0, 45)}${result.length > 45 ? '...' : ''}`,
-        severity: "info"
-      });
+      
+      let isError = false;
+      let displayResult = resultStr;
+      
+      try {
+        const parsed = JSON.parse(resultStr);
+        if (parsed && parsed.status === 'error') {
+          isError = true;
+          displayResult = parsed.error || resultStr;
+        } else if (parsed && parsed.status === 'success' && parsed.message) {
+          displayResult = parsed.message;
+        } else if (parsed && typeof parsed !== 'string') {
+          displayResult = JSON.stringify(parsed);
+        }
+      } catch(e) {
+        // Not valid JSON or stringified differently, leave as is
+      }
+
+      if (isError) {
+        alertsList.push({
+          id: `comp-${idx}`,
+          title: `Execution Failed`,
+          time: timeString,
+          desc: `Sandbox crashed while running '${funcName}'. Error: ${displayResult.slice(0, 80)}${displayResult.length > 80 ? '...' : ''}`,
+          severity: "error"
+        });
+      } else {
+        alertsList.push({
+          id: `comp-${idx}`,
+          title: `VM Isolate Completed`,
+          time: timeString,
+          desc: `Executed '${funcName}' successfully inside V8 sandbox. Output: ${displayResult.slice(0, 45)}${displayResult.length > 45 ? '...' : ''}`,
+          severity: "info"
+        });
+      }
     });
 
     return alertsList.reverse().filter(a => !acknowledgedAlertIds.includes(a.id));
@@ -1797,17 +2060,6 @@ const Dashboard: React.FC = () => {
                     Storage
                   </button>
 
-                  <button 
-                    onClick={() => { setActiveMenu('6'); setIsMobileMenuOpen(false); }}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                      activeMenu === '6' 
-                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
-                    }`}
-                  >
-                    <BookOpen size={16} />
-                    Documentation
-                  </button>
 
                   <button 
                     onClick={() => { setActiveMenu('7'); setIsMobileMenuOpen(false); }}
@@ -1826,6 +2078,7 @@ const Dashboard: React.FC = () => {
 
             {/* Sidebar Footer Operations */}
             <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4 shrink-0 mt-4">
+
               <button 
                 onClick={() => {
                   if (!activeProject) {
@@ -1842,6 +2095,17 @@ const Dashboard: React.FC = () => {
               </button>
 
               <button 
+                onClick={() => { setActiveMenu('6'); setIsMobileMenuOpen(false); }}
+                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeMenu === '6' 
+                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                    : 'bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] text-slate-300 hover:text-white'
+                }`}
+              >
+                <BookOpen size={16} /> Documentation
+              </button>
+
+              <button 
                 onClick={() => {
                   setIsSettingsModalOpen(true);
                   setIsMobileMenuOpen(false);
@@ -1851,6 +2115,20 @@ const Dashboard: React.FC = () => {
               >
                 <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
               </button>
+
+              {isAdmin && (
+                <button 
+                  onClick={() => {
+                    setActiveMenu('8');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-red-500/5 border border-[#252838] hover:border-red-500/30 text-slate-300 hover:text-red-400 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                    activeMenu === '8' ? 'border-red-500/30 text-red-400 bg-red-500/5' : ''
+                  }`}
+                >
+                  <Shield size={14} className={activeMenu === '8' ? 'text-red-500' : 'text-slate-300 group-hover:text-red-400'} /> Admin Panel
+                </button>
+              )}
 
               {/* Wallet Connector Details */}
               <div className="bg-[#0a0b10] border border-[#252838] rounded-xl p-3 flex flex-col gap-2">
@@ -2031,17 +2309,6 @@ const Dashboard: React.FC = () => {
                   Storage
                 </button>
 
-                <button 
-                  onClick={() => setActiveMenu('6')}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                    activeMenu === '6' 
-                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
-                  }`}
-                >
-                  <BookOpen size={16} />
-                  Documentation
-                </button>
 
                 <button 
                   onClick={() => setActiveMenu('7')}
@@ -2061,6 +2328,8 @@ const Dashboard: React.FC = () => {
           {/* Sidebar Footer Operations (Fixed at Bottom) */}
           <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4 shrink-0 mt-4">
             
+
+            
             {/* Deploy New Function Trigger */}
             <button 
               onClick={() => {
@@ -2076,6 +2345,17 @@ const Dashboard: React.FC = () => {
               <Plus size={16} /> Deploy New Function
             </button>
 
+            <button 
+              onClick={() => setActiveMenu('6')}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                activeMenu === '6' 
+                  ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                  : 'bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] text-slate-300 hover:text-white'
+              }`}
+            >
+              <BookOpen size={16} /> Documentation
+            </button>
+
             {/* Workspace Settings */}
             <button 
               onClick={() => setIsSettingsModalOpen(true)}
@@ -2084,6 +2364,17 @@ const Dashboard: React.FC = () => {
             >
               <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
             </button>
+
+            {isAdmin && (
+              <button 
+                onClick={() => setActiveMenu('8')}
+                className={`w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-red-500/5 border border-[#252838] hover:border-red-500/30 text-slate-300 hover:text-red-400 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  activeMenu === '8' ? 'border-red-500/30 text-red-400 bg-red-500/5' : ''
+                }`}
+              >
+                <Shield size={14} className={activeMenu === '8' ? 'text-red-500' : 'text-slate-300 group-hover:text-red-400'} /> Admin Panel
+              </button>
+            )}
 
             {/* Wallet Connector Details */}
             <div className="bg-[#0a0b10] border border-[#252838] rounded-xl p-3 flex flex-col gap-2">
@@ -2951,12 +3242,23 @@ const Dashboard: React.FC = () => {
                       <div className="flex items-center gap-2 mb-4">
                         <Wallet size={16} className="text-brand-orange" />
                         <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit">Current Balance</h3>
+                        <button 
+                          onClick={() => {
+                            fetchMyProjects();
+                            showToast('info', 'Refreshing', 'Fetching latest vault balance...');
+                          }}
+                          disabled={isLoadingProjects}
+                          className="ml-auto text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                          title="Refresh Balance"
+                        >
+                          <RefreshCw size={14} className={isLoadingProjects ? "animate-spin text-brand-orange" : ""} />
+                        </button>
                       </div>
                       <div className="flex items-end gap-3 mb-2">
-                        <span className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-outfit">0.00</span>
+                        <span className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-outfit">{activeProject?.vault || "0.00"}</span>
                         <span className="text-lg text-brand-orange font-bold font-mono pb-1">SUI</span>
                       </div>
-                      <p className="text-xs text-slate-400 font-medium">Estimated 0 executions remaining</p>
+                      <p className="text-xs text-slate-400 font-medium">Estimated {activeProject ? Math.floor(parseFloat(activeProject.vault || "0") / globalComputeFee).toLocaleString() : 0} executions remaining</p>
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between gap-4">
@@ -2965,14 +3267,29 @@ const Dashboard: React.FC = () => {
                         <div className="relative">
                           <input 
                             type="number" 
+                            value={depositAmount}
+                            onChange={(e) => setDepositAmount(e.target.value)}
                             placeholder="e.g. 5.0"
                             className="w-full bg-[#050608] border border-[#252838] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-orange/50 transition-colors"
                           />
                           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">SUI</div>
                         </div>
                       </div>
-                      <button className="mt-5 bg-brand-orange hover:bg-[#F76707] text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_4px_15px_rgba(255,126,33,0.3)] hover:shadow-[0_6px_20px_rgba(255,126,33,0.4)] transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer disabled:opacity-50">
-                        <ArrowUpRight size={16} /> Deposit Funds
+                      <button 
+                        disabled={isDepositing || !depositAmount}
+                        onClick={handleDeposit}
+                        className="mt-5 bg-brand-orange hover:bg-[#F76707] text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_4px_15px_rgba(255,126,33,0.3)] hover:shadow-[0_6px_20px_rgba(255,126,33,0.4)] transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer disabled:opacity-50"
+                      >
+                        {isDepositing ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <ArrowUpRight size={16} /> Deposit Funds
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -2987,7 +3304,7 @@ const Dashboard: React.FC = () => {
                           <div className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">0.05 SUI / Exec</div>
+                          <div className="text-xs font-bold text-white">{globalComputeFee} SUI / Exec</div>
                           <div className="text-[10px] text-slate-400 mt-0.5">Compute Runner Fee (85%)</div>
                         </div>
                       </li>
@@ -3014,6 +3331,107 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
+            </div>
+          )}
+
+          {/* Admin Panel (Menu 8) */}
+          {activeMenu === '8' && isAdmin && (
+            <div id="admin-panel" className="flex flex-col gap-6 animate-in fade-in duration-300 pb-10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-white font-outfit mb-1 tracking-wide">Platform Administration</h2>
+                  <p className="text-xs text-slate-400 max-w-lg">Manage all active workspaces, oversee network operations, and process treasury withdrawals.</p>
+                </div>
+              </div>
+
+              {/* Stats & Withdraw */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-1 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl relative overflow-hidden group flex flex-col">
+                   <div className="flex items-center justify-between mb-4">
+                     <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit flex items-center gap-2"><Shield size={16} className="text-red-500" /> Treasury Balance</h3>
+                     <button 
+                       onClick={() => {
+                         fetchAllProjects();
+                         showToast('info', 'Refreshing', 'Fetching latest treasury balance...');
+                       }}
+                       className="text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer"
+                       title="Refresh Treasury Balance"
+                     >
+                       <RefreshCw size={14} />
+                     </button>
+                   </div>
+                   <div className="flex items-end gap-3 mb-6">
+                     <span className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-outfit">{treasuryBalance}</span>
+                     <span className="text-lg text-red-500 font-bold font-mono pb-1">SUI</span>
+                   </div>
+                   <div className="pt-4 border-t border-white/5 mt-auto space-y-3">
+                     <div className="relative">
+                       <input 
+                         type="number" 
+                         value={withdrawAmount}
+                         onChange={(e) => setWithdrawAmount(e.target.value)}
+                         placeholder="Withdraw Amount (SUI)"
+                         className="w-full bg-[#050608] border border-[#252838] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-red-500/50 transition-colors"
+                       />
+                     </div>
+                     <button 
+                       disabled={isWithdrawing || !withdrawAmount}
+                       onClick={handleWithdraw}
+                       className="w-full bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_4px_15px_rgba(239,68,68,0.3)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.4)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                     >
+                       {isWithdrawing ? "Processing..." : "Withdraw Fees"}
+                     </button>
+                   </div>
+                </div>
+
+                <div className="md:col-span-1 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl relative overflow-hidden group flex flex-col">
+                   <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit mb-4 flex items-center gap-2"><Settings size={16} className="text-blue-500" /> Compute Fee Settings</h3>
+                   <div className="flex items-end gap-3 mb-6">
+                     <span className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-outfit">{globalComputeFee}</span>
+                     <span className="text-lg text-blue-500 font-bold font-mono pb-1">SUI</span>
+                   </div>
+                   <div className="pt-4 border-t border-white/5 mt-auto space-y-3">
+                     <div className="relative">
+                       <input 
+                         type="number" 
+                         value={newComputeFee}
+                         onChange={(e) => setNewComputeFee(e.target.value)}
+                         placeholder="New Fee (e.g. 0.007)"
+                         className="w-full bg-[#050608] border border-[#252838] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors"
+                       />
+                     </div>
+                     <button 
+                       disabled={isUpdatingFee || !newComputeFee}
+                       onClick={handleUpdateComputeFee}
+                       className="w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.4)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                     >
+                       {isUpdatingFee ? "Updating..." : "Update Fee"}
+                     </button>
+                   </div>
+                </div>
+
+                <div className="md:col-span-1 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl overflow-hidden flex flex-col">
+                  <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit mb-4">All Platform Workspaces ({allProjects.length})</h3>
+                  <div className="flex-1 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-[#252838] scrollbar-track-transparent pr-2 space-y-3">
+                    {allProjects.length === 0 ? (
+                      <div className="text-center py-10 text-slate-500 text-sm">No workspaces found.</div>
+                    ) : (
+                      allProjects.map(project => (
+                        <div key={project.id} className="bg-[#05060a] border border-[#252838] p-4 rounded-xl flex items-center justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-bold text-white truncate">{project.name}</h4>
+                            <p className="text-xs text-slate-400 mt-1 truncate">{project.id}</p>
+                            <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-500 font-mono">
+                              <span>Owner: {project.owner.slice(0,6)}...{project.owner.slice(-4)}</span>
+                              <span>Vault: {project.vault} SUI</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -3182,6 +3600,11 @@ const Dashboard: React.FC = () => {
                   placeholder="e.g., Powers order verification, checkout authentication, and notifications..."
                   className="w-full bg-[#05060a] border border-[#252838] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-sans resize-none"
                 />
+              </div>
+
+              <div className="flex items-center justify-between bg-brand-orange/10 border border-brand-orange/20 rounded-xl px-4 py-3">
+                <span className="text-xs text-brand-orange/90 font-medium">Workspace Creation Fee</span>
+                <span className="text-sm font-mono text-brand-orange font-bold">0.1 SUI</span>
               </div>
 
               <button 
@@ -3473,6 +3896,11 @@ const Dashboard: React.FC = () => {
                 </div>
               )}
 
+              <div className="flex items-center justify-between bg-brand-orange/10 border border-brand-orange/20 rounded-xl px-4 py-3">
+                <span className="text-xs text-brand-orange/90 font-medium">Deployment Fee</span>
+                <span className="text-sm font-mono text-brand-orange font-bold">0.05 SUI</span>
+              </div>
+
               <button 
                 onClick={handleRegister}
                 disabled={isRegistering || !registerFunctionName.trim() || !registerBlobId.trim()}
@@ -3604,6 +4032,8 @@ const Dashboard: React.FC = () => {
                       executeDeleteProject();
                     } else if (confirmModal.actionType === 'delete_function') {
                       executeDeleteFunction(confirmModal.targetName);
+                    } else if (confirmModal.actionType === 'admin_delete_workspace') {
+                      executeAdminDeleteProject(confirmModal.targetName);
                     }
                   }}
                   className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:brightness-110 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(220,38,38,0.25)] transition-all cursor-pointer"

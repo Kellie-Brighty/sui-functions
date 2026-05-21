@@ -38,7 +38,13 @@ module sui_functions::trigger {
     /// Global treasury to collect protocol fees
     public struct ProtocolTreasury has key {
         id: UID,
-        balance: Balance<SUI>
+        balance: Balance<SUI>,
+        base_compute_fee: u64
+    }
+
+    /// Admin capability to allow platform fee withdrawal
+    public struct AdminCap has key, store {
+        id: UID
     }
 
     /// Metadata for a registered function
@@ -87,8 +93,22 @@ module sui_functions::trigger {
     public entry fun create_project(
         name: String,
         description: String,
+        treasury: &mut ProtocolTreasury,
+        mut payment: Coin<SUI>,
         ctx: &mut TxContext
     ) {
+        let creation_fee = 100_000_000; // 0.1 SUI
+        assert!(coin::value(&payment) >= creation_fee, EInsufficientFunds);
+        
+        let fee_coin = coin::split(&mut payment, creation_fee, ctx);
+        balance::join(&mut treasury.balance, coin::into_balance(fee_coin));
+        
+        if (coin::value(&payment) > 0) {
+            transfer::public_transfer(payment, tx_context::sender(ctx));
+        } else {
+            coin::destroy_zero(payment);
+        };
+
         let owner = tx_context::sender(ctx);
         let id = object::new(ctx);
         let project_id = object::uid_to_inner(&id);
@@ -116,9 +136,15 @@ module sui_functions::trigger {
     fun init(ctx: &mut TxContext) {
         let treasury = ProtocolTreasury {
             id: object::new(ctx),
-            balance: balance::zero()
+            balance: balance::zero(),
+            base_compute_fee: 7_000_000 // default 0.007 SUI
         };
         transfer::share_object(treasury);
+
+        let admin_cap = AdminCap {
+            id: object::new(ctx)
+        };
+        transfer::public_transfer(admin_cap, tx_context::sender(ctx));
     }
 
     /// Deposit SUI coins into a project's vault
@@ -149,8 +175,22 @@ module sui_functions::trigger {
         walrus_blob_id: String,
         trigger_type: u8,
         trigger_config: String,
+        treasury: &mut ProtocolTreasury,
+        mut payment: Coin<SUI>,
         ctx: &mut TxContext
     ) {
+        let deployment_fee = 50_000_000; // 0.05 SUI
+        assert!(coin::value(&payment) >= deployment_fee, EInsufficientFunds);
+        
+        let fee_coin = coin::split(&mut payment, deployment_fee, ctx);
+        balance::join(&mut treasury.balance, coin::into_balance(fee_coin));
+        
+        if (coin::value(&payment) > 0) {
+            transfer::public_transfer(payment, tx_context::sender(ctx));
+        } else {
+            coin::destroy_zero(payment);
+        };
+
         let sender = tx_context::sender(ctx);
         assert!(project.owner == sender, ENotOwner);
 
@@ -223,8 +263,22 @@ module sui_functions::trigger {
         project: &mut Project,
         name: String,
         new_walrus_blob_id: String,
+        treasury: &mut ProtocolTreasury,
+        mut payment: Coin<SUI>,
         ctx: &mut TxContext
     ) {
+        let deployment_fee = 50_000_000; // 0.05 SUI
+        assert!(coin::value(&payment) >= deployment_fee, EInsufficientFunds);
+        
+        let fee_coin = coin::split(&mut payment, deployment_fee, ctx);
+        balance::join(&mut treasury.balance, coin::into_balance(fee_coin));
+        
+        if (coin::value(&payment) > 0) {
+            transfer::public_transfer(payment, tx_context::sender(ctx));
+        } else {
+            coin::destroy_zero(payment);
+        };
+
         let sender = tx_context::sender(ctx);
         assert!(project.owner == sender, ENotOwner);
         assert!(table::contains(&project.functions, name), EFunctionNotFound);
@@ -349,36 +403,73 @@ module sui_functions::trigger {
     public entry fun submit_result(
         project: &mut Project,
         treasury: &mut ProtocolTreasury,
-        name: String,
+        function_name: String,
         result_data: String,
         ctx: &mut TxContext
     ) {
-        let sender = tx_context::sender(ctx);
-        assert!(project.runner_address == sender, ENotAuthorizedRunner);
-        assert!(table::contains(&project.functions, name), EFunctionNotFound);
+        // Assert runner authorization
+        let runner = tx_context::sender(ctx);
+        assert!(runner == project.runner_address, ENotAuthorizedRunner);
+        assert!(table::contains(&project.functions, function_name), EFunctionNotFound);
 
-        // Constant fee mapping (e.g. 0.05 SUI = 50_000_000 MIST)
-        let compute_fee = 50_000_000;
+        // Constant fee mapping
+        let compute_fee = treasury.base_compute_fee;
         assert!(balance::value(&project.vault) >= compute_fee, EInsufficientFunds);
 
         // Extract fee
         let mut extracted_fee = balance::split(&mut project.vault, compute_fee);
 
         // 15% to protocol treasury
-        let protocol_cut = 7_500_000;
+        let protocol_cut = (compute_fee * 15) / 100;
         let protocol_fee = balance::split(&mut extracted_fee, protocol_cut);
         balance::join(&mut treasury.balance, protocol_fee);
 
         // 85% to runner
         let runner_payment = coin::from_balance(extracted_fee, ctx);
-        transfer::public_transfer(runner_payment, sender);
-        
+        transfer::public_transfer(runner_payment, runner);
         
         event::emit(ExecutionCompleted {
             project_id: object::id(project),
-            function_name: name,
-            runner: sender,
+            function_name,
+            runner,
             result_data
         });
+    }
+    public entry fun withdraw_fees(
+        _admin: &AdminCap,
+        treasury: &mut ProtocolTreasury,
+        ctx: &mut TxContext
+    ) {
+        let amount = balance::value(&treasury.balance);
+        let coin = coin::take(&mut treasury.balance, amount, ctx);
+        transfer::public_transfer(coin, tx_context::sender(ctx));
+    }
+
+    /// Admin updates the base compute fee globally
+    public entry fun update_compute_fee(
+        _admin: &AdminCap,
+        treasury: &mut ProtocolTreasury,
+        new_fee: u64,
+        _ctx: &mut TxContext
+    ) {
+        treasury.base_compute_fee = new_fee;
+    }
+
+    /// Admin can forcefully delete a workspace. The internal vault is refunded to the owner.
+    public entry fun admin_delete_workspace(
+        _admin: &AdminCap,
+        project: Project,
+        ctx: &mut TxContext
+    ) {
+        let Project { id, owner, name: _, description: _, runner_address: _, functions, vault } = project;
+        table::drop(functions);
+        
+        if (balance::value(&vault) > 0) {
+            let vault_coin = coin::from_balance(vault, ctx);
+            transfer::public_transfer(vault_coin, owner);
+        } else {
+            balance::destroy_zero(vault);
+        };
+        object::delete(id);
     }
 }

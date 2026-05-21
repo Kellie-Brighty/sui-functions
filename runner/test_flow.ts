@@ -21,8 +21,9 @@ if (!secret) {
 const keypair = Ed25519Keypair.fromSecretKey(secret);
 
 const packageId = process.env.PACKAGE_ID || "";
-if (!packageId) {
-    console.error("PACKAGE_ID is required in runner/.env");
+const treasuryId = process.env.PROTOCOL_TREASURY_ID || "";
+if (!packageId || !treasuryId) {
+    console.error("PACKAGE_ID and PROTOCOL_TREASURY_ID required in runner/.env");
     process.exit(1);
 }
 
@@ -53,11 +54,14 @@ async function runTest() {
     // 1. Create a workspace project on-chain
     console.log("\n1. Creating workspace project on-chain...");
     const tx1 = new Transaction();
+    const [projectFee] = tx1.splitCoins(tx1.gas, [tx1.pure.u64(100_000_000)]);
     tx1.moveCall({
         target: `${packageId}::trigger::create_project`,
         arguments: [
             tx1.pure.string("E2E Integration Test Suite Workspace"),
-            tx1.pure.string("Testing suite for safe and unsafe auditor check validation")
+            tx1.pure.string("Testing suite for safe and unsafe auditor check validation"),
+            tx1.object(treasuryId),
+            projectFee
         ]
     });
     const result1 = await client.signAndExecuteTransaction({
@@ -124,12 +128,17 @@ async function runTest() {
     // 4. Register Safe Function on-chain
     console.log(`\n4. Registering Safe Function: "SafeJS" (Blob: ${safeBlobId})...`);
     const tx3 = new Transaction();
+    const [safeFee] = tx3.splitCoins(tx3.gas, [tx3.pure.u64(50_000_000)]);
     tx3.moveCall({
         target: `${packageId}::trigger::register_function`,
         arguments: [
             tx3.object(projectId),
             tx3.pure.string("SafeJS"),
-            tx3.pure.string(safeBlobId)
+            tx3.pure.string(safeBlobId),
+            tx3.pure.u8(0),
+            tx3.pure.string("{}"),
+            tx3.object(treasuryId),
+            safeFee
         ]
     });
     const result3 = await client.signAndExecuteTransaction({
@@ -148,12 +157,17 @@ async function runTest() {
     // 5. Register Unsafe Function on-chain
     console.log(`\n5. Registering Unsafe Function: "UnsafeJS" (Blob: ${unsafeBlobId})...`);
     const tx4 = new Transaction();
+    const [unsafeFee] = tx4.splitCoins(tx4.gas, [tx4.pure.u64(50_000_000)]);
     tx4.moveCall({
         target: `${packageId}::trigger::register_function`,
         arguments: [
             tx4.object(projectId),
             tx4.pure.string("UnsafeJS"),
-            tx4.pure.string(unsafeBlobId)
+            tx4.pure.string(unsafeBlobId),
+            tx4.pure.u8(0),
+            tx4.pure.string("{}"),
+            tx4.object(treasuryId),
+            unsafeFee
         ]
     });
     const result4 = await client.signAndExecuteTransaction({

@@ -27,6 +27,25 @@ const keypair = secretKey ? Ed25519Keypair.fromSecretKey(secretKey) : null;
 const projectRunnerCache = new Map<string, { runnerAddress: string; timestamp: number }>();
 const CACHE_TTL = 30 * 1000; // 30 seconds cache
 
+async function getGlobalComputeFee(): Promise<number> {
+    const treasuryId = process.env.PROTOCOL_TREASURY_ID;
+    if (!treasuryId) return 0.007; // Default 0.007 SUI
+    try {
+        const treasuryObj = await client.getObject({
+            id: treasuryId,
+            options: { showContent: true }
+        });
+        const fields = (treasuryObj.data?.content as any)?.fields;
+        const baseComputeFeeMist = fields?.base_compute_fee;
+        if (baseComputeFeeMist) {
+            return Number(baseComputeFeeMist) / 1000000000;
+        }
+    } catch (e: any) {
+        console.warn(`[Listener] Failed to fetch global compute fee:`, e.message);
+    }
+    return 0.007;
+}
+
 async function isRunnerAuthorized(projectId: string): Promise<boolean> {
     if (!keypair) return false;
     const runnerAddress = keypair.toSuiAddress();
@@ -56,6 +75,21 @@ async function isRunnerAuthorized(projectId: string): Promise<boolean> {
         console.warn(`[Listener] Failed to verify runner authorization for project ${projectId}:`, e.message);
     }
     return false;
+}
+
+async function checkProjectVaultBalance(projectId: string): Promise<number> {
+    try {
+        const projectObj = await client.getObject({
+            id: projectId,
+            options: { showContent: true }
+        });
+        const fields = (projectObj.data?.content as any)?.fields;
+        const vaultBalanceMist = fields?.vault || 0;
+        return Number(vaultBalanceMist) / 1000000000;
+    } catch (e: any) {
+        console.warn(`[Listener] Failed to fetch vault balance for project ${projectId}:`, e.message);
+        return 0;
+    }
 }
 
 
@@ -241,8 +275,23 @@ export async function startDynamicAutomationEngine() {
 
                 const functions = await fetchProjectFunctions(projectId);
                 const verifiedFunctions = functions.filter(fn => fn.status === 1);
+                
+                // Only process automated triggers in the polling engine
+                const automatedFunctions = verifiedFunctions.filter(fn => fn.triggerType === 1 || fn.triggerType === 2 || fn.triggerType === 3);
+                
+                if (automatedFunctions.length === 0) {
+                    continue; // Nothing to poll for this project
+                }
 
-                for (const fn of verifiedFunctions) {
+                // Check Vault Balance before attempting automated triggers
+                const vaultBalance = await checkProjectVaultBalance(projectId);
+                const computeFee = await getGlobalComputeFee();
+                if (vaultBalance < computeFee) {
+                    console.log(`[Automation Engine] Skipping automated triggers for project ${projectId}: Insufficient Vault Balance (${vaultBalance} SUI)`);
+                    continue;
+                }
+
+                for (const fn of automatedFunctions) {
                     const { name, triggerType, triggerConfig } = fn;
                     const trackerKey = `${projectId}::${name}`;
                     const now = Date.now();
@@ -425,6 +474,13 @@ export async function startPolling(packageId: string) {
                                     continue;
                                 }
 
+                                const vaultBalance = await checkProjectVaultBalance(project_id);
+                                const computeFee = await getGlobalComputeFee();
+                                if (vaultBalance < computeFee) {
+                                    console.log(`[Listener] Skipping execution for project ${project_id}: Insufficient Vault Balance (${vaultBalance} SUI)`);
+                                    continue;
+                                }
+
                                 console.log(`Triggering function: ${function_name} (Blob: ${walrus_blob_id}) for project: ${project_id}`);
                                 console.log(`Caller: ${caller}`);
                                 
@@ -433,9 +489,14 @@ export async function startPolling(packageId: string) {
                                 
                                 // 2. Execute in Sandbox
                                 console.log("Executing in sandbox with input:", input_data);
-                                const executionResult = await executeInSandbox(code, input_data);
-                                
-                                console.log("Execution Result:", executionResult);
+                                let executionResult: any;
+                                try {
+                                    executionResult = await executeInSandbox(code, input_data);
+                                    console.log("Execution Result:", executionResult);
+                                } catch (sandboxErr: any) {
+                                    console.error("Sandbox Execution Error:", sandboxErr.message);
+                                    executionResult = { status: "error", error: sandboxErr.message };
+                                }
 
                                 // 3. Submit result back to Sui
                                 if (keypair) {
@@ -448,9 +509,9 @@ export async function startPolling(packageId: string) {
                                         target: `${packageId}::trigger::submit_result`,
                                         arguments: [
                                             tx.object(project_id),
+                                            tx.object(treasuryId),
                                             tx.pure.string(function_name),
-                                            tx.pure.string(JSON.stringify(executionResult) ?? "null"),
-                                            tx.object(treasuryId)
+                                            tx.pure.string(JSON.stringify(executionResult) ?? "null")
                                         ]
                                     });
 

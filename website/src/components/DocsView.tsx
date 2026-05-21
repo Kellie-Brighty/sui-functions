@@ -417,7 +417,7 @@ tx.moveCall({
             <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden font-mono text-xs text-slate-350 p-4 bg-[#07080D] space-y-1">
               <div>SUI_RPC_URL=https://fullnode.testnet.sui.io:443</div>
               <div>SUI_PRIVATE_KEY=suiprivkey1... <span className="text-slate-500"># Private key of the operator executing submits</span></div>
-              <div>PACKAGE_ID=0xb6e4b76e45a56e05a0e44d643aa2c6b0e8d1552688e8c9f2b9807160e2a5a97f</div>
+              <div>PACKAGE_ID=0xad8287a8b7535edb784a72d1ba9a5fe8f29c83f7f404db95df0560defa3a64ce</div>
               <div>AUDITOR_KEY=0x66e2da5161ad3a89e2c45f4d8a571ea38de1f4c718</div>
             </div>
 

@@ -20,8 +20,8 @@ import { ConnectButton, useCurrentAccount, useSuiClient, useSignAndExecuteTransa
 import { Transaction } from '@mysten/sui/transactions';
 // Consts
 const SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443';
-const PACKAGE_ID = '0xb6e4b76e45a56e05a0e44d643aa2c6b0e8d1552688e8c9f2b9807160e2a5a97f';
-const PROJECT_ID = '0xe0fb5f86e48b898c9286c3964d0f7dd7ad241ac1985ce5b00ea334e47ed85676';
+const PACKAGE_ID = '0x8899b503f5f097546c61b698296ce44bc1f37251c3b7f3fa92d6e8036231dd30';
+const PROJECT_ID = '0xccc07267467e2a9dc81e60a3b6c7f718d1340786bfae8cfc72ca4beac41c7e6c';
 
 interface Product {
   id: string;
@@ -196,61 +196,18 @@ function App() {
         }
       }
 
-      // 2. Fallback to resilient API feed if no pricing events exist on this new smart contract yet
+      // 2. If no pricing events exist on this smart contract yet
       if (!foundOnChainPrice) {
-        console.log("No on-chain pricing event found yet. Fetching live fallback API...");
-        let price = 1.08; // default fallback
-        let sourceName = 'Fallback Provider API';
-        
-        try {
-          const res = await fetch('https://api.coinbase.com/v2/prices/SUI-USD/spot');
-          const data = await res.json();
-          const amount = parseFloat(data.data.amount);
-          if (!isNaN(amount) && amount > 0) {
-            price = amount;
-            sourceName = 'Coinbase Live API';
-          }
-        } catch (e1) {
-          try {
-            const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=SUI&tsyms=USD');
-            const data = await res.json();
-            const amount = parseFloat(data.USD);
-            if (!isNaN(amount) && amount > 0) {
-              price = amount;
-              sourceName = 'CryptoCompare Live API';
-            }
-          } catch (e2) {
-            try {
-              const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd');
-              const data = await res.json();
-              const amount = parseFloat(data.sui.usd);
-              if (!isNaN(amount) && amount > 0) {
-                price = amount;
-                sourceName = 'CoinGecko Live API';
-              }
-            } catch (e3) {
-              console.warn("All live SUI/USD fallback APIs failed");
-            }
-          }
-        }
-        
-        setSuiPrice(price);
-        setOracleSource(sourceName);
-        
-        chainHistory = [{
-          digest: '0xCG_FALLBACK_API_FEED_LIVE_DATA',
-          price: price,
-          timestamp: new Date().toISOString(),
-          isFallback: true
-        }];
+        console.log("No on-chain pricing event found yet. Awaiting Oracle Update...");
+        setSuiPrice(null);
+        setOracleSource('Awaiting Oracle Update');
       }
 
       setPriceHistory(chainHistory);
     } catch (e: any) {
       console.error("Error fetching price:", e);
-      // Fail-safe default price
-      setSuiPrice(1.08);
-      setOracleSource('Coinbase Live API');
+      setSuiPrice(null);
+      setOracleSource('Error Fetching On-Chain Price');
     } finally {
       setIsFetchingPrice(false);
     }

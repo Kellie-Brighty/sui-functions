@@ -16,18 +16,25 @@ if (!secretKey) {
     process.exit(1);
 }
 const keypair = Ed25519Keypair.fromSecretKey(secretKey);
-const packageId = "0x0a4c46e798a86a660b6c40d4be93d9b97bcad0183f97f4ffa2fc8a38dbf84086";
+const packageId = process.env.PACKAGE_ID || "";
+const treasuryId = process.env.PROTOCOL_TREASURY_ID || "";
+if (!packageId || !treasuryId) {
+    console.error("PACKAGE_ID and PROTOCOL_TREASURY_ID required in .env");
+    process.exit(1);
+}
 
 async function main() {
     console.log("Initializing Project on Sui Testnet...");
     const tx = new Transaction();
     
-    // Call create_project
+    const [projectFee] = tx.splitCoins(tx.gas, [tx.pure.u64(100_000_000)]);
     tx.moveCall({
         target: `${packageId}::trigger::create_project`,
         arguments: [
             tx.pure.string("E-Commerce Oracle Workspace"),
-            tx.pure.string("Decentralized SUI/USD Price Feed & Order Verification Service")
+            tx.pure.string("Decentralized SUI/USD Price Feed & Order Verification Service"),
+            tx.object(treasuryId),
+            projectFee
         ]
     });
 
@@ -58,12 +65,17 @@ async function main() {
 
     console.log("\nRegistering 'SUI USD Oracle' function inside the new project...");
     const regTx = new Transaction();
+    const [deployFee] = regTx.splitCoins(regTx.gas, [regTx.pure.u64(50_000_000)]);
     regTx.moveCall({
         target: `${packageId}::trigger::register_function`,
         arguments: [
             regTx.object(projectId),
             regTx.pure.string("SUI USD Oracle"),
-            regTx.pure.string("0geOO6RLle4NjptiPQ0ZHzaTAb0Ghi-VyW5tfHHETj8")
+            regTx.pure.string("0geOO6RLle4NjptiPQ0ZHzaTAb0Ghi-VyW5tfHHETj8"),
+            regTx.pure.u8(0),
+            regTx.pure.string("{}"),
+            regTx.object(treasuryId),
+            deployFee
         ]
     });
 
