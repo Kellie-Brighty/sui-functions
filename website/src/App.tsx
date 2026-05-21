@@ -1041,12 +1041,84 @@ const App: React.FC = () => {
                 {/* Left Side: Content */}
                 <div className="pl-12 lg:pl-0 lg:pr-16 text-left lg:text-right relative">
                   {/* Timeline node icon */}
-                  <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-purple-500/30 flex items-center justify-center text-purple-400 z-20">
+                  <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-cyan-500/30 flex items-center justify-center text-cyan-400 z-20">
+                    <Zap size={16} />
+                  </div>
+                  
+                  <span className="inline-block px-3 py-1 rounded-full bg-cyan-500/5 border border-cyan-500/20 text-[9px] font-mono font-bold text-cyan-400 uppercase tracking-wider mb-3">
+                    Phase 3 (Q4 2026) • UX Abstraction
+                  </span>
+                  <h3 className="text-2xl font-bold text-white font-outfit mb-3">
+                    Native Gas Sponsoring
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium">
+                    Built-in Sui Sponsored Transactions and zkLogin integration. Allow developers to pay the network gas and compute fees automatically from their pre-funded workspace balance, delivering a 100% Web2-like experience for end-users interacting with autonomous agents.
+                  </p>
+                  <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
+                    <li className="flex items-center gap-2">
+                      <span className="text-cyan-400">●</span> Zero-wallet onboarding (zkLogin)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-cyan-400">●</span> Pre-funded workspace vaults
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-cyan-400">●</span> Seamless B2B2C agentic compute
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Right Side: Visual terminal */}
+                <div className="pl-12 lg:pl-16">
+                  <div className="bg-[#050608]/90 border border-cyan-500/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-cyan-500 opacity-40" />
+                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Gas Station Relay</span>
+                      </div>
+                      <span className="text-[8px] text-slate-600 font-mono">planned</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="text-cyan-400 font-semibold">[relay] Intercepting execution request...</div>
+                      <div className="text-slate-400">[auth] Verified zkLogin payload</div>
+                      <div className="text-slate-400">[vault] Deducting 0.05 SUI from workspace balance</div>
+                      <div className="text-brand-green font-semibold">[sponsor] Network gas paid &amp; tx committed successfully</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phase 4 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                {/* Left Side: Visual terminal */}
+                <div className="pl-12 lg:pl-0 lg:pr-16 order-2 lg:order-1">
+                  <div className="bg-[#050608]/90 border border-purple-500/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-purple-500 opacity-40" />
+                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">zkVM Prover Terminal</span>
+                      </div>
+                      <span className="text-[8px] text-slate-600 font-mono">future</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="text-purple-400 font-semibold">[prove] Generating RISC Zero receipt...</div>
+                      <div className="text-slate-400">[compute] 250M cycle count reached</div>
+                      <div className="text-slate-400">[verify] Publishing Groth16 proof to Sui</div>
+                      <div className="text-brand-green font-semibold">[chain] Execution mathematically verified</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Content */}
+                <div className="pl-12 lg:pl-16 text-left order-1 lg:order-2 relative">
+                  {/* Timeline node icon */}
+                  <div className="absolute top-1 left-[-42px] lg:left-[-52px] lg:-translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-purple-500/30 flex items-center justify-center text-purple-400 z-20">
                     <Server size={16} />
                   </div>
                   
                   <span className="inline-block px-3 py-1 rounded-full bg-purple-500/5 border border-purple-500/20 text-[9px] font-mono font-bold text-purple-400 uppercase tracking-wider mb-3">
-                    Phase 3 (Q4 2026) • zkVM Integration
+                    Phase 4 (Q1 2027) • zkVM Integration
                   </span>
                   <h3 className="text-2xl font-bold text-white font-outfit mb-3">
                     Verifiable Heavy Compute
@@ -1066,59 +1138,19 @@ const App: React.FC = () => {
                     </li>
                   </ul>
                 </div>
-
-                {/* Right Side: Visual terminal */}
-                <div className="pl-12 lg:pl-16">
-                  <div className="bg-[#050608]/90 border border-purple-500/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-2 h-full bg-purple-500 opacity-40" />
-                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">zkVM Prover Terminal</span>
-                      </div>
-                      <span className="text-[8px] text-slate-600 font-mono">future</span>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="text-purple-400 font-semibold">[prove] Generating RISC Zero receipt...</div>
-                      <div className="text-slate-400">[compute] 250M cycle count reached</div>
-                      <div className="text-slate-400">[verify] Publishing Groth16 proof to Sui</div>
-                      <div className="text-brand-green font-semibold">[chain] Execution mathematically verified</div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              {/* Phase 4 */}
+              {/* Phase 5 */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-                {/* Left Side: Visual terminal */}
-                <div className="pl-12 lg:pl-0 lg:pr-16 order-2 lg:order-1">
-                  <div className="bg-[#050608]/90 border border-brand-green/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-2 h-full bg-brand-green opacity-40" />
-                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
-                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Secure Enclave Monitor</span>
-                      </div>
-                      <span className="text-[8px] text-slate-600 font-mono">future</span>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="text-brand-green font-semibold">[tee] AWS Nitro Enclave handshakes active</div>
-                      <div className="text-slate-400">[env] Loading encrypted environment variables</div>
-                      <div className="text-slate-400">[key] Ephemeral key generated in hardware memory</div>
-                      <div className="text-brand-green font-semibold">[secure] Isolated execution pipeline sealed</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Side: Content */}
-                <div className="pl-12 lg:pl-16 text-left order-1 lg:order-2 relative">
+                {/* Left Side: Content */}
+                <div className="pl-12 lg:pl-0 lg:pr-16 text-left lg:text-right relative">
                   {/* Timeline node icon */}
-                  <div className="absolute top-1 left-[-42px] lg:left-[-52px] lg:-translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-green/30 flex items-center justify-center text-brand-green z-20">
+                  <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-green/30 flex items-center justify-center text-brand-green z-20">
                     <Shield size={16} />
                   </div>
                   
                   <span className="inline-block px-3 py-1 rounded-full bg-brand-green/5 border border-brand-green/20 text-[9px] font-mono font-bold text-brand-green uppercase tracking-wider mb-3">
-                    Phase 4 (Q1 2027) • Confidential TEE Enclaves
+                    Phase 5 (Q2 2027) • Confidential TEE Enclaves
                   </span>
                   <h3 className="text-2xl font-bold text-white font-outfit mb-3">
                     Sovereign Enclaves
@@ -1137,6 +1169,26 @@ const App: React.FC = () => {
                       <span className="text-brand-green">●</span> Native Nautilus parity
                     </li>
                   </ul>
+                </div>
+
+                {/* Right Side: Visual terminal */}
+                <div className="pl-12 lg:pl-16">
+                  <div className="bg-[#050608]/90 border border-brand-green/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-brand-green opacity-40" />
+                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
+                        <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Secure Enclave Monitor</span>
+                      </div>
+                      <span className="text-[8px] text-slate-600 font-mono">future</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="text-brand-green font-semibold">[tee] AWS Nitro Enclave handshakes active</div>
+                      <div className="text-slate-400">[env] Loading encrypted environment variables</div>
+                      <div className="text-slate-400">[key] Ephemeral key generated in hardware memory</div>
+                      <div className="text-brand-green font-semibold">[secure] Isolated execution pipeline sealed</div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
