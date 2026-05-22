@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <video src="./video/out/sui-functions-motion-graphics.mp4" width="800" controls autoplay loop muted></video>
+  <video src="https://raw.githubusercontent.com/Kellie-Brighty/sui-functions/main/video/out/sui-functions-motion-graphics.mp4" width="800" controls autoplay loop muted></video>
 </p>
 
 <p align="center">
