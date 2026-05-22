@@ -841,6 +841,64 @@ const App: React.FC = () => {
                   </div>
                 </motion.section>
 
+                {/* DEPIN COMPUTE MINER (COMING SOON) */}
+                <section className="mb-32 relative py-12">
+                  {/* Decorative glowing background elements */}
+                  <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none" />
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                    {/* Left: Content */}
+                    <div className="lg:col-span-6 text-left relative z-10">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/40 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.2)] animate-pulse">
+                        <Wallet size={10} /> DePIN Miner Economy
+                      </div>
+                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
+                        Run a Node. <br className="hidden lg:block" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-amber-400">Earn SUI.</span>
+                      </h2>
+                      <p className="text-slate-200 text-base leading-relaxed mb-8 max-w-lg font-medium">
+                        Sui-Functions is building a completely decentralized compute economy. Soon, anyone will be able to download our Docker container, stake SUI, and earn passive income by executing agentic workloads securely on their own hardware.
+                      </p>
+                      
+                      <ul className="flex flex-col gap-3 font-mono text-[11px] text-slate-400">
+                        <li className="flex items-center gap-2">
+                          <span className="text-brand-orange">✓</span> Zero DevOps — Just pull and run
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-brand-orange">✓</span> Hardware agnostic (Mac, Linux, Windows)
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-brand-orange">✓</span> Mathematically secure V8 isolation
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Right: Terminal Visual */}
+                    <div className="lg:col-span-6 relative z-10 w-full">
+                      <div className="bg-[#030407] border border-[#141624] rounded-2xl p-6 md:p-8 font-mono text-[11px] md:text-xs text-slate-300 shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-left w-full relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-orange opacity-60" />
+                        <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                          <div className="flex items-center gap-2">
+                            <Terminal size={14} className="text-brand-orange" />
+                            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Node Setup Terminal</span>
+                          </div>
+                          <span className="text-[9px] text-brand-orange font-bold px-2 py-1 bg-brand-orange/10 rounded border border-brand-orange/20">COMING SOON</span>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="text-slate-400"># 1. Pull the official decentralized runner image</div>
+                          <div className="text-white font-semibold">docker pull suifunctions/runner-node:latest</div>
+                          <div className="h-3"></div>
+                          <div className="text-slate-400"># 2. Run the node to start earning SUI</div>
+                          <div className="text-white font-semibold">docker run -d \</div>
+                          <div className="text-white font-semibold pl-6">--name sui-miner \</div>
+                          <div className="text-white font-semibold pl-6">-e SUI_PRIVATE_KEY="suiprivkey..." \</div>
+                          <div className="text-white font-semibold pl-6">suifunctions/runner-node</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
                 {/* LIVE DEMO SHOWCASE */}
                 <section className="mb-32">
                   <div className="text-center mb-16">
