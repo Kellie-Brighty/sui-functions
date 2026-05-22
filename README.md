@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  ▶️ <a href="https://youtu.be/1SjmBTgny1Q"><b>Watch the Motion Graphics Showcase on YouTube</b></a>
+  ▶️ <a href="https://youtu.be/1SjmBTgny1Q"><b>Watch showcase on youtube</b></a>
 </p>
 
 <p align="center">
