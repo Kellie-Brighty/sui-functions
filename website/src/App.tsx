@@ -148,7 +148,7 @@ const App: React.FC = () => {
                       transition={{ duration: 0.6, delay: 0.2 }}
                       className="text-base text-slate-400 leading-relaxed mb-10 max-w-lg font-normal"
                     >
-                      Sui-Functions is a production-ready, globally distributed compute layer built entirely on the Sui Network and Walrus Protocol. By replacing fragile Web2 middleware with a massive network of independent Node Operators.
+                      Sui-Functions is a production-ready, globally distributed compute layer built entirely on the Sui Network and Walrus Protocol. Replacing fragile Web2 middleware with a massive network of independent Node Operators.
                     </motion.p>
 
                     {/* Buttons */}

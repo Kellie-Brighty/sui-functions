@@ -73,7 +73,6 @@ export const Header: React.FC<HeaderProps> = ({
               className="!px-5 !py-2.5 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(56,152,255,0.3)] hover:shadow-[0_0_30px_rgba(56,152,255,0.5)] transition-shadow"
             >
               <span>Deploy Now</span>
-              <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />
             </Button>
           </div>
         </div>
@@ -106,7 +105,6 @@ export const Header: React.FC<HeaderProps> = ({
               className="!w-full !justify-center !px-5 !py-3 flex items-center gap-2 shadow-[0_0_20px_rgba(56,152,255,0.2)]"
             >
               <span>Deploy Now</span>
-              <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />
             </Button>
           </div>
         </div>
