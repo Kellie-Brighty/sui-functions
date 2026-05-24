@@ -10,15 +10,15 @@ export default {
         'off-white': '#F9FAFB',
         'slate-pro': '#1F2937',
         brand: {
-          dark: '#05060a',
-          card: '#0a0b10',
-          'card-border': '#23263b',
-          orange: '#FF7E21',
-          'orange-glow': 'rgba(255, 126, 33, 0.15)',
-          blue: '#3b82f6',
-          'blue-glow': 'rgba(59, 130, 246, 0.15)',
-          green: '#10b981',
-          'green-glow': 'rgba(16, 185, 129, 0.15)',
+          dark: '#0B101E',
+          card: '#0A1C2E',
+          'card-border': '#14304A',
+          sui: '#3898FF',
+          'sui-glow': 'rgba(56, 152, 255, 0.15)',
+          indigo: '#003B5C',
+          'indigo-glow': 'rgba(99, 102, 241, 0.15)',
+          cyan: '#6FB7B7',
+          'cyan-glow': 'rgba(6, 182, 212, 0.15)',
         }
       },
       fontFamily: {
@@ -26,8 +26,8 @@ export default {
         outfit: ['"Space Grotesk"', 'sans-serif'],
       },
       boxShadow: {
-        'orange-glow': '0 0 40px rgba(255, 126, 33, 0.15)',
-        'card-glow': '0 10px 30px -10px rgba(0,0,0,0.7), 0 0 15px rgba(255,126,33,0.05)',
+        'sui-glow': '0 0 40px rgba(56, 152, 255, 0.15)',
+        'card-glow': '0 10px 30px -10px rgba(0,0,0,0.7), 0 0 15px rgba(56, 152, 255, 0.05)',
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',

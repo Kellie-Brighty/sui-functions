@@ -61,8 +61,8 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
       keywords: ['intro', 'about', 'concept', 'what is', 'architecture', 'overview', 'serverless', 'lambda'],
       layman: (
         <div className="space-y-6 animate-fade-in-up">
-          <div className="p-5 border border-brand-orange/20 bg-brand-orange/5 rounded-2xl">
-            <h4 className="text-brand-orange font-bold text-lg mb-2 flex items-center gap-2">
+          <div className="p-5 border border-brand-sui/20 bg-brand-sui/5 rounded-2xl">
+            <h4 className="text-brand-sui font-bold text-lg mb-2 flex items-center gap-2">
               <Sparkles size={20} />
               The Decentralized Cloud Revolution
             </h4>
@@ -77,7 +77,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl">
                 <h5 className="font-semibold text-white mb-1 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-brand-orange" />
+                  <span className="w-2 h-2 rounded-full bg-brand-sui" />
                   No Web2 Middlemen
                 </h5>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -95,7 +95,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
               </div>
               <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl">
                 <h5 className="font-semibold text-white mb-1 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-brand-blue" />
+                  <span className="w-2 h-2 rounded-full bg-brand-indigo" />
                   Audited & Secure
                 </h5>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -104,7 +104,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
               </div>
               <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl">
                 <h5 className="font-semibold text-white mb-1 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-400" />
+                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
                   Connected to Smart Contracts
                 </h5>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -118,7 +118,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
       developer: (
         <div className="space-y-6 animate-fade-in-up">
           <p className="text-slate-300 leading-relaxed">
-            <strong className="text-brand-orange">Sui-Functions</strong> is a decentralized, zero-trust serverless execution framework built on the Sui Network and Walrus Storage. It enables the registration, auditing, event-driven execution, and verification of serverless scripts inside lightweight, secure V8 isolate sandboxes.
+            <strong className="text-brand-sui">Sui-Functions</strong> is a decentralized, zero-trust serverless execution framework built on the Sui Network and Walrus Storage. It enables the registration, auditing, event-driven execution, and verification of serverless scripts inside lightweight, secure V8 isolate sandboxes.
           </p>
 
           <div className="bg-[#0b0c15] border border-brand-card-border p-5 rounded-2xl space-y-3">
@@ -126,11 +126,11 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
               <div className="p-3 bg-brand-dark rounded-xl border border-brand-card-border">
                 <div className="text-slate-500 mb-1">Runtime Engine</div>
-                <div className="text-brand-orange font-bold">V8 Isolate (isolated-vm)</div>
+                <div className="text-brand-sui font-bold">V8 Isolate (isolated-vm)</div>
               </div>
               <div className="p-3 bg-brand-dark rounded-xl border border-brand-card-border">
                 <div className="text-slate-500 mb-1">Storage Layer</div>
-                <div className="text-brand-blue font-bold">Walrus Storage Blobs</div>
+                <div className="text-brand-indigo font-bold">Walrus Storage Blobs</div>
               </div>
               <div className="p-3 bg-brand-dark rounded-xl border border-brand-card-border">
                 <div className="text-slate-500 mb-1">State & Events</div>
@@ -138,7 +138,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
               </div>
               <div className="p-3 bg-brand-dark rounded-xl border border-brand-card-border">
                 <div className="text-slate-500 mb-1">Sandbox Limits</div>
-                <div className="text-amber-400 font-bold">128MB Heap, 5s Execution</div>
+                <div className="text-cyan-400 font-bold">128MB Heap, 5s Execution</div>
               </div>
             </div>
           </div>
@@ -178,7 +178,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
           <div className="space-y-4">
             {/* Pillar 1 */}
             <div className="flex gap-4 p-5 bg-brand-card border border-brand-card-border rounded-2xl">
-              <div className="p-3 bg-brand-orange/10 border border-brand-orange/30 rounded-xl h-fit text-brand-orange">
+              <div className="p-3 bg-brand-sui/10 border border-brand-sui/30 rounded-xl h-fit text-brand-sui">
                 <Settings size={24} />
               </div>
               <div>
@@ -191,7 +191,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
 
             {/* Pillar 2 */}
             <div className="flex gap-4 p-5 bg-brand-card border border-brand-card-border rounded-2xl">
-              <div className="p-3 bg-brand-blue/10 border border-brand-blue/30 rounded-xl h-fit text-brand-blue">
+              <div className="p-3 bg-brand-indigo/10 border border-brand-indigo/30 rounded-xl h-fit text-brand-indigo">
                 <Lock size={24} />
               </div>
               <div>
@@ -204,7 +204,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
 
             {/* Pillar 3 */}
             <div className="flex gap-4 p-5 bg-brand-card border border-brand-card-border rounded-2xl">
-              <div className="p-3 bg-brand-green/10 border border-brand-green/30 rounded-xl h-fit text-brand-green">
+              <div className="p-3 bg-brand-cyan/10 border border-brand-cyan/30 rounded-xl h-fit text-brand-cyan">
                 <Cpu size={24} />
               </div>
               <div>
@@ -227,7 +227,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             {/* Pillar 1 Details */}
             <div className="bg-brand-card border border-brand-card-border p-5 rounded-2xl space-y-3">
               <div className="flex justify-between items-center">
-                <span className="px-2.5 py-1 text-[10px] bg-brand-orange/10 border border-brand-orange/30 text-brand-orange font-bold uppercase rounded-lg font-mono">
+                <span className="px-2.5 py-1 text-[10px] bg-brand-sui/10 border border-brand-sui/30 text-brand-sui font-bold uppercase rounded-lg font-mono">
                   Pillar 1
                 </span>
                 <span className="text-xs text-slate-500 font-mono">sources/trigger.move</span>
@@ -241,7 +241,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             {/* Pillar 2 Details */}
             <div className="bg-brand-card border border-brand-card-border p-5 rounded-2xl space-y-3">
               <div className="flex justify-between items-center">
-                <span className="px-2.5 py-1 text-[10px] bg-brand-blue/10 border border-brand-blue/30 text-brand-blue font-bold uppercase rounded-lg font-mono">
+                <span className="px-2.5 py-1 text-[10px] bg-brand-indigo/10 border border-brand-indigo/30 text-brand-indigo font-bold uppercase rounded-lg font-mono">
                   Pillar 2
                 </span>
                 <span className="text-xs text-slate-500 font-mono">Walrus Storage Network</span>
@@ -255,7 +255,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             {/* Pillar 3 Details */}
             <div className="bg-brand-card border border-brand-card-border p-5 rounded-2xl space-y-3">
               <div className="flex justify-between items-center">
-                <span className="px-2.5 py-1 text-[10px] bg-brand-green/10 border border-brand-green/30 text-brand-green font-bold uppercase rounded-lg font-mono">
+                <span className="px-2.5 py-1 text-[10px] bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan font-bold uppercase rounded-lg font-mono">
                   Pillar 3
                 </span>
                 <span className="text-xs text-slate-500 font-mono">runner/vm_manager.ts</span>
@@ -283,7 +283,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
 
           <div className="space-y-4">
             <div className="flex gap-4 items-start">
-              <div className="w-8 h-8 rounded-full bg-brand-orange/10 border border-brand-orange/30 flex items-center justify-center text-brand-orange font-bold font-mono text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-brand-sui/10 border border-brand-sui/30 flex items-center justify-center text-brand-sui font-bold font-mono text-sm shrink-0">
                 1
               </div>
               <div>
@@ -295,7 +295,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             </div>
 
             <div className="flex gap-4 items-start">
-              <div className="w-8 h-8 rounded-full bg-brand-orange/10 border border-brand-orange/30 flex items-center justify-center text-brand-orange font-bold font-mono text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-brand-sui/10 border border-brand-sui/30 flex items-center justify-center text-brand-sui font-bold font-mono text-sm shrink-0">
                 2
               </div>
               <div>
@@ -307,7 +307,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             </div>
 
             <div className="flex gap-4 items-start">
-              <div className="w-8 h-8 rounded-full bg-brand-orange/10 border border-brand-orange/30 flex items-center justify-center text-brand-orange font-bold font-mono text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-brand-sui/10 border border-brand-sui/30 flex items-center justify-center text-brand-sui font-bold font-mono text-sm shrink-0">
                 3
               </div>
               <div>
@@ -319,7 +319,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             </div>
 
             <div className="flex gap-4 items-start">
-              <div className="w-8 h-8 rounded-full bg-brand-orange/10 border border-brand-orange/30 flex items-center justify-center text-brand-orange font-bold font-mono text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-brand-sui/10 border border-brand-sui/30 flex items-center justify-center text-brand-sui font-bold font-mono text-sm shrink-0">
                 4
               </div>
               <div>
@@ -340,12 +340,12 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
               Your function should be standard JavaScript with ES6 support, executing inside an implicit async IIFE context. You can upload using either the HTTP PUT API (recommended for client frontends) or the Walrus CLI tool:
             </p>
 
-            <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden">
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden">
               <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
                 <span>walrus-upload.sh</span>
                 <button 
                   onClick={() => handleCopy('walrus store ./hello_world.js --epochs 180', 'cmd-walrus')}
-                  className="hover:text-brand-orange transition-colors flex items-center gap-1"
+                  className="hover:text-brand-sui transition-colors flex items-center gap-1"
                 >
                   {copiedId === 'cmd-walrus' ? <Check size={12} /> : <Copy size={12} />}
                   <span>{copiedId === 'cmd-walrus' ? 'Copied' : 'Copy'}</span>
@@ -362,7 +362,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
               Alternatively, you can PUT the raw file data directly to the testnet publisher endpoint:
             </p>
             <div className="border border-brand-card-border rounded-xl overflow-hidden font-mono text-xs text-slate-350 p-4 bg-[#07080D]">
-              <span className="text-brand-blue font-bold">PUT</span> https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=5
+              <span className="text-brand-indigo font-bold">PUT</span> https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=5
             </div>
           </div>
 
@@ -372,7 +372,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
               Register the Walrus Blob ID in your project workspace on the Sui testnet smart contract. You can do this directly from the Dashboard by clicking "Add Function", or via a Sui Move transaction block:
             </p>
 
-            <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden">
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden">
               <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
                 <span>sui-register.ts</span>
                 <button 
@@ -385,14 +385,14 @@ tx.moveCall({
     tx.pure.string("W7VwX2jrIHLoY6kve6zLKR9JvaF30k_2tql-g6qcNxQ")
   ]
 });`, 'cmd-register')}
-                  className="hover:text-brand-orange transition-colors flex items-center gap-1"
+                  className="hover:text-brand-sui transition-colors flex items-center gap-1"
                 >
                   {copiedId === 'cmd-register' ? <Check size={12} /> : <Copy size={12} />}
                   <span>{copiedId === 'cmd-register' ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
               <div className="p-4 font-mono text-xs text-slate-350 bg-[#07080D] overflow-x-auto leading-relaxed">
-                <span className="text-brand-blue">const</span> tx = <span className="text-brand-orange">new</span> Transaction();<br />
+                <span className="text-brand-indigo">const</span> tx = <span className="text-brand-sui">new</span> Transaction();<br />
                 tx.moveCall({'{'}<br />
                 &nbsp;&nbsp;target: <span className="text-emerald-400">"0x5363...::trigger::register_function"</span>,<br />
                 &nbsp;&nbsp;arguments: [<br />
@@ -403,7 +403,7 @@ tx.moveCall({
                 {'});'}
               </div>
             </div>
-            <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl text-xs leading-relaxed">
+            <div className="p-3.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-xl text-xs leading-relaxed">
               <strong>💡 Status Reset:</strong> Any registration or update resets the function status to `STATUS_PENDING` (value: 0). Before a function can be executed by the daemon worker runner, it must be verified by the designated auditor, moving to `STATUS_VERIFIED` (value: 1).
             </div>
           </div>
@@ -423,12 +423,12 @@ tx.moveCall({
             </div>
 
             <h5 className="text-xs font-semibold text-white font-mono uppercase tracking-wider">2. Install dependencies and start listening:</h5>
-            <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden">
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden">
               <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
                 <span>Terminal</span>
                 <button 
                   onClick={() => handleCopy('cd runner\nnpm install\nnpm run listen', 'cmd-runner-boot')}
-                  className="hover:text-brand-orange transition-colors flex items-center gap-1"
+                  className="hover:text-brand-sui transition-colors flex items-center gap-1"
                 >
                   {copiedId === 'cmd-runner-boot' ? <Check size={12} /> : <Copy size={12} />}
                   <span>{copiedId === 'cmd-runner-boot' ? 'Copied' : 'Copy'}</span>
@@ -462,14 +462,14 @@ tx.moveCall({
           <div className="space-y-4">
             <div className="p-5 bg-brand-card border border-brand-card-border rounded-xl">
               <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                <Ticket className="text-brand-orange" size={20} />
+                <Ticket className="text-brand-sui" size={20} />
                 Example 1: E-commerce Coupon Validation
               </h4>
               <p className="text-xs text-slate-400 leading-relaxed mb-3">
                 Suppose you run an online storefront. Instead of managing coupon logic on a central server, you deploy the coupon rules script once to Walrus. When a user checks out, your app requests coupon verification on the blockchain. The nodes validate it automatically and return the percentage discount directly to the UI, securely adjusting the total price.
               </p>
               <div className="w-full flex justify-end">
-                <span className="text-[11px] text-brand-orange font-semibold flex items-center gap-1">
+                <span className="text-[11px] text-brand-sui font-semibold flex items-center gap-1">
                   Check out the code in the Code Playground section <ArrowRight size={12} />
                 </span>
               </div>
@@ -477,7 +477,7 @@ tx.moveCall({
 
             <div className="p-5 bg-brand-card border border-brand-card-border rounded-xl">
               <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                <DollarSign className="text-brand-blue" size={20} />
+                <DollarSign className="text-brand-indigo" size={20} />
                 Example 2: Sovereign Price Feed Oracles
               </h4>
               <p className="text-xs text-slate-400 leading-relaxed mb-3">
@@ -499,7 +499,7 @@ tx.moveCall({
               Create a Sui Transaction Block that performs a `moveCall` to `trigger::call_function`. Pass the target `project_id`, the registered name of the function, and your parameters formatted as a JSON string:
             </p>
 
-            <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden">
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden">
               <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
                 <span>trigger_call.ts</span>
                 <button 
@@ -517,7 +517,7 @@ tx.moveCall({
 
 // Await wallet signature and transaction execution
 const result = await signAndExecuteTransaction({ transaction: tx });`, 'js-trigger-call')}
-                  className="hover:text-brand-orange transition-colors flex items-center gap-1"
+                  className="hover:text-brand-sui transition-colors flex items-center gap-1"
                 >
                   {copiedId === 'js-trigger-call' ? <Check size={12} /> : <Copy size={12} />}
                   <span>{copiedId === 'js-trigger-call' ? 'Copied' : 'Copy'}</span>
@@ -543,7 +543,7 @@ const result = await signAndExecuteTransaction({ transaction: tx });`, 'js-trigg
               Because V8 execution is performed off-chain, the transaction submits a request and completes asynchronously. Your frontend application must query or subscribe to the `ExecutionCompleted` event type to receive the final returned data:
             </p>
 
-            <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden">
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden">
               <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
                 <span>poll_events.ts</span>
                 <button 
@@ -570,7 +570,7 @@ if (completedEvent) {
   const result = JSON.parse(completedEvent.parsedJson.result_data);
   console.log("Returned Payload:", result); // { valid: true, discount: 0.5 }
 }`, 'js-poll-events')}
-                  className="hover:text-brand-orange transition-colors flex items-center gap-1"
+                  className="hover:text-brand-sui transition-colors flex items-center gap-1"
                 >
                   {copiedId === 'js-poll-events' ? <Check size={12} /> : <Copy size={12} />}
                   <span>{copiedId === 'js-poll-events' ? 'Copied' : 'Copy'}</span>
@@ -610,10 +610,10 @@ if (completedEvent) {
             <div className="bg-brand-card border border-brand-card-border p-5 rounded-2xl">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="font-bold text-white flex items-center gap-2">
-                  <Ticket size={16} className="text-brand-orange" />
+                  <Ticket size={16} className="text-brand-sui" />
                   coupon_validator.js
                 </h4>
-                <span className="text-[10px] bg-brand-orange/10 border border-brand-orange/30 text-brand-orange font-mono rounded px-2 py-0.5">Coupon Validation</span>
+                <span className="text-[10px] bg-brand-sui/10 border border-brand-sui/30 text-brand-sui font-mono rounded px-2 py-0.5">Coupon Validation</span>
               </div>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
                 Accepts a user-supplied coupon code string inside the input parameters. If it matches a predefined list, it applies a discount and returns a success payload; otherwise, it rejects it.
@@ -630,10 +630,10 @@ if (completedEvent) {
             <div className="bg-brand-card border border-brand-card-border p-5 rounded-2xl">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="font-bold text-white flex items-center gap-2">
-                  <DollarSign size={16} className="text-brand-blue" />
+                  <DollarSign size={16} className="text-brand-indigo" />
                   sui_usd_oracle.js
                 </h4>
-                <span className="text-[10px] bg-brand-blue/10 border border-brand-blue/30 text-brand-blue font-mono rounded px-2 py-0.5">Price Feed Oracle</span>
+                <span className="text-[10px] bg-brand-indigo/10 border border-brand-indigo/30 text-brand-indigo font-mono rounded px-2 py-0.5">Price Feed Oracle</span>
               </div>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
                 Performs a secure external API call using the sandbox's customized `fetch` shim. It queries three separate public APIs sequentially as fallbacks, parses the spot price, and returns it.
@@ -658,19 +658,19 @@ if (completedEvent) {
             <h4 className="text-white font-bold text-sm border-b border-brand-card-border pb-2">Global Sandbox Environment Reference</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <div className="text-brand-orange font-bold font-mono">globalThis.input</div>
+                <div className="text-brand-sui font-bold font-mono">globalThis.input</div>
                 <div className="text-slate-400 text-[11px] leading-relaxed">
                   JSON-parsed request parameters passed by the caller (defaults to an empty object `{}`).
                 </div>
               </div>
               <div>
-                <div className="text-brand-orange font-bold font-mono">globalThis.inputData</div>
+                <div className="text-brand-sui font-bold font-mono">globalThis.inputData</div>
                 <div className="text-slate-400 text-[11px] leading-relaxed">
                   The raw string representation of the input parameters, allowing custom parser implementations.
                 </div>
               </div>
               <div>
-                <div className="text-brand-blue font-bold font-mono">globalThis.fetch(url)</div>
+                <div className="text-brand-indigo font-bold font-mono">globalThis.fetch(url)</div>
                 <div className="text-slate-400 text-[11px] leading-relaxed">
                   Shimmed fetch client. Resolves asynchronously via the host network. Exposes `.text()` and `.json()` helper methods.
                 </div>
@@ -689,10 +689,10 @@ if (completedEvent) {
             <h3 className="text-lg font-bold text-white">Full-Featured Code Snippets</h3>
             
             {/* Snippet 1: Oracle */}
-            <div className="bg-[#08090e] border border-brand-card-border rounded-2xl overflow-hidden shadow-card-glow">
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-2xl overflow-hidden shadow-card-glow">
               <div className="bg-[#0b0c14] px-5 py-3.5 border-b border-brand-card-border/60 flex items-center justify-between">
                 <div className="flex items-center gap-1.5 bg-[#0f101a] px-3.5 py-1.5 rounded-lg border border-brand-card-border/50 text-xs font-semibold text-slate-200 font-mono">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-sui animate-pulse" />
                   sui_usd_oracle.js
                 </div>
                 <button 
@@ -717,7 +717,7 @@ try {
 } catch (err) {
   return { status: "error", message: err.message };
 }`, 'code-oracle')}
-                  className="text-xs text-slate-400 hover:text-brand-orange flex items-center gap-1 transition-colors font-semibold"
+                  className="text-xs text-slate-400 hover:text-brand-sui flex items-center gap-1 transition-colors font-semibold"
                 >
                   {copiedId === 'code-oracle' ? <Check size={14} /> : <Copy size={14} />}
                   <span>{copiedId === 'code-oracle' ? 'Copied!' : 'Copy Code'}</span>
@@ -743,10 +743,10 @@ try {
             </div>
 
             {/* Snippet 2: Coupon */}
-            <div className="bg-[#08090e] border border-brand-card-border rounded-2xl overflow-hidden shadow-card-glow">
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-2xl overflow-hidden shadow-card-glow">
               <div className="bg-[#0b0c14] px-5 py-3.5 border-b border-brand-card-border/60 flex items-center justify-between">
                 <div className="flex items-center gap-1.5 bg-[#0f101a] px-3.5 py-1.5 rounded-lg border border-brand-card-border/50 text-xs font-semibold text-slate-200 font-mono">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-sui animate-pulse" />
                   coupon_validator.js
                 </div>
                 <button 
@@ -762,7 +762,7 @@ if (coupon === "V8_SANDBOX") {
   return { valid: true, discount: 0.3, code: "V8_SANDBOX" };
 }
 return { valid: false, discount: 0, reason: "Coupon code not found in workspace rules" };`, 'code-coupon')}
-                  className="text-xs text-slate-400 hover:text-brand-orange flex items-center gap-1 transition-colors font-semibold"
+                  className="text-xs text-slate-400 hover:text-brand-sui flex items-center gap-1 transition-colors font-semibold"
                 >
                   {copiedId === 'code-coupon' ? <Check size={14} /> : <Copy size={14} />}
                   <span>{copiedId === 'code-coupon' ? 'Copied!' : 'Copy Code'}</span>
@@ -783,6 +783,132 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
       )
     },
     {
+      id: 'node-operators',
+      title: 'Node Operators (A-Z)',
+      category: 'Network Participants',
+      icon: Activity,
+      keywords: ['node', 'operator', 'stake', 'earn', 'sui', 'runner', 'depin', 'miner', 'npx', 'cli'],
+      layman: (
+        <div className="space-y-6 animate-fade-in-up">
+          <p className="text-slate-300 leading-relaxed">
+            Sui-Functions relies on a decentralized network of people (just like you!) to run the code. By turning your computer into a "node", you help power the network and earn SUI in return!
+          </p>
+
+          <div className="space-y-4">
+            <div className="flex gap-4 items-start">
+              <div className="w-8 h-8 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold font-mono text-sm shrink-0">
+                1
+              </div>
+              <div>
+                <h5 className="font-semibold text-white mb-1">Stake SUI to Join</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Go to the Dashboard and click "Become an Operator". You'll need to stake a minimum of 0.5 SUI. This acts as a security deposit to ensure your node behaves honestly.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="w-8 h-8 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold font-mono text-sm shrink-0">
+                2
+              </div>
+              <div>
+                <h5 className="font-semibold text-white mb-1">Get Your Keys</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  During registration, the dashboard will help configure a secure identity for your runner. Your secret keys are automatically saved locally on your computer at `~/.sui-functions/operator.json`.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="w-8 h-8 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold font-mono text-sm shrink-0">
+                3
+              </div>
+              <div>
+                <h5 className="font-semibold text-white mb-1">Start Your Miner Engine</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Open your terminal and run the CLI command provided on the dashboard (e.g. `npx sui-functions-node --core YOUR_ADDRESS`). 
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="w-8 h-8 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold font-mono text-sm shrink-0">
+                4
+              </div>
+              <div>
+                <h5 className="font-semibold text-white mb-1">Earn Passive Income!</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Leave the terminal running. Whenever a decentralized application needs to compute a function, your node might be selected to process it. You will automatically receive SUI rewards for every successful execution!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      developer: (
+        <div className="space-y-6 animate-fade-in-up">
+          <p className="text-slate-300 leading-relaxed">
+            Becoming a decentralized Node Operator allows you to participate in the off-chain compute economy. You must run the `sui-functions-node` daemon, which interfaces directly with the Sui network and Walrus storage.
+          </p>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-white">1. Staking and Registration</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Before your node can accept workloads, you must register as a Public Runner in the smart contract registry. This requires staking a minimum of 0.5 SUI. 
+            </p>
+            <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl">
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Connect your wallet to the dashboard, navigate to the <strong>Operator Dashboard</strong>, and complete the staking transaction. The smart contract assigns you a dedicated <strong>Runner Address</strong> object.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-white">2. Configuration & Execution</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Your runner identity is securely managed locally on your machine. By default, the CLI expects your Ed25519 private key to be located at `~/.sui-functions/operator.json`.
+            </p>
+
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden">
+              <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
+                <span>terminal</span>
+                <button 
+                  onClick={() => handleCopy('export OPERATOR_KEY_PATH="~/.sui-functions/operator.json"\nnpx sui-functions-node --core <YOUR_RUNNER_ADDRESS>', 'cmd-run-node')}
+                  className="hover:text-brand-sui transition-colors flex items-center gap-1"
+                >
+                  {copiedId === 'cmd-run-node' ? <Check size={12} /> : <Copy size={12} />}
+                  <span>{copiedId === 'cmd-run-node' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+              <div className="p-4 font-mono text-xs text-slate-350 bg-[#07080D] overflow-x-auto leading-relaxed">
+                <div className="text-slate-500"># 1. (Optional) Explicitly set your key path</div>
+                <div><span className="text-brand-indigo">export</span> OPERATOR_KEY_PATH=<span className="text-emerald-400">"~/.sui-functions/operator.json"</span></div>
+                <div className="h-3"></div>
+                <div className="text-slate-500"># 2. Boot the daemon listener</div>
+                <div><span className="text-brand-sui">npx</span> sui-functions-node --core &lt;YOUR_RUNNER_ADDRESS&gt;</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-white">3. Network Operations</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Once booted, your node daemon automatically:
+            </p>
+            <ul className="list-disc list-inside text-xs text-slate-300 space-y-2 ml-2">
+              <li>Syncs with the Move smart contract trigger bus.</li>
+              <li>Pulls Javascript logic blobs from Walrus.</li>
+              <li>Isolates execution securely using Google V8 (`isolated-vm`).</li>
+              <li>Signs verifiable completion payloads and commits them back to the network.</li>
+            </ul>
+            <div className="p-3.5 bg-brand-cyan/10 border border-brand-cyan/20 text-brand-cyan rounded-xl text-xs leading-relaxed">
+              <strong>💡 Optimization:</strong> The network employs RPC pre-checks. If another node has already processed an assigned execution (or fallback task), your node will instantly abort, saving CPU cycles and network bandwidth.
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
       id: 'limits',
       title: 'Limits & Troubleshooting',
       category: 'Reference',
@@ -796,7 +922,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
             <div className="space-y-3">
               <div className="border border-brand-card-border bg-brand-card p-4 rounded-xl">
                 <h5 className="font-semibold text-white mb-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-sui animate-pulse" />
                   Why is my function stuck in "Pending Audit" state?
                 </h5>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -806,7 +932,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
 
               <div className="border border-brand-card-border bg-brand-card p-4 rounded-xl">
                 <h5 className="font-semibold text-white mb-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-sui animate-pulse" />
                   What are the sandbox memory and CPU limits?
                 </h5>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -816,7 +942,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
 
               <div className="border border-brand-card-border bg-brand-card p-4 rounded-xl">
                 <h5 className="font-semibold text-white mb-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-sui animate-pulse" />
                   Can my script access the runner's disk or file system?
                 </h5>
                 <p className="text-xs text-slate-400 leading-relaxed">
@@ -837,11 +963,11 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
               <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl space-y-1">
-                <div className="text-brand-orange font-bold">Memory Bounds</div>
+                <div className="text-brand-sui font-bold">Memory Bounds</div>
                 <div className="text-[11px] text-slate-400">128 MB heap allocation limit per isolate context.</div>
               </div>
               <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl space-y-1">
-                <div className="text-brand-blue font-bold">CPU Timeout</div>
+                <div className="text-brand-indigo font-bold">CPU Timeout</div>
                 <div className="text-[11px] text-slate-400">5000 milliseconds limit on execution threads.</div>
               </div>
               <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl space-y-1">
@@ -865,22 +991,22 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
                 </thead>
                 <tbody className="text-slate-400 divide-y divide-brand-card-border">
                   <tr>
-                    <td className="p-3 text-brand-orange font-bold">EFunctionNotFound</td>
+                    <td className="p-3 text-brand-sui font-bold">EFunctionNotFound</td>
                     <td className="p-3 leading-relaxed">The called function name is not registered in the Sui project metadata.</td>
                     <td className="p-3 leading-relaxed">Verify spelling inside the transaction call and ensure it is registered on-chain.</td>
                   </tr>
                   <tr>
-                    <td className="p-3 text-brand-orange font-bold">STATUS_PENDING (0)</td>
+                    <td className="p-3 text-brand-sui font-bold">STATUS_PENDING (0)</td>
                     <td className="p-3 leading-relaxed">Function was recently created or updated and requires an audit.</td>
                     <td className="p-3 leading-relaxed">Review the script using the Walrus Auditor tool and submit verification.</td>
                   </tr>
                   <tr>
-                    <td className="p-3 text-brand-orange font-bold">Execution timeout exceeded</td>
+                    <td className="p-3 text-brand-sui font-bold">Execution timeout exceeded</td>
                     <td className="p-3 leading-relaxed">The script took longer than 5 seconds to return or resolve a promise.</td>
                     <td className="p-3 leading-relaxed">Optimize async loops, reduce remote HTTP hops, or use parallel fetches.</td>
                   </tr>
                   <tr>
-                    <td className="p-3 text-brand-orange font-bold">Isolate memory limit exceeded</td>
+                    <td className="p-3 text-brand-sui font-bold">Isolate memory limit exceeded</td>
                     <td className="p-3 leading-relaxed">The VM exceeded the 128MB limit (e.g. infinite array push).</td>
                     <td className="p-3 leading-relaxed">Avoid storing large object arrays in memory. Keep payloads small.</td>
                   </tr>
@@ -899,8 +1025,8 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
       keywords: ['tee', 'nautilus', 'aws', 'enclaves', 'comparison', 'vs', 'decentralization'],
       layman: (
         <div className="space-y-6 animate-fade-in-up">
-          <div className="p-5 border border-brand-blue/20 bg-brand-blue/5 rounded-2xl">
-            <h4 className="text-brand-blue font-bold text-lg mb-2 flex items-center gap-2">
+          <div className="p-5 border border-brand-indigo/20 bg-brand-indigo/5 rounded-2xl">
+            <h4 className="text-brand-indigo font-bold text-lg mb-2 flex items-center gap-2">
               <ShieldCheck size={20} />
               The Decentralization Difference
             </h4>
@@ -938,29 +1064,29 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
                 <thead>
                   <tr className="bg-brand-card border-b border-brand-card-border text-slate-300">
                     <th className="p-4 border-r border-brand-card-border">Feature</th>
-                    <th className="p-4 border-r border-brand-card-border text-brand-orange">Sui-Functions</th>
+                    <th className="p-4 border-r border-brand-card-border text-brand-sui">Sui-Functions</th>
                     <th className="p-4 text-slate-400">Legacy TEEs (e.g. Nautilus)</th>
                   </tr>
                 </thead>
                 <tbody className="text-slate-300 divide-y divide-brand-card-border">
                   <tr>
                     <td className="p-4 border-r border-brand-card-border font-bold">Execution Engine</td>
-                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">V8 Isolate Sandboxes</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-sui bg-brand-sui/5">V8 Isolate Sandboxes</td>
                     <td className="p-4 text-slate-400 bg-white/5">AWS Nitro Enclaves</td>
                   </tr>
                   <tr>
                     <td className="p-4 border-r border-brand-card-border font-bold">Decentralization</td>
-                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">100% Hardware Agnostic</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-sui bg-brand-sui/5">100% Hardware Agnostic</td>
                     <td className="p-4 text-slate-400 bg-white/5">Requires active AWS account</td>
                   </tr>
                   <tr>
                     <td className="p-4 border-r border-brand-card-border font-bold">Developer UX</td>
-                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">1-Click Web Dashboard</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-sui bg-brand-sui/5">1-Click Web Dashboard</td>
                     <td className="p-4 text-slate-400 bg-white/5">Complex CLI & Cloud config</td>
                   </tr>
                   <tr>
                     <td className="p-4 border-r border-brand-card-border font-bold">Miner Network</td>
-                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">Consumer DePIN ready</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-sui bg-brand-sui/5">Consumer DePIN ready</td>
                     <td className="p-4 text-slate-400 bg-white/5">Enterprise servers only</td>
                   </tr>
                 </tbody>
@@ -997,20 +1123,20 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
           <div className="flex items-center gap-3">
             <button 
               onClick={onBackToLanding} 
-              className="text-xs font-semibold text-slate-400 hover:text-brand-orange transition-colors flex items-center gap-1.5 bg-brand-card border border-brand-card-border px-3 py-1.5 rounded-lg"
+              className="text-xs font-semibold text-slate-400 hover:text-brand-sui transition-colors flex items-center gap-1.5 bg-brand-card border border-brand-card-border px-3 py-1.5 rounded-lg"
             >
               <ChevronLeft size={14} />
               <span>Back to Home</span>
             </button>
             <span className="text-slate-500">/</span>
             <div className="flex items-center gap-2 font-semibold text-white">
-              <BookOpen size={16} className="text-brand-orange animate-pulse" />
+              <BookOpen size={16} className="text-brand-sui animate-pulse" />
               <span>Documentation Portal</span>
             </div>
           </div>
 
           <div className="text-xs font-mono text-slate-400 bg-brand-dark/50 px-3 py-1.5 rounded-lg border border-brand-card-border/40">
-            Sovereign Serverless Protocol <span className="text-brand-orange">v1.0.0</span>
+            Sovereign Serverless Protocol <span className="text-brand-sui">v1.0.0</span>
           </div>
         </div>
       )}
@@ -1029,12 +1155,12 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
               placeholder="Search guides, APIs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-brand-dark/60 border border-brand-card-border rounded-xl text-slate-200 text-sm focus:outline-none focus:border-brand-orange/60 transition-colors font-sans placeholder-slate-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-brand-dark/60 border border-brand-card-border rounded-xl text-slate-200 text-sm focus:outline-none focus:border-brand-sui/60 transition-colors font-sans placeholder-slate-500"
             />
           </div>
 
           {/* Sidebar Menu Panel */}
-          <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-4 space-y-2 backdrop-blur-md flex-shrink min-h-0 overflow-y-auto">
+          <div className="bg-[#0A1C2E]/80 border border-brand-card-border rounded-2xl p-4 space-y-2 backdrop-blur-md flex-shrink min-h-0 overflow-y-auto">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono px-3">
               Sections
             </span>
@@ -1048,13 +1174,13 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
                     onClick={() => setActiveSectionId(sec.id)}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left text-sm font-semibold transition-all duration-200 group ${
                       isActive 
-                        ? 'bg-brand-orange/10 text-brand-orange border border-brand-orange/20 shadow-orange-glow' 
+                        ? 'bg-brand-sui/10 text-brand-sui border border-brand-sui/20 shadow-sui-glow' 
                         : 'text-slate-400 hover:bg-brand-card hover:text-white border border-transparent'
                     }`}
                   >
-                    <Icon size={16} className={`transition-transform duration-200 ${isActive ? 'scale-110 text-brand-orange' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                    <Icon size={16} className={`transition-transform duration-200 ${isActive ? 'scale-110 text-brand-sui' : 'text-slate-500 group-hover:text-slate-300'}`} />
                     <span className="flex-1 truncate">{sec.title}</span>
-                    <ChevronRight size={14} className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-slate-500 ${isActive ? 'text-brand-orange opacity-100' : ''}`} />
+                    <ChevronRight size={14} className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-slate-500 ${isActive ? 'text-brand-sui opacity-100' : ''}`} />
                   </button>
                 );
               })}
@@ -1071,10 +1197,10 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
         <div className="lg:col-span-3 space-y-6 overflow-y-auto h-full pr-2 pb-20">
           
           {/* Content Header Card */}
-          <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-6 md:p-8 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="bg-[#0A1C2E]/80 border border-brand-card-border rounded-2xl p-6 md:p-8 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1">
-              <div className="text-[10px] font-mono text-brand-orange uppercase font-bold tracking-widest flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
+              <div className="text-[10px] font-mono text-brand-sui uppercase font-bold tracking-widest flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-sui" />
                 {currentSection.category}
               </div>
               <h2 className="text-2xl md:text-3xl font-extrabold text-white">{currentSection.title}</h2>
@@ -1086,7 +1212,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
                 onClick={() => setAudienceMode('layman')}
                 className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
                   audienceMode === 'layman'
-                    ? 'bg-brand-orange/10 text-brand-orange border border-brand-orange/20 shadow-orange-glow'
+                    ? 'bg-brand-sui/10 text-brand-sui border border-brand-sui/20 shadow-sui-glow'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -1097,7 +1223,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
                 onClick={() => setAudienceMode('developer')}
                 className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
                   audienceMode === 'developer'
-                    ? 'bg-brand-orange/10 text-brand-orange border border-brand-orange/20 shadow-orange-glow'
+                    ? 'bg-brand-sui/10 text-brand-sui border border-brand-sui/20 shadow-sui-glow'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -1108,7 +1234,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
           </div>
 
           {/* Content Body Panel */}
-          <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-6 md:p-8 backdrop-blur-md min-h-[400px]">
+          <div className="bg-[#0A1C2E]/80 border border-brand-card-border rounded-2xl p-6 md:p-8 backdrop-blur-md min-h-[400px]">
             {audienceMode === 'layman' ? currentSection.layman : currentSection.developer}
           </div>
 
@@ -1117,7 +1243,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
             {prevSection ? (
               <button
                 onClick={() => setActiveSectionId(prevSection.id)}
-                className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors bg-[#08090e]/80 border border-brand-card-border hover:border-brand-card-border/80 px-4 py-2.5 rounded-xl"
+                className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors bg-[#0A1C2E]/80 border border-brand-card-border hover:border-brand-card-border/80 px-4 py-2.5 rounded-xl"
               >
                 <ChevronLeft size={14} />
                 <span>Prev: {prevSection.title}</span>
@@ -1127,7 +1253,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
             {nextSection ? (
               <button
                 onClick={() => setActiveSectionId(nextSection.id)}
-                className="flex items-center gap-2 text-xs font-bold text-brand-orange hover:text-brand-orange/80 transition-colors bg-brand-orange/5 border border-brand-orange/20 hover:border-brand-orange/30 px-4 py-2.5 rounded-xl shadow-orange-glow"
+                className="flex items-center gap-2 text-xs font-bold text-brand-sui hover:text-brand-sui/80 transition-colors bg-brand-sui/5 border border-brand-sui/20 hover:border-brand-sui/30 px-4 py-2.5 rounded-xl shadow-sui-glow"
               >
                 <span>Next: {nextSection.title}</span>
                 <ChevronRight size={14} />

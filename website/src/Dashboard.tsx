@@ -319,9 +319,9 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto animate-in fade-in duration-300">
-      <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-        <div className="w-20 h-20 bg-brand-green/10 border border-brand-green/20 rounded-full flex items-center justify-center mb-6">
-          <Server size={40} className="text-brand-green" />
+      <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="w-20 h-20 bg-brand-cyan/10 border border-brand-cyan/20 rounded-full flex items-center justify-center mb-6">
+          <Server size={40} className="text-brand-cyan" />
         </div>
         <h2 className="text-3xl font-bold text-white font-outfit mb-3">Node Operator Hub</h2>
         <p className="text-slate-400 max-w-md mx-auto text-sm mb-8 leading-relaxed">
@@ -329,17 +329,17 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-8">
-          <div className="bg-[#141624] border border-[#252838] rounded-xl p-6 text-center shadow-inner">
+          <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner">
             <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Current Network APY</h4>
-            <div className="text-4xl font-extrabold text-brand-orange font-outfit">18.4%</div>
+            <div className="text-4xl font-extrabold text-brand-sui font-outfit">18.4%</div>
           </div>
-          <div className="bg-[#141624] border border-[#252838] rounded-xl p-6 text-center shadow-inner">
+          <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner">
             <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Your Staked SUI</h4>
             <div className="text-4xl font-extrabold text-white font-outfit">{isStaked ? '0.50' : '0.00'}</div>
           </div>
-          <div className="bg-[#141624] border border-[#252838] rounded-xl p-6 text-center shadow-inner">
+          <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner">
             <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Yield Earned</h4>
-            <div className="text-4xl font-extrabold text-brand-green font-outfit">0.00</div>
+            <div className="text-4xl font-extrabold text-brand-cyan font-outfit">0.00</div>
           </div>
         </div>
 
@@ -347,14 +347,14 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
           <button 
             onClick={handleStakeSui}
             disabled={isStaking}
-            className="bg-gradient-to-r from-brand-green to-emerald-500 text-white font-bold py-3.5 px-10 rounded-xl hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            className="bg-gradient-to-r from-brand-cyan to-emerald-500 text-white font-bold py-3.5 px-10 rounded-xl hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
             {isStaking ? <Activity className="animate-spin" size={18} /> : <Zap size={18} />} 
             {isStaking ? "Staking 0.5 SUI..." : "Stake 0.5 SUI & Start Processing"}
           </button>
         ) : (
-          <div className="w-full bg-[#05060a] border border-brand-green/30 rounded-xl p-6 text-left animate-in zoom-in-95 duration-300">
+          <div className="w-full bg-[#05060a] border border-brand-cyan/30 rounded-xl p-6 text-left animate-in zoom-in-95 duration-300">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-brand-green font-bold flex items-center gap-2">
+              <h4 className="text-brand-cyan font-bold flex items-center gap-2">
                 <ShieldCheck size={18} /> Staking Successful
               </h4>
             </div>
@@ -362,7 +362,7 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
             <p className="text-slate-400 text-sm mb-4">
               Your node is registered. Run this exact command in your terminal to boot the decentralized execution engine directly from Walrus.
             </p>
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-lg p-4 font-mono text-xs text-brand-orange select-all mb-6 flex justify-between items-center group">
+            <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs text-brand-sui select-all mb-6 flex justify-between items-center group">
               <span>npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</span>
               <button 
                 onClick={() => {
@@ -373,11 +373,11 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
                 className="text-slate-500 hover:text-white transition-colors p-1"
                 title="Copy Command"
               >
-                {copiedCommand ? <Check size={14} className="text-brand-green" /> : <Copy size={14} />}
+                {copiedCommand ? <Check size={14} className="text-brand-cyan" /> : <Copy size={14} />}
               </button>
             </div>
 
-            <div className="border-t border-[#252838] pt-6">
+            <div className="border-t border-[#14304A] pt-6">
               <h4 className="text-white font-bold mb-2">Link Runner Address</h4>
               <p className="text-slate-400 text-xs mb-3">
                 When your terminal boots, it will generate a Runner Address. Paste it here to authorize it to process workloads on your behalf.
@@ -389,12 +389,12 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
                   value={runnerAddress}
                   onChange={(e) => setRunnerAddress(e.target.value)}
                   disabled={isLinked}
-                  className="flex-1 bg-[#141624] border border-[#252838] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-orange disabled:opacity-50"
+                  className="flex-1 bg-[#141624] border border-[#14304A] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-sui disabled:opacity-50"
                 />
                 <button 
                   onClick={handleLinkRunner}
                   disabled={isLinked || !runnerAddress}
-                  className="bg-[#252838] hover:bg-[#2d3142] disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors"
+                  className="bg-[#14304A] hover:bg-[#2d3142] disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors"
                 >
                   {isLinked ? 'Linked ✓' : 'Authorize Node'}
                 </button>
@@ -402,10 +402,10 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
             </div>
 
             {isLinked && (
-              <div className="border-t border-[#252838] pt-6 mt-6">
+              <div className="border-t border-[#14304A] pt-6 mt-6">
                 <div className="flex justify-between items-center mb-2">
                   <h4 className="text-white font-bold">Fund Runner Gas</h4>
-                  <span className="text-xs font-mono bg-[#141624] border border-[#252838] rounded-md px-2 py-1 text-emerald-400 flex items-center gap-1">
+                  <span className="text-xs font-mono bg-[#141624] border border-[#14304A] rounded-md px-2 py-1 text-emerald-400 flex items-center gap-1">
                     <Wallet size={12}/> {runnerSuiBalance} SUI
                   </span>
                 </div>
@@ -419,12 +419,12 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
                     value={fundAmount}
                     onChange={(e) => setFundAmount(e.target.value)}
                     disabled={isFundingRunner}
-                    className="flex-1 bg-[#141624] border border-[#252838] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-orange disabled:opacity-50"
+                    className="flex-1 bg-[#141624] border border-[#14304A] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-sui disabled:opacity-50"
                   />
                   <button 
                     onClick={handleFundRunner}
                     disabled={isFundingRunner || !fundAmount}
-                    className="bg-brand-orange hover:bg-brand-orange/80 disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
+                    className="bg-brand-sui hover:bg-brand-sui/80 disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
                   >
                     {isFundingRunner ? <Activity className="animate-spin" size={16} /> : <ArrowUpRight size={16} />}
                     {isFundingRunner ? 'Sending...' : 'Fund Runner'}
@@ -436,9 +436,9 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
         )}
       </div>
 
-      <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6">
+      <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6">
         <h3 className="text-white font-bold font-outfit text-lg mb-4 flex items-center gap-2">
-          <Activity size={18} className="text-brand-orange animate-pulse" /> Live Workload Feed
+          <Activity size={18} className="text-brand-sui animate-pulse" /> Live Workload Feed
         </h3>
         <div className="bg-[#05060a] border border-[#141624] rounded-xl p-8 text-center text-slate-500 text-sm font-mono flex flex-col items-center justify-center gap-3">
           <Terminal size={24} className="text-slate-600 mb-2" />
@@ -1969,12 +1969,12 @@ const Dashboard: React.FC = () => {
             {/* Spinning Glowing Orb */}
             <div className="relative w-24 h-24 mb-8">
               {/* Outer Pulse */}
-              <div className="absolute inset-0 rounded-full border border-brand-orange/30 animate-ping opacity-60"></div>
+              <div className="absolute inset-0 rounded-full border border-brand-sui/30 animate-ping opacity-60"></div>
               {/* Spinning Track */}
-              <div className="absolute inset-0 rounded-full border-4 border-[#161824] border-t-brand-orange animate-spin"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-[#161824] border-t-brand-sui animate-spin"></div>
               {/* Inner Glow */}
-              <div className="absolute inset-4 rounded-full bg-brand-orange/5 border border-brand-orange/20 flex items-center justify-center shadow-[0_0_20px_rgba(255,126,33,0.15)]">
-                <Cpu size={24} className="text-brand-orange animate-pulse" />
+              <div className="absolute inset-4 rounded-full bg-brand-sui/5 border border-brand-sui/20 flex items-center justify-center shadow-[0_0_20px_rgba(56,152,255,0.15)]">
+                <Cpu size={24} className="text-brand-sui animate-pulse" />
               </div>
             </div>
 
@@ -1987,8 +1987,8 @@ const Dashboard: React.FC = () => {
             </p>
 
             {/* Futuristic Progress bar */}
-            <div className="w-full h-1.5 bg-[#161824] rounded-full overflow-hidden border border-[#252838]">
-              <div className="h-full bg-gradient-to-r from-brand-orange to-[#F76707] animate-pulse-width rounded-full" style={{ width: '85%' }}></div>
+            <div className="w-full h-1.5 bg-[#161824] rounded-full overflow-hidden border border-[#14304A]">
+              <div className="h-full bg-gradient-to-r from-brand-sui to-[#6FB7B7] animate-pulse-width rounded-full" style={{ width: '85%' }}></div>
             </div>
             
             <div className="flex items-center gap-2 mt-4 text-[9px] font-mono font-bold text-slate-400">
@@ -2000,7 +2000,7 @@ const Dashboard: React.FC = () => {
       )}
       
       {/* 1. Global Header Bar */}
-      <header className="h-16 w-full border-b border-[#252838] px-2.5 sm:px-6 flex items-center justify-between bg-[#08090d]/65 backdrop-blur-xl sticky top-0 z-40">
+      <header className="h-16 w-full border-b border-[#14304A] px-2.5 sm:px-6 flex items-center justify-between bg-[#08090d]/65 backdrop-blur-xl sticky top-0 z-40">
         {isMobileSearchOpen ? (
           <div ref={searchRef} className="flex items-center gap-2 w-full">
             <div className="relative flex-1">
@@ -2017,24 +2017,24 @@ const Dashboard: React.FC = () => {
                 }}
                 onFocus={() => setShowSuggestions(true)}
                 onKeyDown={handleKeyDown}
-                className="w-full bg-[#0c0d14]/70 border border-[#252838] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+                className="w-full bg-[#041829]/70 border border-[#14304A] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
               />
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0c0d14]/95 border border-[#252838] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] backdrop-blur-xl z-50 max-h-80 overflow-y-auto font-mono text-[11px] divide-y divide-[#252838]/50">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#041829]/95 border border-[#14304A] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] backdrop-blur-xl z-50 max-h-80 overflow-y-auto font-mono text-[11px] divide-y divide-[#14304A]/50">
                   {suggestions.map((item, idx) => (
                     <div
                       key={idx}
                       onClick={() => handleSuggestionClick(item)}
                       onMouseEnter={() => setSelectedSuggestionIndex(idx)}
                       className={`p-3 cursor-pointer transition-colors flex items-center justify-between gap-3 text-left ${
-                        idx === selectedSuggestionIndex ? 'bg-white/5 text-white border-l-2 border-brand-orange' : 'text-slate-300 hover:bg-white/5'
+                        idx === selectedSuggestionIndex ? 'bg-white/5 text-white border-l-2 border-brand-sui' : 'text-slate-300 hover:bg-white/5'
                       }`}
                     >
                       <div className="flex flex-col gap-0.5">
                         <span className="font-bold text-slate-200">{item.title}</span>
                         <span className="text-[10px] text-slate-400 font-sans">{item.description}</span>
                       </div>
-                      <span className="bg-[#252838] text-[9px] font-black uppercase px-2 py-0.5 rounded text-slate-300 shrink-0">
+                      <span className="bg-[#14304A] text-[9px] font-black uppercase px-2 py-0.5 rounded text-slate-300 shrink-0">
                         {getTabLabel(item.tab)}
                       </span>
                     </div>
@@ -2047,7 +2047,7 @@ const Dashboard: React.FC = () => {
                 setIsMobileSearchOpen(false);
                 setSearchQuery("");
               }}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#252838]/60 hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
+              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#14304A]/60 hover:border-brand-sui/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
             >
               <X size={16} />
             </button>
@@ -2058,12 +2058,12 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <button
                 onClick={() => setIsMobileMenuOpen(prev => !prev)}
-                className="lg:hidden p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#252838]/60 hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
+                className="lg:hidden p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#14304A]/60 hover:border-brand-sui/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
                 aria-label="Toggle Navigation Menu"
               >
                 {isMobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
               </button>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-brand-dark border border-[#252838] flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-brand-dark border border-[#14304A] flex items-center justify-center shrink-0">
                 <img src="/sui-func-logo.png" alt="Sui-Functions Logo" className="w-5 h-5 sm:w-6 sm:h-6 object-contain" />
               </div>
               <span className="text-sm sm:text-base md:text-lg font-bold tracking-tight text-white font-outfit select-none flex items-center">
@@ -2086,24 +2086,24 @@ const Dashboard: React.FC = () => {
                 }}
                 onFocus={() => setShowSuggestions(true)}
                 onKeyDown={handleKeyDown}
-                className="w-full bg-[#0c0d14]/70 border border-[#252838] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+                className="w-full bg-[#041829]/70 border border-[#14304A] rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
               />
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0c0d14]/95 border border-[#252838] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] backdrop-blur-xl z-50 max-h-80 overflow-y-auto font-mono text-[11px] divide-y divide-[#252838]/50">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#041829]/95 border border-[#14304A] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] backdrop-blur-xl z-50 max-h-80 overflow-y-auto font-mono text-[11px] divide-y divide-[#14304A]/50">
                   {suggestions.map((item, idx) => (
                     <div
                       key={idx}
                       onClick={() => handleSuggestionClick(item)}
                       onMouseEnter={() => setSelectedSuggestionIndex(idx)}
                       className={`p-3 cursor-pointer transition-colors flex items-center justify-between gap-3 text-left ${
-                        idx === selectedSuggestionIndex ? 'bg-white/5 text-white border-l-2 border-brand-orange' : 'text-slate-300 hover:bg-white/5'
+                        idx === selectedSuggestionIndex ? 'bg-white/5 text-white border-l-2 border-brand-sui' : 'text-slate-300 hover:bg-white/5'
                       }`}
                     >
                       <div className="flex flex-col gap-0.5">
                         <span className="font-bold text-slate-200">{item.title}</span>
                         <span className="text-[10px] text-slate-400 font-sans">{item.description}</span>
                       </div>
-                      <span className="bg-[#252838] text-[9px] font-black uppercase px-2 py-0.5 rounded text-slate-300 shrink-0">
+                      <span className="bg-[#14304A] text-[9px] font-black uppercase px-2 py-0.5 rounded text-slate-300 shrink-0">
                         {getTabLabel(item.tab)}
                       </span>
                     </div>
@@ -2116,7 +2116,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-1 sm:gap-3 relative shrink-0">
               <button 
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="md:hidden p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#252838]/60 hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
+                className="md:hidden p-1.5 text-slate-300 hover:text-white hover:bg-white/5 border border-[#14304A]/60 hover:border-brand-sui/40 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
                 aria-label="Open Search"
               >
                 <Search size={16} />
@@ -2128,7 +2128,7 @@ const Dashboard: React.FC = () => {
               >
                 <Bell size={18} />
                 {activeAlerts.length > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-orange shadow-[0_0_8px_#FF7E21]"></span>
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_#3898FF]"></span>
                 )}
               </button>
           
@@ -2140,7 +2140,7 @@ const Dashboard: React.FC = () => {
           </button>
 
           {/* Active Connected User Profile SUI gas balance pill */}
-          <div className="flex items-center gap-1 pl-1 sm:pl-2 border-l border-[#252838] shrink-0">
+          <div className="flex items-center gap-1 pl-1 sm:pl-2 border-l border-[#14304A] shrink-0">
             <div className="flex items-center gap-1 px-1.5 py-1 sm:gap-1.5 sm:px-2.5 sm:py-1.5 bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/30 rounded-xl transition-all duration-300 shrink-0">
               <div className="w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center font-black text-[8px] text-white shrink-0">
                 S
@@ -2154,10 +2154,10 @@ const Dashboard: React.FC = () => {
 
           {/* Active Notifications Dropdown */}
           {isNotificationDropdownOpen && (
-            <div className="absolute right-0 top-12 w-80 bg-[#0d0e15] border border-[#252838] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.95)] p-4 z-50 text-xs">
-              <div className="flex items-center justify-between border-b border-[#252838] pb-2.5 mb-3">
+            <div className="absolute right-0 top-12 w-80 bg-[#0d0e15] border border-[#14304A] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.95)] p-4 z-50 text-xs">
+              <div className="flex items-center justify-between border-b border-[#14304A] pb-2.5 mb-3">
                 <span className="font-extrabold text-slate-200 uppercase tracking-wider text-[10px]">Active Notifications</span>
-                <span className="px-2 py-0.5 rounded-full bg-brand-orange/15 text-brand-orange font-bold text-[9px]">
+                <span className="px-2 py-0.5 rounded-full bg-brand-sui/15 text-brand-sui font-bold text-[9px]">
                   {activeAlerts.length} Active
                 </span>
               </div>
@@ -2168,7 +2168,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 ) : (
                   activeAlerts.map(alert => (
-                    <div key={alert.id} className="p-2.5 rounded-xl bg-[#141622]/60 border border-[#252838]/60 flex flex-col gap-1">
+                    <div key={alert.id} className="p-2.5 rounded-xl bg-[#141622]/60 border border-[#14304A]/60 flex flex-col gap-1">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-white text-[11px] truncate">{alert.title}</span>
                         <span className="text-[9px] text-slate-400 text-right shrink-0 ml-1">{alert.time}</span>
@@ -2179,7 +2179,7 @@ const Dashboard: React.FC = () => {
                           e.stopPropagation();
                           setAcknowledgedAlertIds(prev => [...prev, alert.id]);
                         }}
-                        className="mt-1 text-[9px] font-bold text-brand-orange hover:text-orange-400 text-left border-none bg-transparent p-0 cursor-pointer self-start transition-colors"
+                        className="mt-1 text-[9px] font-bold text-brand-sui hover:text-blue-400 text-left border-none bg-transparent p-0 cursor-pointer self-start transition-colors"
                       >
                         Acknowledge Alert
                       </button>
@@ -2197,9 +2197,9 @@ const Dashboard: React.FC = () => {
       {/* Mobile Navigation Drawer */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="w-[280px] max-w-[80vw] h-full bg-[#05060a] border-r border-[#252838] flex flex-col justify-between p-5 animate-in slide-in-from-left duration-300 shadow-[5px_0_30px_rgba(0,0,0,0.8)] overflow-y-auto">
+          <div className="w-[280px] max-w-[80vw] h-full bg-[#05060a] border-r border-[#14304A] flex flex-col justify-between p-5 animate-in slide-in-from-left duration-300 shadow-[5px_0_30px_rgba(0,0,0,0.8)] overflow-y-auto">
             {/* Drawer Header with Title and close button */}
-            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-4">
+            <div className="flex items-center justify-between pb-4 border-b border-[#14304A]/60 mb-4">
               <span className="text-sm font-bold text-white font-outfit">Navigation</span>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -2211,7 +2211,7 @@ const Dashboard: React.FC = () => {
 
             <div className="flex flex-col flex-1 min-h-0 gap-6">
               {/* Active Workspace Block */}
-              <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-4 relative group shrink-0">
+              <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-4 relative group shrink-0">
                 <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Sovereign Compute</div>
                 
                 {isLoadingProjects ? (
@@ -2222,7 +2222,7 @@ const Dashboard: React.FC = () => {
                       setIsCreateProjectModalOpen(true);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-2 border border-dashed border-[#252838] text-slate-300 hover:text-brand-orange hover:border-brand-orange/40 py-2.5 rounded-xl text-xs font-bold transition-all bg-white/5"
+                    className="w-full flex items-center justify-center gap-2 border border-dashed border-[#14304A] text-slate-300 hover:text-brand-sui hover:border-brand-sui/40 py-2.5 rounded-xl text-xs font-bold transition-all bg-white/5"
                   >
                     <Plus size={14} /> Create Project
                   </button>
@@ -2235,7 +2235,7 @@ const Dashboard: React.FC = () => {
                           const proj = myProjects.find(p => p.id === e.target.value);
                           if (proj) setActiveProject(proj);
                         }}
-                        className="w-full bg-[#0c0d14] border border-[#252838] text-white rounded-xl h-10 pl-3 pr-8 font-bold text-xs cursor-pointer hover:border-brand-orange/40 transition-colors focus:outline-none appearance-none"
+                        className="w-full bg-[#041829] border border-[#14304A] text-white rounded-xl h-10 pl-3 pr-8 font-bold text-xs cursor-pointer hover:border-brand-sui/40 transition-colors focus:outline-none appearance-none"
                       >
                         {myProjects.map(p => (
                           <option key={p.id} value={p.id} className="bg-slate-950 text-slate-200 font-semibold text-xs">
@@ -2247,8 +2247,8 @@ const Dashboard: React.FC = () => {
                     </div>
                     
                     {/* Package and Project IDs for quick copy */}
-                    <div className="flex flex-col gap-1.5 mt-1 pt-1.5 border-t border-[#252838]/40">
-                      <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                    <div className="flex flex-col gap-1.5 mt-1 pt-1.5 border-t border-[#14304A]/40">
+                      <div className="flex items-center justify-between bg-[#07080c] border border-[#14304A]/40 rounded-lg p-1.5 px-2">
                         <div className="flex flex-col">
                           <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Package ID</span>
                           <span className="text-[10px] font-mono text-slate-200 mt-0.5">{PACKAGE_ID.slice(0, 6)}...{PACKAGE_ID.slice(-4)}</span>
@@ -2259,14 +2259,14 @@ const Dashboard: React.FC = () => {
                             showToast('success', 'Package ID Copied', 'Package ID has been copied to your clipboard.');
                           }}
                           title="Copy Package ID"
-                          className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                          className="text-slate-400 hover:text-brand-sui p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
                         >
                           <Copy size={11} />
                         </button>
                       </div>
 
                       {activeProject && (
-                        <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                        <div className="flex items-center justify-between bg-[#07080c] border border-[#14304A]/40 rounded-lg p-1.5 px-2">
                           <div className="flex flex-col">
                             <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Project ID</span>
                             <span className="text-[10px] font-mono text-slate-200 mt-0.5">{activeProject.id.slice(0, 6)}...{activeProject.id.slice(-4)}</span>
@@ -2277,7 +2277,7 @@ const Dashboard: React.FC = () => {
                               showToast('success', 'Project ID Copied', 'Project ID has been copied to your clipboard.');
                             }}
                             title="Copy Project ID"
-                            className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                            className="text-slate-400 hover:text-brand-sui p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
                           >
                             <Copy size={11} />
                           </button>
@@ -2290,7 +2290,7 @@ const Dashboard: React.FC = () => {
                         setIsCreateProjectModalOpen(true);
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-orange/40 hover:border-brand-orange text-brand-orange hover:bg-brand-orange/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-orange/5"
+                      className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-sui/40 hover:border-brand-sui text-brand-sui hover:bg-brand-sui/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-sui/5"
                     >
                       <Plus size={14} /> New Workspace
                     </button>
@@ -2299,13 +2299,13 @@ const Dashboard: React.FC = () => {
               </div>
 
               {/* Navigation list */}
-              <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#252838] scrollbar-track-transparent">
+              <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#14304A] scrollbar-track-transparent">
                 <nav className="flex flex-col gap-1.5">
                   <button 
                     onClick={() => { setActiveMenu('1'); setIsMobileMenuOpen(false); }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                       activeMenu === '1' 
-                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                         : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
@@ -2317,7 +2317,7 @@ const Dashboard: React.FC = () => {
                     onClick={() => { setActiveMenu('2'); setIsMobileMenuOpen(false); }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                       activeMenu === '2' 
-                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                         : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
@@ -2329,7 +2329,7 @@ const Dashboard: React.FC = () => {
                     onClick={() => { setActiveMenu('3'); setIsMobileMenuOpen(false); }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                       activeMenu === '3' 
-                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                         : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
@@ -2341,7 +2341,7 @@ const Dashboard: React.FC = () => {
                     onClick={() => { setActiveMenu('4'); setIsMobileMenuOpen(false); }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                       activeMenu === '4' 
-                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                         : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
@@ -2353,7 +2353,7 @@ const Dashboard: React.FC = () => {
                     onClick={() => { setActiveMenu('5'); setIsMobileMenuOpen(false); }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                       activeMenu === '5' 
-                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                         : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
@@ -2366,7 +2366,7 @@ const Dashboard: React.FC = () => {
                     onClick={() => { setActiveMenu('7'); setIsMobileMenuOpen(false); }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                       activeMenu === '7' 
-                        ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                        ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                         : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
@@ -2378,7 +2378,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Sidebar Footer Operations */}
-            <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4 shrink-0 mt-4">
+            <div className="flex flex-col gap-4 border-t border-[#14304A]/60 pt-4 shrink-0 mt-4">
 
               <button 
                 onClick={() => {
@@ -2390,7 +2390,7 @@ const Dashboard: React.FC = () => {
                   setIsMobileMenuOpen(false);
                 }}
                 disabled={!activeProject}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Plus size={16} /> Deploy New Function
               </button>
@@ -2399,8 +2399,8 @@ const Dashboard: React.FC = () => {
                 onClick={() => { setActiveMenu('6'); setIsMobileMenuOpen(false); }}
                 className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                   activeMenu === '6' 
-                    ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                    : 'bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] text-slate-300 hover:text-white'
+                    ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
+                    : 'bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white'
                 }`}
               >
                 <BookOpen size={16} /> Documentation
@@ -2412,7 +2412,7 @@ const Dashboard: React.FC = () => {
                   setIsMobileMenuOpen(false);
                 }}
                 disabled={!activeProject}
-                className="w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] hover:border-brand-orange/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] hover:border-brand-sui/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
               </button>
@@ -2423,7 +2423,7 @@ const Dashboard: React.FC = () => {
                     setActiveMenu('8');
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-red-500/5 border border-[#252838] hover:border-red-500/30 text-slate-300 hover:text-red-400 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  className={`w-full flex items-center justify-center gap-2 bg-[#041829]/60 hover:bg-red-500/5 border border-[#14304A] hover:border-red-500/30 text-slate-300 hover:text-red-400 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
                     activeMenu === '8' ? 'border-red-500/30 text-red-400 bg-red-500/5' : ''
                   }`}
                 >
@@ -2432,7 +2432,7 @@ const Dashboard: React.FC = () => {
               )}
 
               {/* Wallet Connector Details */}
-              <div className="bg-[#0a0b10] border border-[#252838] rounded-xl p-3 flex flex-col gap-2">
+              <div className="bg-[#0A1C2E] border border-[#14304A] rounded-xl p-3 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -2462,11 +2462,11 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-1">
         
         {/* 2. Left Navigation Sider */}
-        <aside className="w-[260px] bg-[#05060a] border-r border-[#252838]/60 hidden lg:flex flex-col justify-between p-4 sticky top-16 h-[calc(100vh-64px)] z-30">
+        <aside className="w-[260px] bg-[#05060a] border-r border-[#14304A]/60 hidden lg:flex flex-col justify-between p-4 sticky top-16 h-[calc(100vh-64px)] z-30">
           
           <div className="flex flex-col flex-1 min-h-0 gap-6">
             {/* Active Workspace Block (Fixed at Top) */}
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-4 relative group shrink-0">
+            <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-4 relative group shrink-0">
               <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Sovereign Compute</div>
               
               {isLoadingProjects ? (
@@ -2474,7 +2474,7 @@ const Dashboard: React.FC = () => {
               ) : myProjects.length === 0 ? (
                 <button 
                   onClick={() => setIsCreateProjectModalOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 border border-dashed border-[#252838] text-slate-300 hover:text-brand-orange hover:border-brand-orange/40 py-2.5 rounded-xl text-xs font-bold transition-all bg-white/5"
+                  className="w-full flex items-center justify-center gap-2 border border-dashed border-[#14304A] text-slate-300 hover:text-brand-sui hover:border-brand-sui/40 py-2.5 rounded-xl text-xs font-bold transition-all bg-white/5"
                 >
                   <Plus size={14} /> Create Project
                 </button>
@@ -2487,7 +2487,7 @@ const Dashboard: React.FC = () => {
                         const proj = myProjects.find(p => p.id === e.target.value);
                         if (proj) setActiveProject(proj);
                       }}
-                      className="w-full bg-[#0c0d14] border border-[#252838] text-white rounded-xl h-10 pl-3 pr-8 font-bold text-xs cursor-pointer hover:border-brand-orange/40 transition-colors focus:outline-none appearance-none"
+                      className="w-full bg-[#041829] border border-[#14304A] text-white rounded-xl h-10 pl-3 pr-8 font-bold text-xs cursor-pointer hover:border-brand-sui/40 transition-colors focus:outline-none appearance-none"
                     >
                       {myProjects.map(p => (
                         <option key={p.id} value={p.id} className="bg-slate-950 text-slate-200 font-semibold text-xs">
@@ -2499,8 +2499,8 @@ const Dashboard: React.FC = () => {
                   </div>
                   
                   {/* Package and Project IDs for quick copy */}
-                  <div className="flex flex-col gap-1.5 mt-1 pt-1.5 border-t border-[#252838]/40">
-                    <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                  <div className="flex flex-col gap-1.5 mt-1 pt-1.5 border-t border-[#14304A]/40">
+                    <div className="flex items-center justify-between bg-[#07080c] border border-[#14304A]/40 rounded-lg p-1.5 px-2">
                       <div className="flex flex-col">
                         <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Package ID</span>
                         <span className="text-[10px] font-mono text-slate-200 mt-0.5">{PACKAGE_ID.slice(0, 6)}...{PACKAGE_ID.slice(-4)}</span>
@@ -2511,14 +2511,14 @@ const Dashboard: React.FC = () => {
                           showToast('success', 'Package ID Copied', 'Package ID has been copied to your clipboard.');
                         }}
                         title="Copy Package ID"
-                        className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                        className="text-slate-400 hover:text-brand-sui p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
                       >
                         <Copy size={11} />
                       </button>
                     </div>
 
                     {activeProject && (
-                      <div className="flex items-center justify-between bg-[#07080c] border border-[#252838]/40 rounded-lg p-1.5 px-2">
+                      <div className="flex items-center justify-between bg-[#07080c] border border-[#14304A]/40 rounded-lg p-1.5 px-2">
                         <div className="flex flex-col">
                           <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider leading-none">Project ID</span>
                           <span className="text-[10px] font-mono text-slate-200 mt-0.5">{activeProject.id.slice(0, 6)}...{activeProject.id.slice(-4)}</span>
@@ -2529,7 +2529,7 @@ const Dashboard: React.FC = () => {
                             showToast('success', 'Project ID Copied', 'Project ID has been copied to your clipboard.');
                           }}
                           title="Copy Project ID"
-                          className="text-slate-400 hover:text-brand-orange p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
+                          className="text-slate-400 hover:text-brand-sui p-1 transition-colors hover:bg-white/5 rounded-md cursor-pointer"
                         >
                           <Copy size={11} />
                         </button>
@@ -2539,7 +2539,7 @@ const Dashboard: React.FC = () => {
 
                   <button 
                     onClick={() => setIsCreateProjectModalOpen(true)}
-                    className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-orange/40 hover:border-brand-orange text-brand-orange hover:bg-brand-orange/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-orange/5"
+                    className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-sui/40 hover:border-brand-sui text-brand-sui hover:bg-brand-sui/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-sui/5"
                   >
                     <Plus size={14} /> New Workspace
                   </button>
@@ -2548,13 +2548,13 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Scrollable Main Menus Section */}
-            <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#252838] scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#14304A] scrollbar-track-transparent">
               <nav className="flex flex-col gap-1.5">
                 <button 
                   onClick={() => setActiveMenu('1')}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                     activeMenu === '1' 
-                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                       : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -2566,7 +2566,7 @@ const Dashboard: React.FC = () => {
                   onClick={() => setActiveMenu('2')}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                     activeMenu === '2' 
-                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                       : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -2578,7 +2578,7 @@ const Dashboard: React.FC = () => {
                   onClick={() => setActiveMenu('3')}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                     activeMenu === '3' 
-                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                       : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -2590,7 +2590,7 @@ const Dashboard: React.FC = () => {
                   onClick={() => setActiveMenu('4')}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                     activeMenu === '4' 
-                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                       : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -2602,7 +2602,7 @@ const Dashboard: React.FC = () => {
                   onClick={() => setActiveMenu('5')}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                     activeMenu === '5' 
-                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                       : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -2615,7 +2615,7 @@ const Dashboard: React.FC = () => {
                   onClick={() => setActiveMenu('7')}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                     activeMenu === '7' 
-                      ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
+                      ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
                       : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -2627,7 +2627,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Sidebar Footer Operations (Fixed at Bottom) */}
-          <div className="flex flex-col gap-4 border-t border-[#252838]/60 pt-4 shrink-0 mt-4">
+          <div className="flex flex-col gap-4 border-t border-[#14304A]/60 pt-4 shrink-0 mt-4">
             
 
             
@@ -2641,7 +2641,7 @@ const Dashboard: React.FC = () => {
                 setIsRegisterModalOpen(true);
               }}
               disabled={!activeProject}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Plus size={16} /> Deploy New Function
             </button>
@@ -2650,8 +2650,8 @@ const Dashboard: React.FC = () => {
               onClick={() => setActiveMenu('6')}
               className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
                 activeMenu === '6' 
-                  ? 'bg-gradient-to-r from-brand-orange/10 to-brand-orange/5 border border-brand-orange/20 text-brand-orange shadow-[inset_0_1px_12px_rgba(255,126,33,0.08)]' 
-                  : 'bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] text-slate-300 hover:text-white'
+                  ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
+                  : 'bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white'
               }`}
             >
               <BookOpen size={16} /> Documentation
@@ -2661,7 +2661,7 @@ const Dashboard: React.FC = () => {
             <button 
               onClick={() => setIsSettingsModalOpen(true)}
               disabled={!activeProject}
-              className="w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-white/5 border border-[#252838] hover:border-brand-orange/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] hover:border-brand-sui/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
             </button>
@@ -2669,7 +2669,7 @@ const Dashboard: React.FC = () => {
             {isAdmin && (
               <button 
                 onClick={() => setActiveMenu('8')}
-                className={`w-full flex items-center justify-center gap-2 bg-[#0c0d14]/60 hover:bg-red-500/5 border border-[#252838] hover:border-red-500/30 text-slate-300 hover:text-red-400 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center justify-center gap-2 bg-[#041829]/60 hover:bg-red-500/5 border border-[#14304A] hover:border-red-500/30 text-slate-300 hover:text-red-400 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
                   activeMenu === '8' ? 'border-red-500/30 text-red-400 bg-red-500/5' : ''
                 }`}
               >
@@ -2678,7 +2678,7 @@ const Dashboard: React.FC = () => {
             )}
 
             {/* Wallet Connector Details */}
-            <div className="bg-[#0a0b10] border border-[#252838] rounded-xl p-3 flex flex-col gap-2">
+            <div className="bg-[#0A1C2E] border border-[#14304A] rounded-xl p-3 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -2702,12 +2702,12 @@ const Dashboard: React.FC = () => {
           
           {/* Persona Toggle */}
           <div className="flex justify-center mb-2">
-            <div className="bg-[#0a0b10] p-1.5 rounded-2xl border border-[#252838] flex items-center gap-2 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+            <div className="bg-[#0A1C2E] p-1.5 rounded-2xl border border-[#14304A] flex items-center gap-2 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
               <button
                 onClick={() => setPersona('developer')}
                 className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'developer'
-                    ? 'bg-gradient-to-r from-brand-orange/20 to-[#F76707]/10 text-brand-orange border border-brand-orange/30 shadow-[0_0_15px_rgba(255,126,33,0.15)]'
+                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[0_0_15px_rgba(56,152,255,0.15)]'
                     : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
                 }`}
               >
@@ -2717,7 +2717,7 @@ const Dashboard: React.FC = () => {
                 onClick={() => setPersona('operator')}
                 className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'operator'
-                    ? 'bg-gradient-to-r from-brand-green/20 to-emerald-500/10 text-brand-green border border-brand-green/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                    ? 'bg-gradient-to-r from-brand-cyan/20 to-emerald-500/10 text-brand-cyan border border-brand-cyan/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
                     : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
                 }`}
               >
@@ -2732,9 +2732,9 @@ const Dashboard: React.FC = () => {
             <>
               {/* Global Unconfigured Runner Alert */}
           {activeProject && (!activeProject.runnerAddress || activeProject.runnerAddress === "0x0" || activeProject.runnerAddress === "0x0000000000000000000000000000000000000000000000000000000000000000" || /^0x0+$/.test(activeProject.runnerAddress)) && (
-            <div className="bg-amber-950/15 border border-amber-500/30 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_4px_20px_rgba(245,158,11,0.05)] animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="bg-amber-950/15 border border-cyan-500/30 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_4px_20px_rgba(6,182,212,0.05)] animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500 shrink-0">
                   <AlertTriangle size={20} />
                 </div>
                 <div>
@@ -2746,7 +2746,7 @@ const Dashboard: React.FC = () => {
               </div>
               <button 
                 onClick={() => setIsSettingsModalOpen(true)}
-                className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 Configure Workspace Runner
               </button>
@@ -2771,7 +2771,7 @@ const Dashboard: React.FC = () => {
                   <button 
                     onClick={handleExportData}
                     disabled={!projectEvents || projectEvents.length === 0}
-                    className="flex items-center gap-1.5 bg-[#0c0d14] border border-[#252838] rounded-xl px-3.5 py-2 text-xs font-bold text-slate-200 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center gap-1.5 bg-[#041829] border border-[#14304A] rounded-xl px-3.5 py-2 text-xs font-bold text-slate-200 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <Download size={12} />
                     Export Data
@@ -2783,7 +2783,7 @@ const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 
                 {/* 1. Cluster Health */}
-                <div id="metric-cluster-health" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-cluster-health" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-5 relative group hover:border-brand-sui/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Cluster Health</span>
                     <Activity size={16} className="text-emerald-400" />
@@ -2799,7 +2799,7 @@ const Dashboard: React.FC = () => {
                       <div 
                       key={s} 
                       className={`h-1.5 flex-1 rounded-full ${
-                        totalInvocations > 0 && totalCompletions === 0 && s === 5 ? 'bg-amber-500/20' : 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
+                        totalInvocations > 0 && totalCompletions === 0 && s === 5 ? 'bg-cyan-500/20' : 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
                       }`}
                       ></div>
                     ))}
@@ -2807,7 +2807,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* 2. Avg Latency */}
-                <div id="metric-avg-latency" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-avg-latency" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-5 relative group hover:border-brand-sui/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Avg Latency (P99)</span>
                     <Cpu size={16} className="text-blue-400" />
@@ -2834,7 +2834,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* 3. Success Rate */}
-                <div id="metric-success-rate" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-success-rate" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-5 relative group hover:border-brand-sui/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Success Rate</span>
                     <CheckCircle size={16} className="text-emerald-400" />
@@ -2843,29 +2843,29 @@ const Dashboard: React.FC = () => {
                   <div className="text-xs text-emerald-400 font-bold font-mono mt-1 flex items-center gap-1">
                     <span>✓</span> Dynamic execution validation
                   </div>
-                  <div className="flex items-center justify-between border-t border-[#252838]/60 pt-3 mt-4 text-xs text-slate-300 font-mono">
+                  <div className="flex items-center justify-between border-t border-[#14304A]/60 pt-3 mt-4 text-xs text-slate-300 font-mono">
                     <div>OK: <span className="text-white font-bold">{totalCompletions}</span></div>
                     <div>ERR: <span className="text-red-400 font-bold">{totalInvocations - totalCompletions}</span></div>
                   </div>
                 </div>
 
                 {/* 4. Total Invocations */}
-                <div id="metric-total-invocations" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-5 relative group hover:border-brand-orange/30 transition-colors">
+                <div id="metric-total-invocations" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-5 relative group hover:border-brand-sui/30 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-slate-200 font-bold uppercase tracking-wider">Total Invocations</span>
-                    <Sparkles size={16} className="text-brand-orange" />
+                    <Sparkles size={16} className="text-brand-sui" />
                   </div>
                   <h3 className="text-3xl font-black text-white font-outfit">
                     {totalInvocations}
                   </h3>
-                  <div className="text-xs text-brand-orange font-bold font-mono mt-1 flex items-center gap-1">
+                  <div className="text-xs text-brand-sui font-bold font-mono mt-1 flex items-center gap-1">
                     <span>▲</span> On-chain events queried
                   </div>
 
                   {/* Horizontal visual progress uploader bar */}
-                  <div className="w-full bg-[#252838] h-1.5 rounded-full mt-6 overflow-hidden">
+                  <div className="w-full bg-[#14304A] h-1.5 rounded-full mt-6 overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-brand-orange to-[#F76707] rounded-full shadow-[0_0_8px_#FF7E21]"
+                      className="h-full bg-gradient-to-r from-brand-sui to-[#6FB7B7] rounded-full shadow-[0_0_8px_#3898FF]"
                       style={{ width: successRateString }}
                     ></div>
                   </div>
@@ -2877,7 +2877,7 @@ const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 
                 {/* Stacked Chart container */}
-                <div id="overview-execution-volume" className="xl:col-span-2 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
+                <div id="overview-execution-volume" className="xl:col-span-2 bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 relative">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
                       Execution Volume (Global)
@@ -2889,14 +2889,14 @@ const Dashboard: React.FC = () => {
                         SUI EVENT BUS
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-brand-orange/40 border border-brand-orange/50"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-brand-sui/40 border border-brand-sui/50"></span>
                         WALRUS WORKERS
                       </div>
                     </div>
                   </div>
 
                   {/* High fidelity pure CSS bar chart component */}
-                  <div className="flex items-end justify-between h-[280px] pt-6 pb-2 border-b border-[#252838]/70">
+                  <div className="flex items-end justify-between h-[280px] pt-6 pb-2 border-b border-[#14304A]/70">
                     {chartData.map((data, i) => {
                       const suiHeight = `${data.sui}%`;
                       const walrusHeight = `${data.walrus}%`;
@@ -2904,18 +2904,18 @@ const Dashboard: React.FC = () => {
                         <div key={i} className="flex flex-col items-center flex-1 group">
                           <div className="relative w-7 sm:w-10 h-[220px] flex flex-col justify-end gap-[2px] transition-all duration-300 group-hover:scale-y-[1.03] origin-bottom cursor-pointer">
                             {/* Premium Pure-CSS Hover Tooltip */}
-                            <div className="absolute bottom-[230px] left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-center bg-[#0d0e15] border border-[#252838] px-3.5 py-2.5 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.95)] z-50 text-[10px] min-w-[130px] pointer-events-none transition-all duration-200 select-none">
+                            <div className="absolute bottom-[230px] left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-center bg-[#0d0e15] border border-[#14304A] px-3.5 py-2.5 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.95)] z-50 text-[10px] min-w-[130px] pointer-events-none transition-all duration-200 select-none">
                               <span className="font-mono text-slate-400 font-bold mb-1.5">{data.label} Window</span>
                               <div className="flex items-center justify-between w-full gap-3 text-blue-400 font-bold mb-1">
                                 <span>Sui Triggers:</span>
                                 <span>{data.rawSui}</span>
                               </div>
-                              <div className="flex items-center justify-between w-full gap-3 text-brand-orange font-bold">
+                              <div className="flex items-center justify-between w-full gap-3 text-brand-sui font-bold">
                                 <span>Walrus Execs:</span>
                                 <span>{data.rawWalrus}</span>
                               </div>
                               {/* Bottom CSS Pointer Triangle */}
-                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0d0e15] border-r border-b border-[#252838] rotate-45"></div>
+                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0d0e15] border-r border-b border-[#14304A] rotate-45"></div>
                             </div>
                             {/* Top stack: Sui workload */}
                             <div 
@@ -2927,9 +2927,9 @@ const Dashboard: React.FC = () => {
                             {/* Bottom stack: Walrus workload */}
                             <div 
                               style={{ height: walrusHeight }}
-                              className="w-full bg-brand-orange/20 border-l border-r border-brand-orange/40 rounded-b-[4px] relative group-hover:bg-brand-orange/30 transition-colors duration-200"
+                              className="w-full bg-brand-sui/20 border-l border-r border-brand-sui/40 rounded-b-[4px] relative group-hover:bg-brand-sui/30 transition-colors duration-200"
                             >
-                              <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-orange/60 shadow-[0_-2px_10px_rgba(255,126,33,0.5)]"></div>
+                              <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-sui/60 shadow-[0_-2px_10px_rgba(56,152,255,0.5)]"></div>
                             </div>
                           </div>
                           <span className="text-xs text-slate-200 font-mono font-bold mt-3 select-none">{data.label}</span>
@@ -2940,7 +2940,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Active Alerts Widget */}
-                <div id="overview-active-alerts" className="xl:col-span-1 bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 flex flex-col">
+                <div id="overview-active-alerts" className="xl:col-span-1 bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 flex flex-col">
                   <div className="flex items-center justify-between mb-5">
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-outfit">
                       Active Alerts
@@ -2962,7 +2962,7 @@ const Dashboard: React.FC = () => {
                             ? 'bg-red-500/5 border-red-500/20 hover:border-red-500/40' 
                             : alert.severity === 'info'
                             ? 'bg-blue-500/5 border-blue-500/20 hover:border-blue-500/40'
-                            : 'bg-amber-500/5 border-amber-500/20 hover:border-amber-500/40'
+                            : 'bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-500/40'
                         }`}
                       >
                         {alert.severity === 'info' ? (
@@ -2976,7 +2976,7 @@ const Dashboard: React.FC = () => {
                             className={`mt-0.5 flex-shrink-0 ${
                               alert.severity === 'high' || alert.severity === 'error' 
                                 ? 'text-red-400' 
-                                : 'text-amber-500'
+                                : 'text-cyan-500'
                             }`} 
                           />
                         )}
@@ -3011,12 +3011,12 @@ const Dashboard: React.FC = () => {
               </div>
 
               {/* Bottom Section: Top Performing Functions Table */}
-              <div id="overview-top-functions" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 relative">
+              <div id="overview-top-functions" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 relative">
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
                     Top Performing Functions
                   </span>
-                  <button className="text-xs font-bold text-brand-orange hover:underline bg-transparent border-none">
+                  <button className="text-xs font-bold text-brand-sui hover:underline bg-transparent border-none">
                     View Performance Suite
                   </button>
                 </div>
@@ -3024,7 +3024,7 @@ const Dashboard: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-[#252838]/70 text-xs text-slate-200 font-bold uppercase tracking-wider">
+                      <tr className="border-b border-[#14304A]/70 text-xs text-slate-200 font-bold uppercase tracking-wider">
                         <th className="pb-3.5 pl-2">Function Name</th>
                         <th className="pb-3.5">Invocations</th>
                         <th className="pb-3.5">Success Rate</th>
@@ -3034,7 +3034,7 @@ const Dashboard: React.FC = () => {
                         <th className="pb-3.5 text-right pr-2">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="text-xs text-slate-300 font-medium divide-y divide-[#252838]/50">
+                    <tbody className="text-xs text-slate-300 font-medium divide-y divide-[#14304A]/50">
                       {/* 1. Dynamic Functions from Sui if exist */}
                       {myFunctions.map((fn, idx) => {
                         // Count triggers
@@ -3083,7 +3083,7 @@ const Dashboard: React.FC = () => {
                             }}
                             className={`group transition-colors ${fn.status === 1 ? 'hover:bg-white/5 cursor-pointer' : 'opacity-85 hover:bg-red-500/5 cursor-not-allowed'}`}
                           >
-                            <td className="py-4 pl-2 font-mono font-bold text-white group-hover:text-brand-orange transition-colors">
+                            <td className="py-4 pl-2 font-mono font-bold text-white group-hover:text-brand-sui transition-colors">
                               {fn.name}
                             </td>
                             <td className="py-4 font-mono">{fnInvocations.toLocaleString()}</td>
@@ -3095,8 +3095,8 @@ const Dashboard: React.FC = () => {
                             <td className="py-4">
                               <div className="flex items-center gap-2">
                                 {fn.status === 0 && (
-                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
                                     Pending Audit
                                   </span>
                                 )}
@@ -3117,7 +3117,7 @@ const Dashboard: React.FC = () => {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       onClick={(e) => e.stopPropagation()}
-                                      className="text-[9px] font-black uppercase text-brand-orange hover:text-orange-400 hover:underline transition-colors flex items-center gap-0.5"
+                                      className="text-[9px] font-black uppercase text-brand-sui hover:text-blue-400 hover:underline transition-colors flex items-center gap-0.5"
                                     >
                                       Auditor <ArrowUpRight size={10} />
                                     </a>
@@ -3134,7 +3134,7 @@ const Dashboard: React.FC = () => {
                                   setEditTriggerConfig(fn.triggerConfig || "{}");
                                   setIsEditTriggerModalOpen(true);
                                 }}
-                                className="px-2.5 py-1 text-[10px] font-bold uppercase rounded bg-[#252838] hover:bg-[#343850] text-[#F56910] hover:text-white transition-all cursor-pointer border border-[#F56910]/20"
+                                className="px-2.5 py-1 text-[10px] font-bold uppercase rounded bg-[#14304A] hover:bg-[#343850] text-[#F56910] hover:text-white transition-all cursor-pointer border border-[#F56910]/20"
                               >
                                 Edit Trigger
                               </button>
@@ -3160,7 +3160,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 2: Registered Functions */}
           {activeMenu === '2' && (
-            <div id="functions-header" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300">
+            <div id="functions-header" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300">
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
@@ -3174,7 +3174,7 @@ const Dashboard: React.FC = () => {
                   <button 
                     onClick={fetchMyFunctions} 
                     disabled={!activeProject}
-                    className="flex items-center gap-1.5 bg-[#0c0d14] border border-[#252838] hover:text-white rounded-xl px-4 py-2 text-xs font-bold text-slate-300 transition-colors disabled:opacity-40"
+                    className="flex items-center gap-1.5 bg-[#041829] border border-[#14304A] hover:text-white rounded-xl px-4 py-2 text-xs font-bold text-slate-300 transition-colors disabled:opacity-40"
                   >
                     <RefreshCw size={14} className={isLoadingFunctions ? "animate-spin" : ""} />
                     Sync Registry
@@ -3182,7 +3182,7 @@ const Dashboard: React.FC = () => {
                   <button 
                     onClick={() => setIsRegisterModalOpen(true)}
                     disabled={!activeProject}
-                    className="flex items-center gap-1.5 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white rounded-xl px-4 py-2 text-xs font-bold shadow-[0_4px_12px_rgba(255,126,33,0.2)] transition-all active:scale-95 disabled:opacity-40"
+                    className="flex items-center gap-1.5 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white rounded-xl px-4 py-2 text-xs font-bold shadow-[0_4px_12px_rgba(56,152,255,0.2)] transition-all active:scale-95 disabled:opacity-40"
                   >
                     <Plus size={14} />
                     Register Function
@@ -3198,11 +3198,11 @@ const Dashboard: React.FC = () => {
                 </div>
               ) : isLoadingFunctions ? (
                 <div className="flex flex-col items-center justify-center py-24 opacity-80">
-                  <div className="w-10 h-10 border-2 border-[#252838] border-t-brand-orange rounded-full animate-spin mb-4" />
+                  <div className="w-10 h-10 border-2 border-[#14304A] border-t-brand-sui rounded-full animate-spin mb-4" />
                   <span className="text-xs font-extrabold text-slate-200">Reading dynamic tables...</span>
                 </div>
               ) : myFunctions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 bg-[#0c0d14] border border-[#252838] rounded-2xl border-dashed">
+                <div className="flex flex-col items-center justify-center py-20 bg-[#041829] border border-[#14304A] rounded-2xl border-dashed">
                   <Code size={40} className="text-slate-200 mb-3" />
                   <span className="text-xs font-bold text-slate-200">No Custom Functions Deployed Yet</span>
                   <span className="text-xs text-slate-200 mt-1 max-w-sm text-center leading-relaxed font-medium">
@@ -3210,7 +3210,7 @@ const Dashboard: React.FC = () => {
                   </span>
                   <button 
                     onClick={() => setIsRegisterModalOpen(true)}
-                    className="mt-4 bg-[#252838] hover:bg-[#2d3047] text-brand-orange px-4 py-2 rounded-xl text-xs font-bold transition-colors border border-brand-orange/30"
+                    className="mt-4 bg-[#14304A] hover:bg-[#2d3047] text-brand-sui px-4 py-2 rounded-xl text-xs font-bold transition-colors border border-brand-sui/30"
                   >
                     Upload first function
                   </button>
@@ -3224,17 +3224,17 @@ const Dashboard: React.FC = () => {
                         setTriggerFunctionName(fn.name);
                         setActiveMenu('3');
                       }}
-                      className="p-5 border border-[#252838] rounded-xl bg-[#0c0d14] hover:border-brand-orange/40 hover:bg-[#0c0d14]/80 transition-all cursor-pointer group"
+                      className="p-5 border border-[#14304A] rounded-xl bg-[#041829] hover:border-brand-sui/40 hover:bg-[#041829]/80 transition-all cursor-pointer group"
                     >
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-white/5 border border-[#252838] rounded-xl flex items-center justify-center group-hover:border-brand-orange/20 transition-colors">
-                            <Code size={16} className="text-brand-orange" />
+                          <div className="w-9 h-9 bg-white/5 border border-[#14304A] rounded-xl flex items-center justify-center group-hover:border-brand-sui/20 transition-colors">
+                            <Code size={16} className="text-brand-sui" />
                           </div>
-                          <span className="font-bold text-sm text-white group-hover:text-brand-orange transition-colors font-mono">{fn.name}</span>
+                          <span className="font-bold text-sm text-white group-hover:text-brand-sui transition-colors font-mono">{fn.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="bg-brand-orange/20 border border-brand-orange/30 text-brand-orange text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
+                          <span className="bg-brand-sui/20 border border-brand-sui/30 text-brand-sui text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
                             VERSION {fn.version}
                           </span>
                           <button
@@ -3248,12 +3248,12 @@ const Dashboard: React.FC = () => {
                         </div>
                       </div>
                       
-                      <div className="bg-[#05060a] p-3 rounded-lg border border-[#252838]/60 flex items-center justify-between mb-3">
+                      <div className="bg-[#05060a] p-3 rounded-lg border border-[#14304A]/60 flex items-center justify-between mb-3">
                         <span className="text-xs text-slate-300 font-mono truncate mr-4">Blob ID: {fn.blobId}</span>
-                        <Play size={12} className="text-slate-300 group-hover:text-brand-orange transition-colors flex-shrink-0" />
+                        <Play size={12} className="text-slate-300 group-hover:text-brand-sui transition-colors flex-shrink-0" />
                       </div>
 
-                      <div className="bg-[#05060a]/60 p-3 rounded-lg border border-[#252838]/40 flex items-center justify-between mb-3 text-xs">
+                      <div className="bg-[#05060a]/60 p-3 rounded-lg border border-[#14304A]/40 flex items-center justify-between mb-3 text-xs">
                         <div className="flex items-center gap-2 text-slate-300">
                           <Sliders size={12} className="text-[#F56910]" />
                           <span className="font-semibold text-slate-400">Trigger:</span>
@@ -3269,17 +3269,17 @@ const Dashboard: React.FC = () => {
                             setEditTriggerConfig(fn.triggerConfig || "{}");
                             setIsEditTriggerModalOpen(true);
                           }}
-                          className="text-[10px] text-[#F56910] hover:text-orange-400 font-bold uppercase transition-colors bg-transparent border-none cursor-pointer flex items-center gap-1"
+                          className="text-[10px] text-[#F56910] hover:text-blue-400 font-bold uppercase transition-colors bg-transparent border-none cursor-pointer flex items-center gap-1"
                         >
                           <Settings size={10} /> Edit Trigger
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#252838]/30">
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#14304A]/30">
                         <div className="flex items-center gap-1.5">
                           {fn.status === 0 && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
                               Pending Audit
                             </span>
                           )}
@@ -3304,11 +3304,11 @@ const Dashboard: React.FC = () => {
                               handleRequestVerification(fn.name);
                             }}
                             disabled={isRequestingVerification !== null}
-                            className="text-[9px] font-black uppercase bg-[#252838] hover:bg-[#2d3047] text-brand-orange hover:text-orange-400 border border-brand-orange/20 px-2.5 py-1 rounded-xl transition-all cursor-pointer flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="text-[9px] font-black uppercase bg-[#14304A] hover:bg-[#2d3047] text-brand-sui hover:text-blue-400 border border-brand-sui/20 px-2.5 py-1 rounded-xl transition-all cursor-pointer flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             {isRequestingVerification === fn.name ? (
                               <>
-                                <span className="w-2.5 h-2.5 border-2 border-brand-orange/20 border-t-brand-orange rounded-full animate-spin"></span>
+                                <span className="w-2.5 h-2.5 border-2 border-brand-sui/20 border-t-brand-sui rounded-full animate-spin"></span>
                                 Requesting...
                               </>
                             ) : (
@@ -3332,10 +3332,10 @@ const Dashboard: React.FC = () => {
               
               {/* Massive Logs Terminal */}
               <div id="logs-terminal" className="xl:col-span-2">
-                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 h-full flex flex-col">
+                <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-5">
                     <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit flex items-center gap-2">
-                      <Terminal size={14} className="text-brand-orange" />
+                      <Terminal size={14} className="text-brand-sui" />
                       Live Execution Sandbox Terminal
                     </span>
                     {/* Indicator dots */}
@@ -3347,7 +3347,7 @@ const Dashboard: React.FC = () => {
                   </div>
 
                   {/* Terminal Area */}
-                  <div className="bg-[#05060a] rounded-xl p-5 h-[500px] flex flex-col font-mono text-xs shadow-inner relative border border-[#252838]/60">
+                  <div className="bg-[#05060a] rounded-xl p-5 h-[500px] flex flex-col font-mono text-xs shadow-inner relative border border-[#14304A]/60">
                     <div className="flex-1 overflow-y-auto pr-1">
                       {logs.map((log, i) => (
                         <div key={i} className="mb-2.5 flex gap-4 animate-in fade-in slide-in-from-left-2 duration-150">
@@ -3355,7 +3355,7 @@ const Dashboard: React.FC = () => {
                           <span className={`
                             ${log.includes('Event') || log.includes('Trigger') ? 'text-blue-400 font-medium' : ''}
                             ${log.includes('Success') || log.includes('Registered') ? 'text-emerald-400 font-bold' : ''}
-                            ${log.includes('[Transaction]') ? 'text-brand-orange font-medium' : ''}
+                            ${log.includes('[Transaction]') ? 'text-brand-sui font-medium' : ''}
                             ${!log.includes('Event') && !log.includes('Success') && !log.includes('[Transaction]') ? 'text-slate-200' : ''}
                           `}>
                             {log}
@@ -3365,7 +3365,7 @@ const Dashboard: React.FC = () => {
 
                       {logs.length === 0 && (
                         <div className="flex flex-col items-center justify-center h-full opacity-60 py-20">
-                          <Activity size={32} className="mb-3.5 animate-pulse text-brand-orange" />
+                          <Activity size={32} className="mb-3.5 animate-pulse text-brand-sui" />
                           <span className="text-xs font-bold text-slate-200">Awaiting blockchain events...</span>
                           <span className="text-xs text-slate-300 mt-1 max-w-xs text-center leading-relaxed">
                             Simulate or trigger execution on the right panel to boot V8 sandbox isolates and read compute logs.
@@ -3379,7 +3379,7 @@ const Dashboard: React.FC = () => {
 
               {/* Quick Trigger Sandbox controller */}
               <div id="logs-controller" className="xl:col-span-1">
-                <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 flex flex-col">
+                <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 flex flex-col">
                   <h3 className="text-sm font-bold text-white font-outfit uppercase tracking-wider mb-2">Live Execution Controller</h3>
                   <p className="text-xs text-slate-300 leading-relaxed mb-6">
                     Dispatch a live trigger transaction to your Sui smart contract. The Sui-Functions operator runner fleet will intercept the event, download your script from Walrus, and execute it within a secure V8 isolation sandbox.
@@ -3395,7 +3395,7 @@ const Dashboard: React.FC = () => {
                           value={triggerFunctionName}
                           onChange={(e) => setTriggerFunctionName(e.target.value)}
                           placeholder="e.g., sui_usd_oracle.js"
-                          className="w-full bg-[#0c0d14] border border-[#252838] rounded-xl pl-10 pr-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+                          className="w-full bg-[#041829] border border-[#14304A] rounded-xl pl-10 pr-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
                         />
                       </div>
                     </div>
@@ -3406,7 +3406,7 @@ const Dashboard: React.FC = () => {
                         rows={5}
                         value={triggerInputJson}
                         onChange={(e) => setTriggerInputJson(e.target.value)}
-                        className="w-full bg-[#0c0d14] border border-[#252838] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono resize-none"
+                        className="w-full bg-[#041829] border border-[#14304A] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono resize-none"
                       />
                     </div>
                   </div>
@@ -3414,7 +3414,7 @@ const Dashboard: React.FC = () => {
                   <button 
                     onClick={() => handleTrigger(triggerFunctionName)}
                     disabled={!activeProject || isExecuting}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Play size={14} fill="currentColor" />
                     {isExecuting ? "Executing VM Isolate..." : "Execute Now"}
@@ -3427,7 +3427,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 4: Compute Sandbox Settings */}
           {activeMenu === '4' && (
-            <div id="compute-header" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+            <div id="compute-header" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">Sovereign Worker Compute Specs</h2>
                 <p className="text-xs text-slate-300 mt-1">
@@ -3438,21 +3438,21 @@ const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
                 {/* 1. Memory caps */}
-                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5">
+                <div className="bg-[#041829] border border-[#14304A] rounded-xl p-5">
                   <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Memory Allocation</div>
                   <h4 className="text-xl font-bold text-white">128 MB</h4>
                   <p className="text-xs text-slate-300 mt-1 leading-relaxed">Memory heap cap allocated to each isolated Google V8 context thread.</p>
                 </div>
 
                 {/* 2. CPU Caps */}
-                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5">
+                <div className="bg-[#041829] border border-[#14304A] rounded-xl p-5">
                   <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">CPU Execution Cap</div>
                   <h4 className="text-xl font-bold text-white">5,000 ms</h4>
                   <p className="text-xs text-slate-300 mt-1 leading-relaxed">Maximum execution CPU runtime allowed before isolation thread termination.</p>
                 </div>
 
                 {/* 3. Package system shims */}
-                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5">
+                <div className="bg-[#041829] border border-[#14304A] rounded-xl p-5">
                   <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Allowed Modules</div>
                   <h4 className="text-xl font-bold text-emerald-400">Strict Sandboxed</h4>
                   <p className="text-xs text-slate-300 mt-1 leading-relaxed">Blocked file system and system subprocess queries. Pure fetch and crypto shims.</p>
@@ -3460,11 +3460,11 @@ const Dashboard: React.FC = () => {
 
               </div>
 
-              <div id="compute-performance" className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
+              <div id="compute-performance" className="bg-[#041829] border border-[#14304A] rounded-xl p-6">
                 <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit block mb-4">
                   VM Isolation Performance Auditing
                 </span>
-                <div className="bg-[#05060a] border border-[#252838]/60 p-4 rounded-xl font-mono text-[11px] text-slate-200 flex flex-col gap-2">
+                <div className="bg-[#05060a] border border-[#14304A]/60 p-4 rounded-xl font-mono text-[11px] text-slate-200 flex flex-col gap-2">
                   <div>[VM Engine] Google V8 Core v12.4.254 initialization... <span className="text-emerald-400 font-bold">Success</span></div>
                   <div>[VM Engine] Thread limits configured: 128MB Heap, 5s timeout.</div>
                   <div>[VM Engine] Registered custom fetch shim handler.</div>
@@ -3476,7 +3476,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 5: Walrus Storage Details */}
           {activeMenu === '5' && (
-            <div id="storage-header" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+            <div id="storage-header" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">Walrus Immutable Storage Layer</h2>
                 <p className="text-xs text-slate-200 mt-1 font-medium">
@@ -3487,10 +3487,10 @@ const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Publisher address config */}
-                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5 flex flex-col justify-between">
+                <div className="bg-[#041829] border border-[#14304A] rounded-xl p-5 flex flex-col justify-between">
                   <div>
                     <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Walrus Publisher Endpoint</div>
-                    <span className="text-xs font-mono font-bold text-brand-orange block truncate mb-3">
+                    <span className="text-xs font-mono font-bold text-brand-sui block truncate mb-3">
                       {WALRUS_PUBLISHER}
                     </span>
                   </div>
@@ -3500,7 +3500,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Storage caching statistics */}
-                <div className="bg-[#0c0d14] border border-[#252838] rounded-xl p-5 flex flex-col justify-between">
+                <div className="bg-[#041829] border border-[#14304A] rounded-xl p-5 flex flex-col justify-between">
                   <div>
                     <div className="text-xs font-bold uppercase text-slate-200 tracking-wider mb-2">Blob Cache Life</div>
                     <h4 className="text-lg font-black text-white font-mono">1 Epoch (Persistent)</h4>
@@ -3512,34 +3512,34 @@ const Dashboard: React.FC = () => {
 
               </div>
 
-              <div id="storage-blob-cache" className="bg-[#0c0d14] border border-[#252838] rounded-xl p-6">
+              <div id="storage-blob-cache" className="bg-[#041829] border border-[#14304A] rounded-xl p-6">
                 <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit block mb-4">
                   Active Blob Registry Cache
                 </span>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-[#252838]/70 text-slate-200 font-bold uppercase tracking-wider">
+                      <tr className="border-b border-[#14304A]/70 text-slate-200 font-bold uppercase tracking-wider">
                         <th className="pb-3 pl-2">Script Name</th>
                         <th className="pb-3">Walrus Blob ID</th>
                         <th className="pb-3">Epoch Quota</th>
                       </tr>
                     </thead>
-                    <tbody className="text-slate-200 font-mono divide-y divide-[#252838]/40">
+                    <tbody className="text-slate-200 font-mono divide-y divide-[#14304A]/40">
                       <tr>
                         <td className="py-3 pl-2 text-white font-bold font-mono">sui_usd_oracle.js</td>
                         <td className="py-3 text-slate-200">W7VwX2jrIH5yP0t4qLm...</td>
-                        <td className="py-3 text-brand-orange">Permanent</td>
+                        <td className="py-3 text-brand-sui">Permanent</td>
                       </tr>
                       <tr>
                         <td className="py-3 pl-2 text-white font-bold font-mono">hello_world.js</td>
                         <td className="py-3 text-slate-200">K9YtZ1plOL8qX2wrTm5...</td>
-                        <td className="py-3 text-brand-orange">Permanent</td>
+                        <td className="py-3 text-brand-sui">Permanent</td>
                       </tr>
                       <tr>
                         <td className="py-3 pl-2 text-white font-bold font-mono">test_upload.js</td>
                         <td className="py-3 text-slate-200">A3BxV7qwER9zX1lrYt6...</td>
-                        <td className="py-3 text-brand-orange">Permanent</td>
+                        <td className="py-3 text-brand-sui">Permanent</td>
                       </tr>
                     </tbody>
                   </table>
@@ -3550,7 +3550,7 @@ const Dashboard: React.FC = () => {
 
           {/* Menu Panel 6: Documentation Portal */}
           {activeMenu === '6' && (
-            <div id="docs-portal" className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+            <div id="docs-portal" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
               <DocsView isDashboardView={true} />
             </div>
           )}
@@ -3566,12 +3566,12 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 group-hover:bg-brand-orange/10 transition-colors duration-700 pointer-events-none" />
+                <div className="md:col-span-2 bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-brand-sui/5 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 group-hover:bg-brand-sui/10 transition-colors duration-700 pointer-events-none" />
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
                       <div className="flex items-center gap-2 mb-4">
-                        <Wallet size={16} className="text-brand-orange" />
+                        <Wallet size={16} className="text-brand-sui" />
                         <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit">Current Balance</h3>
                         <button 
                           onClick={() => {
@@ -3582,12 +3582,12 @@ const Dashboard: React.FC = () => {
                           className="ml-auto text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                           title="Refresh Balance"
                         >
-                          <RefreshCw size={14} className={isLoadingProjects ? "animate-spin text-brand-orange" : ""} />
+                          <RefreshCw size={14} className={isLoadingProjects ? "animate-spin text-brand-sui" : ""} />
                         </button>
                       </div>
                       <div className="flex items-end gap-3 mb-2">
                         <span className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-outfit">{activeProject?.vault || "0.00"}</span>
-                        <span className="text-lg text-brand-orange font-bold font-mono pb-1">SUI</span>
+                        <span className="text-lg text-brand-sui font-bold font-mono pb-1">SUI</span>
                       </div>
                       <p className="text-xs text-slate-400 font-medium">Estimated {activeProject ? Math.floor(parseFloat(activeProject.vault || "0") / globalComputeFee).toLocaleString() : 0} executions remaining</p>
                     </div>
@@ -3601,7 +3601,7 @@ const Dashboard: React.FC = () => {
                             value={depositAmount}
                             onChange={(e) => setDepositAmount(e.target.value)}
                             placeholder="e.g. 5.0"
-                            className="w-full bg-[#050608] border border-[#252838] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-orange/50 transition-colors"
+                            className="w-full bg-[#050608] border border-[#14304A] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-brand-sui/50 transition-colors"
                           />
                           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">SUI</div>
                         </div>
@@ -3609,7 +3609,7 @@ const Dashboard: React.FC = () => {
                       <button 
                         disabled={isDepositing || !depositAmount}
                         onClick={handleDeposit}
-                        className="mt-5 bg-brand-orange hover:bg-[#F76707] text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_4px_15px_rgba(255,126,33,0.3)] hover:shadow-[0_6px_20px_rgba(255,126,33,0.4)] transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer disabled:opacity-50"
+                        className="mt-5 bg-brand-sui hover:bg-[#6FB7B7] text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_4px_15px_rgba(56,152,255,0.3)] hover:shadow-[0_6px_20px_rgba(56,152,255,0.4)] transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer disabled:opacity-50"
                       >
                         {isDepositing ? (
                           <>
@@ -3627,12 +3627,12 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-6">
-                  <div className="bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-5 shadow-xl flex-1 flex flex-col justify-center">
+                  <div className="bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-5 shadow-xl flex-1 flex flex-col justify-center">
                     <h4 className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-3">Fee Structure</h4>
                     <ul className="space-y-3">
                       <li className="flex items-start gap-2">
-                        <div className="w-4 h-4 rounded-full bg-brand-orange/10 border border-brand-orange/30 flex items-center justify-center shrink-0 mt-0.5">
-                          <div className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
+                        <div className="w-4 h-4 rounded-full bg-brand-sui/10 border border-brand-sui/30 flex items-center justify-center shrink-0 mt-0.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-brand-sui" />
                         </div>
                         <div>
                           <div className="text-xs font-bold text-white">{globalComputeFee} SUI / Exec</div>
@@ -3644,7 +3644,7 @@ const Dashboard: React.FC = () => {
                           <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white flex items-center gap-2">Network Gas <span className="px-1.5 py-0.5 rounded border border-brand-orange/30 bg-brand-orange/10 text-brand-orange text-[8px] font-extrabold tracking-wider uppercase">Coming Soon</span></div>
+                          <div className="text-xs font-bold text-white flex items-center gap-2">Network Gas <span className="px-1.5 py-0.5 rounded border border-brand-sui/30 bg-brand-sui/10 text-brand-sui text-[8px] font-extrabold tracking-wider uppercase">Coming Soon</span></div>
                           <div className="text-[10px] text-slate-400 mt-0.5">Sponsored by Gas Station</div>
                         </div>
                       </li>
@@ -3677,7 +3677,7 @@ const Dashboard: React.FC = () => {
 
               {/* Stats & Withdraw */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-1 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl relative overflow-hidden group flex flex-col">
+                <div className="md:col-span-1 bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-6 shadow-xl relative overflow-hidden group flex flex-col">
                    <div className="flex items-center justify-between mb-4">
                      <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit flex items-center gap-2"><Shield size={16} className="text-red-500" /> Treasury Balance</h3>
                      <button 
@@ -3702,7 +3702,7 @@ const Dashboard: React.FC = () => {
                          value={withdrawAmount}
                          onChange={(e) => setWithdrawAmount(e.target.value)}
                          placeholder="Withdraw Amount (SUI)"
-                         className="w-full bg-[#050608] border border-[#252838] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-red-500/50 transition-colors"
+                         className="w-full bg-[#050608] border border-[#14304A] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-red-500/50 transition-colors"
                        />
                      </div>
                      <button 
@@ -3715,7 +3715,7 @@ const Dashboard: React.FC = () => {
                    </div>
                 </div>
 
-                <div className="md:col-span-1 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl relative overflow-hidden group flex flex-col">
+                <div className="md:col-span-1 bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-6 shadow-xl relative overflow-hidden group flex flex-col">
                    <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit mb-4 flex items-center gap-2"><Settings size={16} className="text-blue-500" /> Compute Fee Settings</h3>
                    <div className="flex items-end gap-3 mb-6">
                      <span className="text-4xl md:text-5xl font-extrabold text-white tracking-tight font-outfit">{globalComputeFee}</span>
@@ -3728,7 +3728,7 @@ const Dashboard: React.FC = () => {
                          value={newComputeFee}
                          onChange={(e) => setNewComputeFee(e.target.value)}
                          placeholder="New Fee (e.g. 0.007)"
-                         className="w-full bg-[#050608] border border-[#252838] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors"
+                         className="w-full bg-[#050608] border border-[#14304A] rounded-xl px-4 py-3 text-sm text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 transition-colors"
                        />
                      </div>
                      <button 
@@ -3741,14 +3741,14 @@ const Dashboard: React.FC = () => {
                    </div>
                 </div>
 
-                <div className="md:col-span-1 bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-6 shadow-xl overflow-hidden flex flex-col">
+                <div className="md:col-span-1 bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-6 shadow-xl overflow-hidden flex flex-col">
                   <h3 className="text-sm font-bold text-white tracking-wide uppercase font-outfit mb-4">All Platform Workspaces ({allProjects.length})</h3>
-                  <div className="flex-1 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-[#252838] scrollbar-track-transparent pr-2 space-y-3">
+                  <div className="flex-1 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-[#14304A] scrollbar-track-transparent pr-2 space-y-3">
                     {allProjects.length === 0 ? (
                       <div className="text-center py-10 text-slate-500 text-sm">No workspaces found.</div>
                     ) : (
                       allProjects.map(project => (
-                        <div key={project.id} className="bg-[#05060a] border border-[#252838] p-4 rounded-xl flex items-center justify-between gap-4">
+                        <div key={project.id} className="bg-[#05060a] border border-[#14304A] p-4 rounded-xl flex items-center justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <h4 className="text-sm font-bold text-white truncate">{project.name}</h4>
                             <p className="text-xs text-slate-400 mt-1 truncate">{project.id}</p>
@@ -3778,7 +3778,7 @@ const Dashboard: React.FC = () => {
       {/* WALLET DISCONNECT CONFIRMATION MODAL */}
       {isDisconnectModalOpen && (
         <div className="fixed inset-0 bg-[#040507]/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0b10] border border-[#252838] w-full max-w-[440px] rounded-3xl p-6 relative shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#0A1C2E] border border-[#14304A] w-full max-w-[440px] rounded-3xl p-6 relative shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none animate-in fade-in zoom-in-95 duration-200">
             
             {/* Header Icon */}
             <div className="flex items-center gap-3 mb-4">
@@ -3797,7 +3797,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => setIsDisconnectModalOpen(false)}
-                className="flex-1 bg-[#141622] hover:bg-[#1a1d2e] border border-[#252838] text-slate-200 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                className="flex-1 bg-[#141622] hover:bg-[#1a1d2e] border border-[#14304A] text-slate-200 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -3819,20 +3819,20 @@ const Dashboard: React.FC = () => {
       {/* HELP & ONBOARDING MODAL */}
       {isHelpModalOpen && (
         <div className="fixed inset-0 bg-[#040507]/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0b10] border border-[#252838] w-full max-w-2xl rounded-3xl p-6 sm:p-8 relative shadow-[0_20px_60px_rgba(0,0,0,0.85)] max-h-[85vh] overflow-y-auto select-none">
+          <div className="bg-[#0A1C2E] border border-[#14304A] w-full max-w-2xl rounded-3xl p-6 sm:p-8 relative shadow-[0_20px_60px_rgba(0,0,0,0.85)] max-h-[85vh] overflow-y-auto select-none">
             
             {/* Close Button */}
             <button 
               onClick={() => setIsHelpModalOpen(false)}
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 text-slate-300 hover:text-white bg-[#141622] hover:bg-[#1a1d2e] border border-[#252838] p-2 rounded-xl transition-all cursor-pointer"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 text-slate-300 hover:text-white bg-[#141622] hover:bg-[#1a1d2e] border border-[#14304A] p-2 rounded-xl transition-all cursor-pointer"
             >
               <X size={16} />
             </button>
 
             {/* Header */}
-            <div className="flex items-center gap-3.5 mb-6 border-b border-[#252838] pb-5">
-              <div className="w-10 h-10 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 flex items-center justify-center">
-                <HelpCircle size={22} className="text-brand-orange" />
+            <div className="flex items-center gap-3.5 mb-6 border-b border-[#14304A] pb-5">
+              <div className="w-10 h-10 rounded-2xl bg-brand-sui/10 border border-brand-sui/20 flex items-center justify-center">
+                <HelpCircle size={22} className="text-brand-sui" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold text-white font-outfit">Sui-Functions Guide</h2>
@@ -3844,14 +3844,14 @@ const Dashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
               {/* Column 1: Core Concepts */}
               <div className="flex flex-col gap-4">
-                <h3 className="text-xs font-black uppercase tracking-widest text-brand-orange font-mono">1. Operational Core</h3>
+                <h3 className="text-xs font-black uppercase tracking-widest text-brand-sui font-mono">1. Operational Core</h3>
                 
-                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                <div className="p-3.5 rounded-2xl bg-[#041829] border border-[#14304A]/70 flex flex-col gap-1.5">
                   <span className="font-bold text-slate-200">Decentralized Lambdas</span>
                   <p className="text-slate-300">Sui-Functions lets you run standard JavaScript scripts in isolated, gas-efficient V8 sandboxes. Execution is triggered completely trustlessly by Sui smart contract events.</p>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                <div className="p-3.5 rounded-2xl bg-[#041829] border border-[#14304A]/70 flex flex-col gap-1.5">
                   <span className="font-bold text-slate-200">Walrus Protocol Storage</span>
                   <p className="text-slate-300">Rather than central servers, function code blobs are stored immutably on the Walrus storage network, loaded dynamically by runners on demand, and executed securely.</p>
                 </div>
@@ -3861,12 +3861,12 @@ const Dashboard: React.FC = () => {
               <div className="flex flex-col gap-4">
                 <h3 className="text-xs font-black uppercase tracking-widest text-blue-400 font-mono">2. Telemetry Overview</h3>
 
-                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                <div className="p-3.5 rounded-2xl bg-[#041829] border border-[#14304A]/70 flex flex-col gap-1.5">
                   <span className="font-bold text-slate-200">Sui Event Bus (Blue Stack)</span>
                   <p className="text-slate-300">Represents live on-chain triggers emitted by contracts, signifying active compute calls requested by clients across the network.</p>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#0c0d14] border border-[#252838]/70 flex flex-col gap-1.5">
+                <div className="p-3.5 rounded-2xl bg-[#041829] border border-[#14304A]/70 flex flex-col gap-1.5">
                   <span className="font-bold text-slate-200">Walrus Workers (Orange Stack)</span>
                   <p className="text-slate-300">Displays real-time script downloads and final transaction settlements executed and written back to Sui in under 6 seconds.</p>
                 </div>
@@ -3874,11 +3874,11 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Footer actions */}
-            <div className="mt-8 pt-5 border-t border-[#252838] flex items-center justify-between">
+            <div className="mt-8 pt-5 border-t border-[#14304A] flex items-center justify-between">
               <span className="text-[10px] text-slate-400 font-mono font-bold">Network: Testnet v1.4.2</span>
               <button 
                 onClick={() => setIsHelpModalOpen(false)}
-                className="px-5 py-2.5 bg-brand-orange hover:bg-orange-500 text-white font-extrabold text-xs rounded-xl shadow-[0_4px_15px_rgba(255,126,33,0.3)] transition-all cursor-pointer border-none"
+                className="px-5 py-2.5 bg-brand-sui hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-[0_4px_15px_rgba(56,152,255,0.3)] transition-all cursor-pointer border-none"
               >
                 Acknowledge & Close
               </button>
@@ -3892,12 +3892,12 @@ const Dashboard: React.FC = () => {
       {isCreateProjectModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
           <div 
-            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            className="bg-[#041829] border border-[#14304A] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[#14304A]/60 mb-6">
               <div className="flex items-center gap-2">
-                <Folder size={18} className="text-brand-orange" />
+                <Folder size={18} className="text-brand-sui" />
                 <span className="text-base font-bold text-white font-outfit">Create Workspace Project</span>
               </div>
               <button 
@@ -3920,7 +3920,7 @@ const Dashboard: React.FC = () => {
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
                   placeholder="e.g., E-Commerce Suite, DeFi Oracle Network"
-                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-sans"
+                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-sans"
                 />
               </div>
 
@@ -3931,19 +3931,19 @@ const Dashboard: React.FC = () => {
                   value={newProjectDescription}
                   onChange={(e) => setNewProjectDescription(e.target.value)}
                   placeholder="e.g., Powers order verification, checkout authentication, and notifications..."
-                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-sans resize-none"
+                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-sans resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-between bg-brand-orange/10 border border-brand-orange/20 rounded-xl px-4 py-3">
-                <span className="text-xs text-brand-orange/90 font-medium">Workspace Creation Fee</span>
-                <span className="text-sm font-mono text-brand-orange font-bold">0.1 SUI</span>
+              <div className="flex items-center justify-between bg-brand-sui/10 border border-brand-sui/20 rounded-xl px-4 py-3">
+                <span className="text-xs text-brand-sui/90 font-medium">Workspace Creation Fee</span>
+                <span className="text-sm font-mono text-brand-sui font-bold">0.1 SUI</span>
               </div>
 
               <button 
                 onClick={handleCreateProject}
                 disabled={isCreatingProject || !newProjectName.trim()}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {isCreatingProject ? "Minting Workspace..." : "Confirm Project Creation"}
               </button>
@@ -3956,12 +3956,12 @@ const Dashboard: React.FC = () => {
       {isSettingsModalOpen && activeProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
           <div 
-            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            className="bg-[#041829] border border-[#14304A] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[#14304A]/60 mb-6">
               <div className="flex items-center gap-2">
-                <Settings size={18} className="text-brand-orange animate-spin-slow" />
+                <Settings size={18} className="text-brand-sui animate-spin-slow" />
                 <div>
                   <span className="text-base font-bold text-white block font-outfit">Workspace Settings</span>
                   <span className="text-[10px] text-slate-300 font-mono mt-0.5 block truncate max-w-[340px]">{activeProject.name}</span>
@@ -3977,7 +3977,7 @@ const Dashboard: React.FC = () => {
 
             <div className="flex flex-col gap-5">
               {/* RUNNER OPTION SELECTOR */}
-              <div className="bg-[#141622]/40 border border-[#252838]/60 p-4 rounded-2xl flex flex-col gap-3">
+              <div className="bg-[#141622]/40 border border-[#14304A]/60 p-4 rounded-2xl flex flex-col gap-3">
                 <span className="text-[10px] font-bold uppercase text-slate-200 tracking-wider">Execution Environment</span>
                 
                 <div className="grid grid-cols-2 gap-2">
@@ -3989,8 +3989,8 @@ const Dashboard: React.FC = () => {
                     }}
                     className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       !isCustomRunner
-                        ? "bg-brand-orange/10 border-brand-orange/50 shadow-[0_0_12px_rgba(255,126,33,0.1)] text-white"
-                        : "bg-[#05060a]/50 border-[#252838] hover:border-[#2d3047] text-slate-300"
+                        ? "bg-brand-sui/10 border-brand-sui/50 shadow-[0_0_12px_rgba(56,152,255,0.1)] text-white"
+                        : "bg-[#05060a]/50 border-[#14304A] hover:border-[#2d3047] text-slate-300"
                     }`}
                   >
                     <span className="text-xs font-bold font-outfit">Public Compute Pool</span>
@@ -4004,13 +4004,13 @@ const Dashboard: React.FC = () => {
                     }}
                     className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       isCustomRunner
-                        ? "bg-brand-orange/10 border-brand-orange/50 shadow-[0_0_12px_rgba(255,126,33,0.1)] text-white"
-                        : "bg-[#05060a]/50 border-[#252838] hover:border-[#2d3047] text-slate-300"
+                        ? "bg-brand-sui/10 border-brand-sui/50 shadow-[0_0_12px_rgba(56,152,255,0.1)] text-white"
+                        : "bg-[#05060a]/50 border-[#14304A] hover:border-[#2d3047] text-slate-300"
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="text-xs font-bold font-outfit text-white">Dedicated Runner</span>
-                      <span className="text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-orange/20 border border-brand-orange text-brand-orange leading-none shrink-0 font-mono">Paid</span>
+                      <span className="text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-sui/20 border border-brand-sui text-brand-sui leading-none shrink-0 font-mono">Paid</span>
                     </div>
                     <span className="text-[9px] leading-normal opacity-85 font-medium">Lease a dedicated Node Operator with an SLA.</span>
                   </button>
@@ -4018,8 +4018,8 @@ const Dashboard: React.FC = () => {
               </div>
 
               {!isCustomRunner ? (
-                <div className="bg-[#141622]/30 border border-[#252838]/60 p-4 rounded-xl flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-brand-orange/10 flex items-center justify-center text-brand-orange text-[10px] shrink-0 mt-0.5 font-bold">ℹ</div>
+                <div className="bg-[#141622]/30 border border-[#14304A]/60 p-4 rounded-xl flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-brand-sui/10 flex items-center justify-center text-brand-sui text-[10px] shrink-0 mt-0.5 font-bold">ℹ</div>
                   <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
                     <strong className="text-white block mb-1">Public Serverless Mode Active</strong>
                     Your serverless functions execute inside our decentralized, isolated V8 sandboxes. Any staked node operator can pick up and run your workloads for free.
@@ -4039,12 +4039,12 @@ const Dashboard: React.FC = () => {
                       value={settingsRunnerAddress}
                       onChange={(e) => setSettingsRunnerAddress(e.target.value)}
                       placeholder="0x..."
-                      className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-mono"
+                      className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
                     />
                   </div>
                   
                   <div className="bg-amber-950/10 border border-amber-900/30 p-4 rounded-xl flex items-start gap-3">
-                    <span className="text-amber-500 font-bold text-xs shrink-0 mt-0.5">⚠️</span>
+                    <span className="text-cyan-500 font-bold text-xs shrink-0 mt-0.5">⚠️</span>
                     <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
                       Only the Node Operator running with the Runner Address below will be allowed to pick up and execute your functions. Ensure you have coordinated with them.
                     </div>
@@ -4055,12 +4055,12 @@ const Dashboard: React.FC = () => {
               <button 
                 onClick={handleSaveSettings}
                 disabled={isSavingSettings || !settingsRunnerAddress.trim()}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {isSavingSettings ? "Configuring On-Chain Specs..." : "Save Workspace Configurations"}
               </button>
 
-              <div className="border-t border-[#252838]/60 pt-4 mt-2">
+              <div className="border-t border-[#14304A]/60 pt-4 mt-2">
                 <span className="text-[10px] font-bold uppercase text-red-400 tracking-wider block mb-2">Danger Zone</span>
                 <div className="bg-red-950/20 border border-red-900/30 p-4 rounded-xl flex items-center justify-between gap-4">
                   <div className="text-[10px] text-slate-300 leading-normal font-medium">
@@ -4083,12 +4083,12 @@ const Dashboard: React.FC = () => {
       {isRegisterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
           <div 
-            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            className="bg-[#041829] border border-[#14304A] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[#14304A]/60 mb-6">
               <div className="flex items-center gap-2">
-                <Plus size={18} className="text-brand-orange" />
+                <Plus size={18} className="text-brand-sui" />
                 <span className="text-base font-bold text-white font-outfit">Register New Function</span>
               </div>
               <button 
@@ -4107,11 +4107,11 @@ const Dashboard: React.FC = () => {
 
             <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto pr-1">
               {/* Scope Workspace Info */}
-              <div className="bg-[#05060a] border border-[#252838] p-4 rounded-2xl flex items-center justify-between">
+              <div className="bg-[#05060a] border border-[#14304A] p-4 rounded-2xl flex items-center justify-between">
                 <div>
                   <span className="text-xs text-slate-300 font-bold uppercase tracking-wider block">Target Project Workspace</span>
                   <span className="text-xs font-bold text-white flex items-center gap-1.5 mt-1 font-mono">
-                    <Folder size={12} className="text-brand-orange" /> {activeProject?.name}
+                    <Folder size={12} className="text-brand-sui" /> {activeProject?.name}
                   </span>
                 </div>
               </div>
@@ -4123,7 +4123,7 @@ const Dashboard: React.FC = () => {
                   value={registerFunctionName}
                   onChange={(e) => setRegisterFunctionName(e.target.value)}
                   placeholder="e.g., sui_usd_oracle"
-                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange/40 focus:ring-1 focus:ring-brand-orange/20 transition-all font-sans"
+                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-sans"
                 />
               </div>
 
@@ -4153,7 +4153,7 @@ const Dashboard: React.FC = () => {
               ) : (
                 <div>
                   <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Upload Script to Walrus</label>
-                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#252838] hover:border-brand-orange/40 rounded-2xl cursor-pointer bg-[#05060a] hover:bg-[#0c0d14]/50 transition-all">
+                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#14304A] hover:border-brand-sui/40 rounded-2xl cursor-pointer bg-[#05060a] hover:bg-[#041829]/50 transition-all">
                     <input 
                       type="file" 
                       accept=".js,.ts"
@@ -4163,7 +4163,7 @@ const Dashboard: React.FC = () => {
                     
                     {isUploading ? (
                       <div className="flex flex-col items-center justify-center py-2">
-                        <div className="w-10 h-10 border-2 border-[#252838] border-t-brand-orange rounded-full animate-spin mb-3" />
+                        <div className="w-10 h-10 border-2 border-[#14304A] border-t-brand-sui rounded-full animate-spin mb-3" />
                         <span className="text-xs font-bold text-white">Uploading Blob... {uploadPercentage}%</span>
                       </div>
                     ) : (
@@ -4180,7 +4180,7 @@ const Dashboard: React.FC = () => {
                <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold uppercase text-slate-200 tracking-wider">Walrus Blob ID</label>
-                  <span className="text-[10px] text-brand-orange font-bold font-mono">✓ Auto-Generated</span>
+                  <span className="text-[10px] text-brand-sui font-bold font-mono">✓ Auto-Generated</span>
                 </div>
                 <input 
                   type="text" 
@@ -4188,7 +4188,7 @@ const Dashboard: React.FC = () => {
                   disabled={true}
                   readOnly={true}
                   placeholder="Awaiting script upload above..."
-                  className="w-full bg-[#161824]/65 border border-[#252838] text-brand-orange rounded-xl px-4 py-3 text-xs focus:outline-none transition-all font-mono cursor-not-allowed font-extrabold shadow-inner"
+                  className="w-full bg-[#161824]/65 border border-[#14304A] text-brand-sui rounded-xl px-4 py-3 text-xs focus:outline-none transition-all font-mono cursor-not-allowed font-extrabold shadow-inner"
                 />
                 <span className="text-[9px] text-slate-400 font-medium block mt-1.5 leading-normal">
                   Lock secured. The immutable Blob ID is cryptographically calculated by Walrus nodes post script compilation.
@@ -4212,7 +4212,7 @@ const Dashboard: React.FC = () => {
                       setRegisterTriggerConfig(JSON.stringify({ drift_threshold: 0.001 }, null, 2));
                     }
                   }}
-                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
+                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
                 >
                   <option value={0}>Manual Trigger (On-Demand)</option>
                   <option value={1}>Cron Trigger (Periodic execution)</option>
@@ -4229,20 +4229,20 @@ const Dashboard: React.FC = () => {
                     onChange={(e) => setRegisterTriggerConfig(e.target.value)}
                     rows={4}
                     placeholder="Enter configuration JSON parameters..."
-                    className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
+                    className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
                   />
                 </div>
               )}
 
-              <div className="flex items-center justify-between bg-brand-orange/10 border border-brand-orange/20 rounded-xl px-4 py-3">
-                <span className="text-xs text-brand-orange/90 font-medium">Deployment Fee</span>
-                <span className="text-sm font-mono text-brand-orange font-bold">0.05 SUI</span>
+              <div className="flex items-center justify-between bg-brand-sui/10 border border-brand-sui/20 rounded-xl px-4 py-3">
+                <span className="text-xs text-brand-sui/90 font-medium">Deployment Fee</span>
+                <span className="text-sm font-mono text-brand-sui font-bold">0.05 SUI</span>
               </div>
 
               <button 
                 onClick={handleRegister}
                 disabled={isRegistering || !registerFunctionName.trim() || !registerBlobId.trim()}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {isRegistering ? "Syncing smart contracts..." : "Confirm Registration"}
               </button>
@@ -4253,10 +4253,10 @@ const Dashboard: React.FC = () => {
       {isEditTriggerModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md px-4">
           <div 
-            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
+            className="bg-[#041829] border border-[#14304A] rounded-3xl p-6 w-full max-w-[480px] shadow-[0_10px_45px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-[#252838]/60 mb-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[#14304A]/60 mb-6">
               <div className="flex items-center gap-2">
                 <Settings size={18} className="text-[#F56910]" />
                 <span className="text-base font-bold text-white font-outfit">Edit Automation Trigger</span>
@@ -4275,7 +4275,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-5">
-              <div className="bg-[#05060a] border border-[#252838] p-4 rounded-2xl flex items-center justify-between">
+              <div className="bg-[#05060a] border border-[#14304A] p-4 rounded-2xl flex items-center justify-between">
                 <div>
                   <span className="text-xs text-slate-300 font-bold uppercase tracking-wider block">Function Name</span>
                   <span className="text-xs font-bold text-white flex items-center gap-1.5 mt-1 font-mono">
@@ -4301,7 +4301,7 @@ const Dashboard: React.FC = () => {
                       setEditTriggerConfig(JSON.stringify({ drift_threshold: 0.001 }, null, 2));
                     }
                   }}
-                  className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
+                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
                 >
                   <option value={0}>Manual Trigger (On-Demand)</option>
                   <option value={1}>Cron Trigger (Periodic execution)</option>
@@ -4318,7 +4318,7 @@ const Dashboard: React.FC = () => {
                     onChange={(e) => setEditTriggerConfig(e.target.value)}
                     rows={4}
                     placeholder="Enter configuration JSON parameters..."
-                    className="w-full bg-[#05060a] border border-[#252838] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
+                    className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
                   />
                 </div>
               )}
@@ -4326,7 +4326,7 @@ const Dashboard: React.FC = () => {
               <button 
                 onClick={handleUpdateTrigger}
                 disabled={isUpdatingTrigger}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#F56910] to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] hover:shadow-[0_4px_20px_rgba(255,126,33,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#F56910] to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {isUpdatingTrigger ? "Syncing smart contracts..." : "Save Trigger Configuration"}
               </button>
@@ -4338,10 +4338,10 @@ const Dashboard: React.FC = () => {
       {confirmModal.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md px-4 animate-in fade-in duration-200">
           <div 
-            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[440px] shadow-[0_10px_50px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-200"
+            className="bg-[#041829] border border-[#14304A] rounded-3xl p-6 w-full max-w-[440px] shadow-[0_10px_50px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 pb-4 border-b border-[#252838]/60 mb-5">
+            <div className="flex items-center gap-3 pb-4 border-b border-[#14304A]/60 mb-5">
               <div className="w-10 h-10 bg-red-500/10 border border-red-500/25 rounded-2xl flex items-center justify-center">
                 <AlertTriangle size={18} className="text-red-400 animate-pulse" />
               </div>
@@ -4358,7 +4358,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                className="flex-1 bg-transparent hover:bg-white/5 text-slate-300 hover:text-white py-3 rounded-xl text-xs font-bold border border-[#252838] transition-all cursor-pointer"
+                className="flex-1 bg-transparent hover:bg-white/5 text-slate-300 hover:text-white py-3 rounded-xl text-xs font-bold border border-[#14304A] transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -4381,7 +4381,7 @@ const Dashboard: React.FC = () => {
               ) : (
                 <button 
                   onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                  className="flex-1 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] transition-all cursor-pointer"
+                  className="flex-1 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] transition-all cursor-pointer"
                 >
                   Dismiss
                 </button>
@@ -4395,16 +4395,16 @@ const Dashboard: React.FC = () => {
       {isAuditWarningModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md px-4 animate-in fade-in duration-200">
           <div 
-            className="bg-[#0c0d14] border border-[#252838] rounded-3xl p-6 w-full max-w-[460px] shadow-[0_10px_50px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-200"
+            className="bg-[#041829] border border-[#14304A] rounded-3xl p-6 w-full max-w-[460px] shadow-[0_10px_50px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 pb-4 border-b border-[#252838]/60 mb-5">
-              <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-center justify-center">
-                <Shield size={18} className="text-amber-500 animate-pulse" />
+            <div className="flex items-center gap-3 pb-4 border-b border-[#14304A]/60 mb-5">
+              <div className="w-10 h-10 bg-cyan-500/10 border border-cyan-500/25 rounded-2xl flex items-center justify-center">
+                <Shield size={18} className="text-cyan-500 animate-pulse" />
               </div>
               <div>
                 <span className="text-base font-bold text-white block font-outfit">Verification Required</span>
-                <span className="text-[9px] text-amber-400 font-mono block mt-0.5 uppercase tracking-wider font-bold">V8 Sandbox Safety Check</span>
+                <span className="text-[9px] text-cyan-400 font-mono block mt-0.5 uppercase tracking-wider font-bold">V8 Sandbox Safety Check</span>
               </div>
             </div>
 
@@ -4413,14 +4413,14 @@ const Dashboard: React.FC = () => {
                 The execution trigger for <strong className="text-white">"{auditWarningFnName}"</strong> was aborted. Every function registered on-chain must pass a sandboxed safety audit before it can be triggered.
               </p>
               
-              <div className="bg-[#141622]/50 border border-[#252838]/60 rounded-2xl p-4 flex flex-col gap-2 font-mono text-[10px]">
+              <div className="bg-[#141622]/50 border border-[#14304A]/60 rounded-2xl p-4 flex flex-col gap-2 font-mono text-[10px]">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">STATUS:</span>
-                  <span className={`font-bold ${auditWarningStatus === 'Rejected' ? 'text-red-400' : 'text-amber-400'}`}>{auditWarningStatus}</span>
+                  <span className={`font-bold ${auditWarningStatus === 'Rejected' ? 'text-red-400' : 'text-cyan-400'}`}>{auditWarningStatus}</span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-slate-400">WALRUS BLOB ID:</span>
-                  <span className="text-slate-300 break-all select-all bg-[#05060a] border border-[#252838] px-2 py-1.5 rounded-lg mt-1 font-bold">{auditWarningBlobId}</span>
+                  <span className="text-slate-300 break-all select-all bg-[#05060a] border border-[#14304A] px-2 py-1.5 rounded-lg mt-1 font-bold">{auditWarningBlobId}</span>
                 </div>
               </div>
 
@@ -4450,7 +4450,7 @@ const Dashboard: React.FC = () => {
                 href="http://localhost:5175" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-orange to-[#F76707] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(255,126,33,0.25)] transition-all cursor-pointer text-center"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] transition-all cursor-pointer text-center"
               >
                 Launch Walrus Auditor (Local) <ArrowUpRight size={14} />
               </a>
@@ -4459,7 +4459,7 @@ const Dashboard: React.FC = () => {
                 href="https://publisher.walrus.site/TJgeWW4t-MOv1K2klEsC0eDTDZbmcUu610eHptXD9mA" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-[#141622]/40 hover:bg-[#141622]/70 text-slate-300 py-3 rounded-xl text-xs font-bold border border-[#252838] transition-all cursor-pointer text-center"
+                className="w-full flex items-center justify-center gap-2 bg-[#141622]/40 hover:bg-[#141622]/70 text-slate-300 py-3 rounded-xl text-xs font-bold border border-[#14304A] transition-all cursor-pointer text-center"
               >
                 Launch Walrus Auditor (Decentralized) <ArrowUpRight size={12} />
               </a>
@@ -4486,14 +4486,14 @@ const Dashboard: React.FC = () => {
                 : toast.type === 'error'
                 ? 'border-red-500/35 shadow-red-950/20'
                 : toast.type === 'warning'
-                ? 'border-amber-500/35 shadow-amber-950/20'
-                : 'border-[#252838] shadow-black/40'
+                ? 'border-cyan-500/35 shadow-amber-950/20'
+                : 'border-[#14304A] shadow-black/40'
             }`}
           >
             <div className="flex-shrink-0 mt-0.5">
               {toast.type === 'success' && <CheckCircle size={18} className="text-emerald-400" />}
               {toast.type === 'error' && <AlertTriangle size={18} className="text-red-400" />}
-              {toast.type === 'warning' && <AlertTriangle size={18} className="text-amber-500" />}
+              {toast.type === 'warning' && <AlertTriangle size={18} className="text-cyan-500" />}
               {toast.type === 'info' && <Info size={18} className="text-blue-400" />}
             </div>
             <div className="flex-1 min-w-0">
@@ -4504,7 +4504,7 @@ const Dashboard: React.FC = () => {
                   href={`https://suiscan.xyz/testnet/tx/${toast.txDigest}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 mt-2 text-[10px] text-brand-orange hover:text-orange-400 transition-colors font-semibold"
+                  className="inline-flex items-center gap-1 mt-2 text-[10px] text-brand-sui hover:text-blue-400 transition-colors font-semibold"
                 >
                   View Transaction <ArrowUpRight size={10} />
                 </a>

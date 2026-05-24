@@ -83,23 +83,23 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-brand-dark text-slate-100 font-sans selection:bg-brand-orange/30 selection:text-white overflow-x-hidden relative">
+    <div className="min-h-screen bg-brand-dark text-slate-100 font-sans selection:bg-brand-sui/30 selection:text-white overflow-x-hidden relative">
       {/* ═══ LAYERED AMBIENT BACKGROUND ═══ */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* Base radial glow at top */}
-        <div className="absolute inset-0 radial-glow-orange" />
+        <div className="absolute inset-0 radial-glow-sui" />
 
         {/* Large floating orb - top right (orange) */}
-        <div className="absolute -top-32 -right-32 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-brand-orange/20 to-transparent blur-[120px] animate-float-slow" />
+        <div className="absolute -top-32 -right-32 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-brand-sui/20 to-transparent blur-[120px] animate-float-slow" />
 
         {/* Medium orb - mid left (blue) */}
-        <div className="absolute top-[40%] -left-48 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-brand-blue/20 to-transparent blur-[100px] animate-float-medium" />
+        <div className="absolute top-[40%] -left-48 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-brand-indigo/20 to-transparent blur-[100px] animate-float-medium" />
 
         {/* Small orb - bottom right (orange/amber) */}
-        <div className="absolute top-[70%] -right-24 w-[400px] h-[400px] rounded-full bg-gradient-to-bl from-amber-500/20 to-transparent blur-[100px] animate-float-reverse" />
+        <div className="absolute top-[70%] -right-24 w-[400px] h-[400px] rounded-full bg-gradient-to-bl from-cyan-500/20 to-transparent blur-[100px] animate-float-reverse" />
 
         {/* Faint aurora sweep across center */}
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[90vw] h-[600px] bg-gradient-to-r from-transparent via-brand-orange/15 to-transparent blur-[80px] rotate-[-8deg] animate-aurora" />
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[90vw] h-[600px] bg-gradient-to-r from-transparent via-brand-sui/15 to-transparent blur-[80px] rotate-[-8deg] animate-aurora" />
 
         {/* Subtle noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`, backgroundRepeat: 'repeat', backgroundSize: '128px 128px' }} />
@@ -133,10 +133,10 @@ const App: React.FC = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.1 }}
-                      className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-outfit text-white leading-[1.1] mb-6"
+                      className="text-5xl sm:text-6xl lg:text-[72px] font-bold tracking-tight text-[#E2E8F0] leading-[1.05] mb-6 font-outfit"
                     >
                       The Zero-Downtime <br />
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-400">
                         Compute Economy
                       </span>
                     </motion.h1>
@@ -146,9 +146,9 @@ const App: React.FC = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
-                      className="text-lg text-slate-200 leading-relaxed mb-10 max-w-2xl font-medium"
+                      className="text-base text-slate-400 leading-relaxed mb-10 max-w-lg font-normal"
                     >
-                      Sui-Functions is a globally distributed, cryptoeconomically secured compute layer. By replacing fragile Web2 middleware with a massive network of independent Node Operators, we guarantee 100% uptime for autonomous agents and decentralized applications.
+                      Sui-Functions is a production-ready, globally distributed compute layer built entirely on the Sui Network and Walrus Protocol. By replacing fragile Web2 middleware with a massive network of independent Node Operators.
                     </motion.p>
 
                     {/* Buttons */}
@@ -158,26 +158,21 @@ const App: React.FC = () => {
                       transition={{ duration: 0.6, delay: 0.3 }}
                       className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto"
                     >
-                      {/* High-fidelity custom connect button trigger */}
-                      <div className="relative flex justify-center">
-                        <Button
-                          onClick={() => setShowConnectModal(true)}
-                          variant="primary"
-                          size="lg"
-                          className="w-full sm:w-auto flex items-center justify-center gap-2.5"
-                        >
-                          <span>Start Deploying</span>
-                          <img src="/deploy.svg" alt="Deploy Icon" className="w-5 h-5 object-contain" />
-                        </Button>
-                      </div>
                       <Button
                         onClick={() => setShowConnectModal(true)}
-                        variant="outline"
-                        size="lg"
-                        className="w-full sm:w-auto flex items-center justify-center gap-2.5 hover:bg-[#12131C]"
+                        variant="primary"
+                        size="md"
+                        className="w-full sm:w-auto"
                       >
-                        <ShieldCheck size={20} className="text-brand-orange" />
-                        <span>Become an Operator</span>
+                        Become an Operator
+                      </Button>
+                      <Button
+                        onClick={() => setShowConnectModal(true)}
+                        variant="secondary"
+                        size="md"
+                        className="w-full sm:w-auto"
+                      >
+                        Start Deploying
                       </Button>
                     </motion.div>
                   </div>
@@ -191,57 +186,50 @@ const App: React.FC = () => {
                       className="relative w-72 h-72 sm:w-96 sm:h-96 flex items-center justify-center animate-float"
                     >
                       {/* Glowing decorative rings */}
-                      <div className="absolute inset-0 rounded-full bg-brand-orange/10 blur-[80px]" />
-                      <div className="absolute w-80 h-80 rounded-full border border-brand-orange/5 animate-pulse-slow" />
-                      <div className="absolute w-64 h-64 rounded-full border border-brand-orange/10 border-dashed" />
+                      <div className="absolute inset-0 rounded-full bg-brand-sui/10 blur-[80px]" />
+                      <div className="absolute w-80 h-80 rounded-full border border-brand-sui/5 animate-pulse-slow" />
+                      <div className="absolute w-64 h-64 rounded-full border border-brand-sui/10 border-dashed" />
 
                       {/* Orange 3D kinetic sphere image */}
                       <img
                         src="/sui-func-logo.png"
                         alt="Sui-Functions 3D Mesh Sphere"
-                        className="w-60 h-60 sm:w-80 sm:h-80 object-contain drop-shadow-[0_0_50px_rgba(255,126,33,0.4)] relative z-10"
+                        className="w-60 h-60 sm:w-80 sm:h-80 object-contain drop-shadow-[0_0_50px_rgba(56,152,255,0.4)] relative z-10"
                       />
                     </motion.div>
                   </div>
                 </section>
 
-                {/* STATISTICS BAR (Control Panel) */}
+                {/* STATISTICS GRID */}
                 <motion.section
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.6 }}
-                  className="mb-24"
+                  className="mb-32 border-y border-[#14304A] py-10"
                 >
-                  <Card hoverEffect={false} className="!bg-[#040508]/80 !backdrop-blur-3xl border border-[#1A1C29] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
-                    {/* Glossy top edge highlight */}
-                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-slate-500/20 to-transparent" />
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-[#1A1C29]">
-                      <div className="flex flex-col items-center md:items-start md:pl-4 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Total SUI Staked</span>
-                        <span className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 font-outfit tracking-tight">4.2M+</span>
-                      </div>
-                      <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Uptime Guarantee</span>
-                        <div className="flex items-center gap-2.5 bg-brand-green/5 border border-brand-green/20 px-3 py-1 rounded-full mt-1">
-                          <span className="w-2 h-2 rounded-full bg-brand-green shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
-                          <span className="text-[11px] font-bold text-[#10B981] font-mono tracking-wider uppercase">100.000%</span>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Network APY</span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-extrabold text-brand-orange font-outfit tracking-tight">18.4</span>
-                          <span className="text-brand-orange font-bold font-mono text-sm">%</span>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Active Node Operators</span>
-                        <span className="text-3xl font-extrabold text-white font-outfit tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">1,402</span>
-                      </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-[#14304A]">
+                    <div className="flex flex-col items-start md:pl-6 pt-4 md:pt-0">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">Asset Density</span>
+                      <span className="text-3xl font-bold text-[#E2E8F0] tracking-tight mb-1">4.2M+ <span className="text-[10px] text-slate-500 ml-1">SUI</span></span>
+                      <span className="text-[10px] text-slate-600 uppercase tracking-widest">Total SUI Staked</span>
                     </div>
-                  </Card>
+                    <div className="flex flex-col items-start md:pl-10 pt-4 md:pt-0">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">Reliability Matrix</span>
+                      <span className="text-3xl font-bold text-[#E2E8F0] tracking-tight mb-1">100%</span>
+                      <span className="text-[10px] text-slate-600 uppercase tracking-widest">Uptime SLA Guaranteed</span>
+                    </div>
+                    <div className="flex flex-col items-start md:pl-10 pt-4 md:pt-0">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">Node Distribution</span>
+                      <span className="text-3xl font-bold text-[#E2E8F0] tracking-tight mb-1">1,402</span>
+                      <span className="text-[10px] text-slate-600 uppercase tracking-widest">Active Node Operators</span>
+                    </div>
+                    <div className="flex flex-col items-start md:pl-10 pt-4 md:pt-0">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">Network Yield</span>
+                      <span className="text-3xl font-bold text-[#E2E8F0] tracking-tight mb-1">18.4%</span>
+                      <span className="text-[10px] text-slate-600 uppercase tracking-widest">Estimated Annual APY</span>
+                    </div>
+                  </div>
                 </motion.section>
 
                 {/* POWERED BY / CORE INFRASTRUCTURE SECTION */}
@@ -253,14 +241,14 @@ const App: React.FC = () => {
                   className="mb-32"
                 >
                   <div className="bg-[#050608]/80 backdrop-blur-3xl border border-[#1A1C29] rounded-[32px] p-8 md:p-14 text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-                    <div className="absolute top-0 left-1/2 -translate-y-1/2 w-[600px] h-32 bg-brand-orange/5 blur-[80px] pointer-events-none" />
+                    <div className="absolute top-0 left-1/2 -translate-y-1/2 w-[600px] h-32 bg-brand-sui/5 blur-[80px] pointer-events-none" />
 
-                    <span className="px-3.5 py-1.5 rounded-full bg-brand-orange/5 border border-brand-orange/20 text-[10px] font-mono font-bold uppercase tracking-widest text-brand-orange inline-block mb-6">
+                    <span className="px-3.5 py-1.5 rounded-full bg-brand-sui/5 border border-brand-sui/20 text-[10px] font-mono font-bold uppercase tracking-widest text-brand-sui inline-block mb-6">
                       Core Protocol Infrastructure
                     </span>
 
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
-                      Powered by the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-blue-400 to-brand-orange">Sui Stack</span>
+                      Powered by the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-indigo via-blue-400 to-brand-sui">Sui Stack</span>
                     </h2>
                     <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed font-medium mb-12">
                       Sui-Functions merges next-generation layer-1 consensus with decentralized object storage to create a secure, sovereign edge compute backbone for autonomous agentic workflows.
@@ -268,7 +256,7 @@ const App: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto items-stretch">
                       {/* Partner 1: Sui (Bento Box) */}
-                      <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-blue/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
+                      <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-indigo/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
                         <div className="w-16 h-16 rounded-[18px] bg-[#0A101C] border border-[#162544] flex items-center justify-center shadow-[0_10px_30px_rgba(59,130,246,0.1)] group-hover:shadow-[0_10px_30px_rgba(59,130,246,0.25)] group-hover:scale-105 transition-all duration-500">
                           <img
                             src="https://www.google.com/s2/favicons?domain=sui.io&sz=128"
@@ -279,7 +267,7 @@ const App: React.FC = () => {
                         <div>
                           <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center justify-between w-full">
                             Sui Network
-                            <span className="px-2.5 py-1 rounded bg-brand-blue/10 border border-brand-blue/20 text-[9px] font-mono font-bold text-brand-blue uppercase tracking-wider">Coordination</span>
+                            <span className="px-2.5 py-1 rounded bg-brand-indigo/10 border border-brand-indigo/20 text-[9px] font-mono font-bold text-brand-indigo uppercase tracking-wider">Coordination</span>
                           </h3>
                           <p className="text-slate-400 text-sm leading-relaxed font-medium group-hover:text-slate-300 transition-colors">
                             Acts as our state coordinator and event bus. Move smart contracts manage the dynamic trigger registry and commit completed execution receipts securely on-chain.
@@ -288,8 +276,8 @@ const App: React.FC = () => {
                       </div>
 
                       {/* Partner 2: Walrus (Bento Box) */}
-                      <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-orange/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
-                        <div className="w-16 h-16 rounded-[18px] bg-[#160f08] border border-[#3b2311] flex items-center justify-center shadow-[0_10px_30px_rgba(255,126,33,0.1)] group-hover:shadow-[0_10px_30px_rgba(255,126,33,0.25)] group-hover:scale-105 transition-all duration-500">
+                      <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-sui/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
+                        <div className="w-16 h-16 rounded-[18px] bg-[#160f08] border border-[#3b2311] flex items-center justify-center shadow-[0_10px_30px_rgba(56,152,255,0.1)] group-hover:shadow-[0_10px_30px_rgba(56,152,255,0.25)] group-hover:scale-105 transition-all duration-500">
                           <img
                             src="https://www.google.com/s2/favicons?domain=walrus.xyz&sz=128"
                             alt="Walrus Protocol Logo"
@@ -299,7 +287,7 @@ const App: React.FC = () => {
                         <div>
                           <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center justify-between w-full">
                             Walrus Protocol
-                            <span className="px-2.5 py-1 rounded bg-brand-orange/10 border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase tracking-wider">Logic Registry</span>
+                            <span className="px-2.5 py-1 rounded bg-brand-sui/10 border border-brand-sui/20 text-[9px] font-mono font-bold text-brand-sui uppercase tracking-wider">Logic Registry</span>
                           </h3>
                           <p className="text-slate-400 text-sm leading-relaxed font-medium group-hover:text-slate-300 transition-colors">
                             We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution via cryptographic Blob IDs.
@@ -316,20 +304,20 @@ const App: React.FC = () => {
 
                     {/* Left Column: Context & Sticky Title */}
                     <div className="lg:col-span-5 flex flex-col justify-center text-left">
-                      <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[9px] font-mono font-bold uppercase tracking-widest text-brand-orange inline-block mb-4 self-start">
+                      <span className="px-3.5 py-1.5 rounded-full bg-brand-sui-glow border border-brand-sui/20 text-[9px] font-mono font-bold uppercase tracking-widest text-brand-sui inline-block mb-4 self-start">
                         Core Capabilities
                       </span>
                       <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit leading-[1.15]">
                         Engineered for <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-sui via-cyan-400 to-[#6FB7B7] text-shimmer">
                           Zero Downtime
                         </span>
                       </h2>
                       <p className="text-slate-300 text-sm leading-relaxed font-medium mb-6 max-w-md">
                         By incentivizing a decentralized pool of operators, Sui-Functions delivers a trustless, sovereign execution environment that never crashes.
                       </p>
-                      <div className="flex items-center gap-3 text-brand-orange font-bold text-[10px] uppercase tracking-wider font-mono">
-                        <span className="w-2.5 h-2.5 rounded-full bg-brand-orange animate-ping" />
+                      <div className="flex items-center gap-3 text-brand-sui font-bold text-[10px] uppercase tracking-wider font-mono">
+                        <span className="w-2.5 h-2.5 rounded-full bg-brand-sui animate-ping" />
                         Zero Trust Architecture Active
                       </div>
                     </div>
@@ -338,18 +326,18 @@ const App: React.FC = () => {
                     <div className="lg:col-span-7 flex flex-col gap-6">
 
                       {/* Feature Item 1 */}
-                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-orange/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
+                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-sui/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
                         {/* Accent glow line on top left */}
-                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-orange to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-sui to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                         {/* Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-brand-orange-glow border border-brand-orange/25 flex items-center justify-center text-brand-orange shadow-[0_4px_15px_rgba(255,126,33,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                        <div className="w-14 h-14 rounded-2xl bg-brand-sui-glow border border-brand-sui/25 flex items-center justify-center text-brand-sui shadow-[0_4px_15px_rgba(56,152,255,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                           <Shield size={26} />
                         </div>
 
                         {/* Description */}
                         <div>
-                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-orange transition-colors duration-200">
+                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-sui transition-colors duration-200">
                             Secure V8 Sandboxing
                           </h3>
                           <p className="text-slate-200 text-sm leading-relaxed font-medium">
@@ -359,18 +347,18 @@ const App: React.FC = () => {
                       </div>
 
                       {/* Feature Item 2 */}
-                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-blue/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
+                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-indigo/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
                         {/* Accent glow line on top left */}
-                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-indigo to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                         {/* Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-brand-blue-glow border border-brand-blue/25 flex items-center justify-center text-brand-blue shadow-[0_4px_15px_rgba(59,130,246,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                        <div className="w-14 h-14 rounded-2xl bg-brand-indigo-glow border border-brand-indigo/25 flex items-center justify-center text-brand-indigo shadow-[0_4px_15px_rgba(59,130,246,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                           <Zap size={26} />
                         </div>
 
                         {/* Description */}
                         <div>
-                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-blue transition-colors duration-200">
+                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-indigo transition-colors duration-200">
                             On-Chain Trigger Bus
                           </h3>
                           <p className="text-slate-200 text-sm leading-relaxed font-medium">
@@ -380,18 +368,18 @@ const App: React.FC = () => {
                       </div>
 
                       {/* Feature Item 3 */}
-                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-green/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
+                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-cyan/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
                         {/* Accent glow line on top left */}
-                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-green to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-cyan to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                         {/* Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-brand-green-glow border border-brand-green/25 flex items-center justify-center text-brand-green shadow-[0_4px_15px_rgba(16,185,129,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                        <div className="w-14 h-14 rounded-2xl bg-brand-cyan-glow border border-brand-cyan/25 flex items-center justify-center text-brand-cyan shadow-[0_4px_15px_rgba(16,185,129,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                           <Server size={26} />
                         </div>
 
                         {/* Description */}
                         <div>
-                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-green transition-colors duration-200">
+                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-cyan transition-colors duration-200">
                             Walrus Logic Registry
                           </h3>
                           <p className="text-slate-200 text-sm leading-relaxed font-medium">
@@ -417,14 +405,14 @@ const App: React.FC = () => {
                   <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 text-left">
                     <div>
                       <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-3">
-                        Three Pillars <span className="text-brand-orange">Architecture</span>
+                        Three Pillars <span className="text-brand-sui">Architecture</span>
                       </h2>
                       <p className="text-slate-400 text-sm max-w-xl leading-relaxed">
                         Experience the decentralized agentic execution cycle step-by-step: from fast blockchain triggers to immutable storage retrieval and secure sandbox execution.
                       </p>
                     </div>
                     <div className="flex items-center gap-2 font-mono text-[10px] text-slate-500 bg-[#090A10]/60 px-4 py-2 border border-[#1A1C29] rounded-xl self-start">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-sui animate-pulse" />
                       SYSTEM PROTOCOL STATUS: OPERATIONAL
                     </div>
                   </div>
@@ -432,19 +420,19 @@ const App: React.FC = () => {
                   {/* Horizontal Step Pipeline (3 Columns) */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-12 relative select-none">
                     {/* Visual connector line behind steps (MD and above) */}
-                    <div className="absolute top-1/2 left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-brand-orange via-brand-blue to-brand-green opacity-15 -translate-y-1/2 hidden md:block z-0" />
+                    <div className="absolute top-1/2 left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-brand-sui via-brand-indigo to-brand-cyan opacity-15 -translate-y-1/2 hidden md:block z-0" />
 
                     {/* Step 1 Tab Card */}
                     <button
                       onClick={() => setActivePillar('trigger')}
                       className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${activePillar === 'trigger'
-                          ? 'border-brand-orange/45 bg-[#0b0705] shadow-[0_0_25px_rgba(255,126,33,0.1)] scale-[1.01]'
+                          ? 'border-brand-sui/45 bg-[#0b0705] shadow-[0_0_25px_rgba(56,152,255,0.1)] scale-[1.01]'
                           : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
                         }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 01</span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'trigger' ? 'bg-brand-orange/15 text-brand-orange scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'trigger' ? 'bg-brand-sui/15 text-brand-sui scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
                           }`}>
                           <Zap size={14} />
                         </div>
@@ -459,13 +447,13 @@ const App: React.FC = () => {
                     <button
                       onClick={() => setActivePillar('logic')}
                       className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${activePillar === 'logic'
-                          ? 'border-brand-blue/45 bg-[#05070c] shadow-[0_0_25px_rgba(59,130,246,0.1)] scale-[1.01]'
+                          ? 'border-brand-indigo/45 bg-[#05070c] shadow-[0_0_25px_rgba(59,130,246,0.1)] scale-[1.01]'
                           : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
                         }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 02</span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'logic' ? 'bg-brand-blue/15 text-brand-blue scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'logic' ? 'bg-brand-indigo/15 text-brand-indigo scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
                           }`}>
                           <Server size={14} />
                         </div>
@@ -480,13 +468,13 @@ const App: React.FC = () => {
                     <button
                       onClick={() => setActivePillar('worker')}
                       className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${activePillar === 'worker'
-                          ? 'border-brand-green/45 bg-[#050c08] shadow-[0_0_25px_rgba(16,185,129,0.1)] scale-[1.01]'
+                          ? 'border-brand-cyan/45 bg-[#050c08] shadow-[0_0_25px_rgba(16,185,129,0.1)] scale-[1.01]'
                           : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
                         }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 03</span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'worker' ? 'bg-brand-green/15 text-brand-green scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'worker' ? 'bg-brand-cyan/15 text-brand-cyan scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
                           }`}>
                           <Shield size={14} />
                         </div>
@@ -516,16 +504,16 @@ const App: React.FC = () => {
                         <div>
                           <div className="flex items-center justify-between border-b border-[#141624] pb-4 mb-6 select-none">
                             <div className="flex items-center gap-2">
-                              <Terminal size={14} className={activePillar === 'trigger' ? 'text-brand-orange' : activePillar === 'logic' ? 'text-brand-blue' : 'text-brand-green'} />
+                              <Terminal size={14} className={activePillar === 'trigger' ? 'text-brand-sui' : activePillar === 'logic' ? 'text-brand-indigo' : 'text-brand-cyan'} />
                               <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">Diagnostics Console</h3>
                             </div>
                             <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold border uppercase tracking-wider ${isSimulating
-                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/25 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.2)]'
+                                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/25 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.2)]'
                                 : activePillar === 'trigger'
-                                  ? 'bg-brand-orange/10 text-brand-orange border-brand-orange/20'
+                                  ? 'bg-brand-sui/10 text-brand-sui border-brand-sui/20'
                                   : activePillar === 'logic'
-                                    ? 'bg-brand-blue/10 text-brand-blue border-brand-blue/20'
-                                    : 'bg-brand-green/10 text-brand-green border-brand-green/20'
+                                    ? 'bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20'
+                                    : 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/20'
                               }`}>
                               {isSimulating ? 'Active' : 'Idle'}
                             </span>
@@ -549,7 +537,7 @@ const App: React.FC = () => {
                                 </div>
                                 <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
                                   <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Tx Latency</span>
-                                  <span className="text-xs font-bold text-brand-orange">~390ms</span>
+                                  <span className="text-xs font-bold text-brand-sui">~390ms</span>
                                 </div>
                               </>
                             )}
@@ -570,7 +558,7 @@ const App: React.FC = () => {
                                 </div>
                                 <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
                                   <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Model</span>
-                                  <span className="text-xs font-bold text-brand-blue">Permanent Store</span>
+                                  <span className="text-xs font-bold text-brand-indigo">Permanent Store</span>
                                 </div>
                               </>
                             )}
@@ -591,7 +579,7 @@ const App: React.FC = () => {
                                 </div>
                                 <div className="p-3.5 bg-[#030407] border border-[#141624] rounded-xl flex flex-col gap-1">
                                   <span className="block text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider">Isolate Heap</span>
-                                  <span className="text-xs font-bold text-brand-green">128 MB Limit</span>
+                                  <span className="text-xs font-bold text-brand-cyan">128 MB Limit</span>
                                 </div>
                               </>
                             )}
@@ -607,8 +595,8 @@ const App: React.FC = () => {
                               <div className="flex flex-col gap-1">
                                 {simulationLogs.map((log, index) => {
                                   let colorClass = 'text-slate-400';
-                                  if (log.includes('🚀') || log.includes('🔍') || log.includes('⚡')) colorClass = 'text-amber-400';
-                                  if (log.includes('✅') || log.includes('OK') || log.includes('SUCCESS')) colorClass = 'text-brand-green';
+                                  if (log.includes('🚀') || log.includes('🔍') || log.includes('⚡')) colorClass = 'text-cyan-400';
+                                  if (log.includes('✅') || log.includes('OK') || log.includes('SUCCESS')) colorClass = 'text-brand-cyan';
                                   if (log.includes('RECEIVED:') || log.includes('FOUND') || log.includes('🔒')) colorClass = 'text-sky-400';
 
                                   return (
@@ -619,9 +607,9 @@ const App: React.FC = () => {
                                   );
                                 })}
                                 {isSimulating && (
-                                  <div className="text-brand-orange flex items-center gap-1 select-none font-mono">
+                                  <div className="text-brand-sui flex items-center gap-1 select-none font-mono">
                                     <span className="text-slate-700 flex-shrink-0">&gt;</span>
-                                    <span className="w-1.5 h-3 bg-brand-orange animate-pulse inline-block" />
+                                    <span className="w-1.5 h-3 bg-brand-sui animate-pulse inline-block" />
                                   </div>
                                 )}
                               </div>
@@ -636,10 +624,10 @@ const App: React.FC = () => {
                           className={`w-full mt-6 py-3.5 rounded-xl font-mono text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none ${isSimulating
                               ? 'bg-slate-800/40 text-slate-500 border border-slate-700/20 cursor-not-allowed'
                               : activePillar === 'trigger'
-                                ? 'bg-brand-orange/10 hover:bg-brand-orange/20 text-brand-orange border border-brand-orange/20 shadow-[0_0_15px_rgba(255,126,33,0.08)]'
+                                ? 'bg-brand-sui/10 hover:bg-brand-sui/20 text-brand-sui border border-brand-sui/20 shadow-[0_0_15px_rgba(56,152,255,0.08)]'
                                 : activePillar === 'logic'
-                                  ? 'bg-brand-blue/10 hover:bg-brand-blue/20 text-brand-blue border border-brand-blue/20 shadow-[0_0_15px_rgba(59,130,246,0.08)]'
-                                  : 'bg-brand-green/10 hover:bg-brand-green/20 text-brand-green border border-brand-green/20 shadow-[0_0_15px_rgba(16,185,129,0.08)]'
+                                  ? 'bg-brand-indigo/10 hover:bg-brand-indigo/20 text-brand-indigo border border-brand-indigo/20 shadow-[0_0_15px_rgba(59,130,246,0.08)]'
+                                  : 'bg-brand-cyan/10 hover:bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/20 shadow-[0_0_15px_rgba(16,185,129,0.08)]'
                             }`}
                         >
                           {isSimulating ? (
@@ -668,7 +656,7 @@ const App: React.FC = () => {
                   className="mb-32 py-12 relative overflow-hidden"
                 >
                   {/* Decorative glowing background elements */}
-                  <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none" />
+                  <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-sui/5 blur-[120px] pointer-events-none" />
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     {/* Left: Interactive Visual Representation */}
@@ -677,10 +665,10 @@ const App: React.FC = () => {
                         {/* Visual Header */}
                         <div className="flex items-center justify-between border-b border-[#1A1C29] pb-4 mb-6">
                           <div className="flex items-center gap-3">
-                            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
+                            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
                             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Upgrade Request Proposal</span>
                           </div>
-                          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono font-bold text-[9px] uppercase tracking-wider">Awaiting Sigs</span>
+                          <span className="px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono font-bold text-[9px] uppercase tracking-wider">Awaiting Sigs</span>
                         </div>
 
                         {/* Proposal Metadata */}
@@ -691,11 +679,11 @@ const App: React.FC = () => {
                           </div>
                           <div className="flex justify-between items-center px-4 py-3 bg-[#07080D] border-b border-[#1A1C29]">
                             <span className="text-slate-500 font-bold">CURRENT BLOB ID:</span>
-                            <span className="text-brand-blue font-bold select-all">K9YtZ1pL0L8q...</span>
+                            <span className="text-brand-indigo font-bold select-all">K9YtZ1pL0L8q...</span>
                           </div>
                           <div className="flex justify-between items-center px-4 py-3 bg-[#07080D]">
                             <span className="text-slate-500 font-bold">PROPOSED BLOB ID:</span>
-                            <span className="text-brand-orange font-bold select-all">W7VwX2jrIH5y...</span>
+                            <span className="text-brand-sui font-bold select-all">W7VwX2jrIH5y...</span>
                           </div>
                         </div>
 
@@ -705,31 +693,31 @@ const App: React.FC = () => {
 
                           <div className="flex items-center justify-between p-3 rounded-xl bg-[#090A10] border border-[#1A1C29]">
                             <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-md bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
+                              <div className="w-6 h-6 rounded-md bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
                               <span className="text-[12px] font-mono font-medium text-slate-300">0x8a4c...4086 (Lead Dev)</span>
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-brand-green uppercase">Approved</span>
+                            <span className="text-[10px] font-mono font-bold text-brand-cyan uppercase">Approved</span>
                           </div>
 
                           <div className="flex items-center justify-between p-3 rounded-xl bg-[#090A10] border border-[#1A1C29]">
                             <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-md bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
+                              <div className="w-6 h-6 rounded-md bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
                               <span className="text-[12px] font-mono font-medium text-slate-300">0x2528...9832 (Security Auditor)</span>
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-brand-green uppercase">Approved</span>
+                            <span className="text-[10px] font-mono font-bold text-brand-cyan uppercase">Approved</span>
                           </div>
 
                           <div className="flex items-center justify-between p-3 rounded-xl bg-[#0A0C13] border border-[#1A1C29]">
                             <div className="flex items-center gap-3">
-                              <span className="w-6 h-6 rounded-md bg-amber-500/5 border border-amber-500/20 flex items-center justify-center text-amber-500 font-mono text-[10px] animate-pulse">●</span>
+                              <span className="w-6 h-6 rounded-md bg-cyan-500/5 border border-cyan-500/20 flex items-center justify-center text-cyan-500 font-mono text-[10px] animate-pulse">●</span>
                               <span className="text-[12px] font-mono font-medium text-slate-400">0xf767...1104 (Sponsor Treasury)</span>
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-amber-500 uppercase animate-pulse">Pending</span>
+                            <span className="text-[10px] font-mono font-bold text-cyan-500 uppercase animate-pulse">Pending</span>
                           </div>
                         </div>
 
                         {/* Explanatory visual note */}
-                        <div className="p-4 bg-brand-orange/5 border border-brand-orange/20 rounded-xl text-[11px] text-slate-400 leading-relaxed font-medium">
+                        <div className="p-4 bg-brand-sui/5 border border-brand-sui/20 rounded-xl text-[11px] text-slate-400 leading-relaxed font-medium">
                           Sui layer-1 smart contracts natively block updates to edge runners until the registered Multisig object triggers a verified state change transaction.
                         </div>
                       </div>
@@ -737,12 +725,12 @@ const App: React.FC = () => {
 
                     {/* Right: Rich Explanatory Copy */}
                     <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-start text-left justify-center">
-                      <span className="px-3.5 py-1.5 rounded-full bg-brand-orange-glow border border-brand-orange/20 text-[10px] font-extrabold uppercase tracking-widest text-brand-orange mb-4 font-mono">
+                      <span className="px-3.5 py-1.5 rounded-full bg-brand-sui-glow border border-brand-sui/20 text-[10px] font-extrabold uppercase tracking-widest text-brand-sui mb-4 font-mono">
                         Decentralized DevSecOps
                       </span>
                       <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-6">
                         Sovereign Upgrade Governance <br />
-                        <span className="text-brand-orange">Controlled by Consensus</span>
+                        <span className="text-brand-sui">Controlled by Consensus</span>
                       </h2>
                       <p className="text-slate-200 text-sm leading-relaxed font-medium mb-6">
                         Unlike traditional Web2 cloud functions, where a single hacked developer key or hijacked CI/CD pipeline can secretly poison hosted code, Sui-Functions introduces an unhackable deployment lifecycle for agentic logic.
@@ -750,7 +738,7 @@ const App: React.FC = () => {
 
                       <div className="flex flex-col gap-6 w-full mb-6">
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-blue-glow border border-brand-blue/30 flex items-center justify-center text-brand-blue flex-shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-brand-indigo-glow border border-brand-indigo/30 flex items-center justify-center text-brand-indigo flex-shrink-0">
                             <Shield size={20} />
                           </div>
                           <div>
@@ -762,7 +750,7 @@ const App: React.FC = () => {
                         </div>
 
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-green-glow border border-brand-green/30 flex items-center justify-center text-brand-green flex-shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-brand-cyan-glow border border-brand-cyan/30 flex items-center justify-center text-brand-cyan flex-shrink-0">
                             <Users size={20} />
                           </div>
                           <div>
@@ -774,7 +762,7 @@ const App: React.FC = () => {
                         </div>
 
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-orange-glow border border-brand-orange/30 flex items-center justify-center text-brand-orange flex-shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-brand-sui-glow border border-brand-sui/30 flex items-center justify-center text-brand-sui flex-shrink-0">
                             <CheckCircle2 size={20} />
                           </div>
                           <div>
@@ -798,7 +786,7 @@ const App: React.FC = () => {
                   className="mb-32 relative"
                 >
                   <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.1)]">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/30 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.1)]">
                       <Wallet size={10} /> Economics
                     </div>
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
@@ -810,8 +798,8 @@ const App: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    <div className="bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-8 hover:border-brand-orange/30 transition-all duration-300">
-                      <div className="w-12 h-12 rounded-2xl bg-brand-orange-glow border border-brand-orange/20 flex items-center justify-center text-brand-orange mb-6">
+                    <div className="bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-8 hover:border-brand-sui/30 transition-all duration-300">
+                      <div className="w-12 h-12 rounded-2xl bg-brand-sui-glow border border-brand-sui/20 flex items-center justify-center text-brand-sui mb-6">
                         <Wallet size={24} />
                       </div>
                       <h3 className="text-xl font-bold text-white font-outfit mb-3">Project Vaults</h3>
@@ -820,8 +808,8 @@ const App: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-8 hover:border-brand-orange/30 transition-all duration-300">
-                      <div className="w-12 h-12 rounded-2xl bg-brand-orange-glow border border-brand-orange/20 flex items-center justify-center text-brand-orange mb-6">
+                    <div className="bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-8 hover:border-brand-sui/30 transition-all duration-300">
+                      <div className="w-12 h-12 rounded-2xl bg-brand-sui-glow border border-brand-sui/20 flex items-center justify-center text-brand-sui mb-6">
                         <Zap size={24} />
                       </div>
                       <h3 className="text-xl font-bold text-white font-outfit mb-3">Pay-Per-Execution</h3>
@@ -830,8 +818,8 @@ const App: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="bg-[#0c0d14]/70 backdrop-blur-md border border-[#252838] rounded-2xl p-8 hover:border-brand-orange/30 transition-all duration-300">
-                      <div className="w-12 h-12 rounded-2xl bg-brand-orange-glow border border-brand-orange/20 flex items-center justify-center text-brand-orange mb-6">
+                    <div className="bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-8 hover:border-brand-sui/30 transition-all duration-300">
+                      <div className="w-12 h-12 rounded-2xl bg-brand-sui-glow border border-brand-sui/20 flex items-center justify-center text-brand-sui mb-6">
                         <Server size={24} />
                       </div>
                       <h3 className="text-xl font-bold text-white font-outfit mb-3">Runner Incentives</h3>
@@ -845,31 +833,31 @@ const App: React.FC = () => {
                 {/* DEPIN COMPUTE MINER (COMING SOON) */}
                 <section className="mb-32 relative py-12">
                   {/* Decorative glowing background elements */}
-                  <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none" />
+                  <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-sui/5 blur-[120px] pointer-events-none" />
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     {/* Left: Content */}
                     <div className="lg:col-span-6 text-left relative z-10">
-                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/40 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.2)] animate-pulse">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/40 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.2)] animate-pulse">
                         <Wallet size={10} /> DePIN Miner Economy
                       </div>
                       <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
                         Run a Node. <br className="hidden lg:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-amber-400">Earn SUI.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-sui to-cyan-400">Earn SUI.</span>
                       </h2>
                       <p className="text-slate-200 text-base leading-relaxed mb-8 max-w-lg font-medium">
-                        Sui-Functions is building a completely decentralized compute economy. Soon, anyone will be able to download our Docker container, stake SUI, and earn passive income by executing agentic workloads securely on their own hardware.
+                        Sui-Functions is building a completely decentralized compute economy. Anyone can now download our decentralized runner engine, stake SUI, and earn passive income by executing agentic workloads securely on their own hardware.
                       </p>
                       
                       <ul className="flex flex-col gap-3 font-mono text-[11px] text-slate-400">
                         <li className="flex items-center gap-2">
-                          <span className="text-brand-orange">✓</span> Zero DevOps — Just pull and run
+                          <span className="text-brand-sui">✓</span> Zero DevOps — Just run the CLI command
                         </li>
                         <li className="flex items-center gap-2">
-                          <span className="text-brand-orange">✓</span> Hardware agnostic (Mac, Linux, Windows)
+                          <span className="text-brand-sui">✓</span> Hardware agnostic (Mac, Linux, Windows)
                         </li>
                         <li className="flex items-center gap-2">
-                          <span className="text-brand-orange">✓</span> Mathematically secure V8 isolation
+                          <span className="text-brand-sui">✓</span> Mathematically secure V8 isolation
                         </li>
                       </ul>
                     </div>
@@ -877,23 +865,21 @@ const App: React.FC = () => {
                     {/* Right: Terminal Visual */}
                     <div className="lg:col-span-6 relative z-10 w-full">
                       <div className="bg-[#030407] border border-[#141624] rounded-2xl p-6 md:p-8 font-mono text-[11px] md:text-xs text-slate-300 shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-left w-full relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-orange opacity-60" />
+                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-sui opacity-60" />
                         <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
                           <div className="flex items-center gap-2">
-                            <Terminal size={14} className="text-brand-orange" />
+                            <Terminal size={14} className="text-brand-sui" />
                             <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Node Setup Terminal</span>
                           </div>
-                          <span className="text-[9px] text-brand-orange font-bold px-2 py-1 bg-brand-orange/10 rounded border border-brand-orange/20">COMING SOON</span>
+                          <span className="text-[9px] text-brand-cyan font-bold px-2 py-1 bg-brand-cyan/10 rounded border border-brand-cyan/20">LIVE NOW</span>
                         </div>
                         <div className="space-y-3">
-                          <div className="text-slate-400"># 1. Pull the official decentralized runner image</div>
-                          <div className="text-white font-semibold">docker pull suifunctions/runner-node:latest</div>
+                          <div className="text-slate-400"># 1. Connect your private key to the global network</div>
+                          <div className="text-white font-semibold">export OPERATOR_KEY_PATH="~/.sui-functions/operator.json"</div>
                           <div className="h-3"></div>
-                          <div className="text-slate-400"># 2. Run the node to start earning SUI</div>
-                          <div className="text-white font-semibold">docker run -d \</div>
-                          <div className="text-white font-semibold pl-6">--name sui-miner \</div>
-                          <div className="text-white font-semibold pl-6">-e SUI_PRIVATE_KEY="suiprivkey..." \</div>
-                          <div className="text-white font-semibold pl-6">suifunctions/runner-node</div>
+                          <div className="text-slate-400"># 2. Boot the decentralized runtime engine directly from Walrus</div>
+                          <div className="text-white font-semibold">npx sui-functions-node --core \</div>
+                          <div className="text-white font-semibold pl-6">OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</div>
                         </div>
                       </div>
                     </div>
@@ -902,16 +888,16 @@ const App: React.FC = () => {
 
                 {/* TRUE DECENTRALIZATION - TEE CONTRAST */}
                 <section className="mb-32 relative py-12">
-                  <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-blue/5 blur-[120px] pointer-events-none" />
+                  <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-indigo/5 blur-[120px] pointer-events-none" />
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     {/* Left: Terminal Visual representing TEE pain */}
                     <div className="lg:col-span-6 relative z-10 w-full order-2 lg:order-1">
                       <div className="bg-[#030407] border border-[#141624] rounded-2xl p-6 md:p-8 font-mono text-[11px] md:text-xs text-slate-300 shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-left w-full relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-blue opacity-60" />
+                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-indigo opacity-60" />
                         <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
                           <div className="flex items-center gap-2">
-                            <Layers size={14} className="text-brand-blue" />
+                            <Layers size={14} className="text-brand-indigo" />
                             <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">The Legacy TEE Approach</span>
                           </div>
                           <span className="text-[9px] text-red-400 font-bold px-2 py-1 bg-red-500/10 rounded border border-red-500/20">AWS DEPENDENT</span>
@@ -927,12 +913,12 @@ const App: React.FC = () => {
 
                     {/* Right: Content */}
                     <div className="lg:col-span-6 text-left relative z-10 order-1 lg:order-2">
-                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-blue/40 bg-brand-blue/10 text-brand-blue text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-indigo/40 bg-brand-indigo/10 text-brand-indigo text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                         <ShieldCheck size={10} /> True Decentralization
                       </div>
                       <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
                         Zero Cloud Lock-in. <br className="hidden lg:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-cyan-400">Hardware Agnostic.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-indigo to-cyan-400">Hardware Agnostic.</span>
                       </h2>
                       <p className="text-slate-200 text-base leading-relaxed mb-8 max-w-lg font-medium">
                         Other off-chain compute networks force you to rent expensive, centralized AWS Nitro Enclaves. Sui-Functions uses mathematically secure V8 Sandboxing, meaning our network is truly decentralized, and you can deploy your logic in 10 seconds with our beautiful UI—no complex CLI required.
@@ -940,13 +926,13 @@ const App: React.FC = () => {
                       
                       <ul className="flex flex-col gap-3 font-mono text-[11px] text-slate-400">
                         <li className="flex items-center gap-2">
-                          <span className="text-brand-blue">✓</span> No proprietary AWS hardware required
+                          <span className="text-brand-indigo">✓</span> No proprietary AWS hardware required
                         </li>
                         <li className="flex items-center gap-2">
-                          <span className="text-brand-blue">✓</span> 1-Click Dashboard Deploy vs Raw SDKs
+                          <span className="text-brand-indigo">✓</span> 1-Click Dashboard Deploy vs Raw SDKs
                         </li>
                         <li className="flex items-center gap-2">
-                          <span className="text-brand-blue">✓</span> A true DePIN economy, not a rented server
+                          <span className="text-brand-indigo">✓</span> A true DePIN economy, not a rented server
                         </li>
                       </ul>
                     </div>
@@ -956,7 +942,7 @@ const App: React.FC = () => {
                 {/* LIVE DEMO SHOWCASE */}
                 <section className="mb-32">
                   <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.1)]">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/30 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.1)]">
                       <Zap size={10} /> Use Case
                     </div>
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
@@ -969,21 +955,21 @@ const App: React.FC = () => {
 
                   <div className="grid grid-cols-1 max-w-xl mx-auto">
                     {/* Card 1: SuiNode Storefront */}
-                    <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-blue/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
+                    <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-indigo/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
                       {/* Card Blue Flare */}
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-[50px] rounded-full group-hover:bg-brand-blue/10 transition-colors pointer-events-none" />
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-indigo/5 blur-[50px] rounded-full group-hover:bg-brand-indigo/10 transition-colors pointer-events-none" />
 
                       <div>
                         <div className="flex justify-between items-start mb-6">
-                          <div className="w-12 h-12 rounded-2xl border border-brand-blue/20 bg-brand-blue-glow flex items-center justify-center text-brand-blue shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                          <div className="w-12 h-12 rounded-2xl border border-brand-indigo/20 bg-brand-indigo-glow flex items-center justify-center text-brand-indigo shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                             <Globe size={20} />
                           </div>
-                          <span className="text-[9px] font-mono font-extrabold text-brand-blue bg-brand-blue-glow/65 border border-brand-blue/30 px-2 py-1 rounded-full uppercase tracking-wider">
+                          <span className="text-[9px] font-mono font-extrabold text-brand-indigo bg-brand-indigo-glow/65 border border-brand-indigo/30 px-2 py-1 rounded-full uppercase tracking-wider">
                             Live Demo
                           </span>
                         </div>
 
-                        <h3 className="text-xl font-bold text-white font-outfit mb-3 group-hover:text-brand-blue transition-colors">
+                        <h3 className="text-xl font-bold text-white font-outfit mb-3 group-hover:text-brand-indigo transition-colors">
                           Autonomous DeFi Agent
                         </h3>
                         <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
@@ -1006,7 +992,7 @@ const App: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="w-full justify-center gap-2 border border-brand-blue/30 hover:bg-brand-blue/10 text-brand-blue hover:text-white font-bold h-11"
+                          className="w-full justify-center gap-2 border border-brand-indigo/30 hover:bg-brand-indigo/10 text-brand-indigo hover:text-white font-bold h-11"
                         >
                           <span>Launch Agent Showcase</span>
                           <ArrowRight size={14} />
@@ -1017,7 +1003,7 @@ const App: React.FC = () => {
                 </section>
 
                 {/* ENTERPRISE AVAILABILITY */}
-                <section className="mb-32 relative rounded-[48px] overflow-hidden border border-[#161722]/50 bg-[#0a0b10]/60">
+                <section className="mb-32 relative rounded-[48px] overflow-hidden border border-[#161722]/50 bg-[#0A1C2E]/60">
                   {/* Enterprise map image background */}
                   <div className="absolute inset-0 bg-[url('/enterprice-bg.png')] bg-cover bg-center opacity-70 pointer-events-none" />
                   {/* Custom dark overlay with low opacity backdrop blur */}
@@ -1036,7 +1022,7 @@ const App: React.FC = () => {
 
                       {/* Regions Item */}
                       <div className="flex flex-col items-center">
-                        <div className="w-14 h-14 rounded-full border border-brand-orange/30 bg-brand-orange-glow flex items-center justify-center text-brand-orange mb-6 shadow-[0_0_20px_rgba(255,126,33,0.15)] hover:scale-105 transition-transform duration-300">
+                        <div className="w-14 h-14 rounded-full border border-brand-sui/30 bg-brand-sui-glow flex items-center justify-center text-brand-sui mb-6 shadow-[0_0_20px_rgba(56,152,255,0.15)] hover:scale-105 transition-transform duration-300">
                           <Globe size={24} />
                         </div>
                         <h4 className="text-xl font-extrabold text-white font-outfit mb-1.5">IoT &amp; DePIN</h4>
@@ -1045,7 +1031,7 @@ const App: React.FC = () => {
 
                       {/* Validators Item */}
                       <div className="flex flex-col items-center">
-                        <div className="w-14 h-14 rounded-full border border-brand-blue/30 bg-brand-blue-glow flex items-center justify-center text-brand-blue mb-6 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:scale-105 transition-transform duration-300">
+                        <div className="w-14 h-14 rounded-full border border-brand-indigo/30 bg-brand-indigo-glow flex items-center justify-center text-brand-indigo mb-6 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:scale-105 transition-transform duration-300">
                           <Server size={24} />
                         </div>
                         <h4 className="text-xl font-extrabold text-white font-outfit mb-1.5">Cloud Sovereignty</h4>
@@ -1054,7 +1040,7 @@ const App: React.FC = () => {
 
                       {/* Support Item */}
                       <div className="flex flex-col items-center">
-                        <div className="w-14 h-14 rounded-full border border-brand-green/30 bg-brand-green-glow flex items-center justify-center text-brand-green mb-6 shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:scale-105 transition-transform duration-300">
+                        <div className="w-14 h-14 rounded-full border border-brand-cyan/30 bg-brand-cyan-glow flex items-center justify-center text-brand-cyan mb-6 shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:scale-105 transition-transform duration-300">
                           <Clock size={24} />
                         </div>
                         <h4 className="text-xl font-extrabold text-white font-outfit mb-1.5">B2B SaaS Glue</h4>
@@ -1068,7 +1054,7 @@ const App: React.FC = () => {
                 {/* ROADMAP SECTION */}
                 <section id="roadmap" className="mb-32 relative">
                   <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange-glow text-brand-orange text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(255,126,33,0.1)]">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/30 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.1)]">
                       <Clock size={10} /> Development Roadmap
                     </div>
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
@@ -1081,7 +1067,7 @@ const App: React.FC = () => {
 
                   <div className="relative max-w-5xl mx-auto mt-24 px-6 md:px-12">
                     {/* The vertical timeline line (centered on desktop, left-aligned on mobile) */}
-                    <div className="absolute left-[24px] lg:left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-brand-orange via-brand-blue to-brand-green/20 -translate-x-[1px] lg:-translate-x-1/2 z-0 opacity-40" />
+                    <div className="absolute left-[24px] lg:left-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-brand-sui via-brand-indigo to-brand-cyan/20 -translate-x-[1px] lg:-translate-x-1/2 z-0 opacity-40" />
 
                     <div className="space-y-24 relative z-10">
 
@@ -1090,11 +1076,11 @@ const App: React.FC = () => {
                         {/* Left Side: Content */}
                         <div className="pl-12 lg:pl-0 lg:pr-16 text-left lg:text-right relative">
                           {/* Timeline node icon */}
-                          <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-orange flex items-center justify-center shadow-[0_0_15px_rgba(255,126,33,0.4)] z-20">
-                            <CheckCircle2 size={16} className="text-brand-orange" />
+                          <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-sui flex items-center justify-center shadow-[0_0_15px_rgba(56,152,255,0.4)] z-20">
+                            <CheckCircle2 size={16} className="text-brand-sui" />
                           </div>
 
-                          <span className="inline-block px-3 py-1 rounded-full bg-brand-orange/5 border border-brand-orange/20 text-[9px] font-mono font-bold text-brand-orange uppercase tracking-wider mb-3">
+                          <span className="inline-block px-3 py-1 rounded-full bg-brand-sui/5 border border-brand-sui/20 text-[9px] font-mono font-bold text-brand-sui uppercase tracking-wider mb-3">
                             Phase 1 (Live) • V8 Isolate Compute
                           </span>
                           <h3 className="text-2xl font-bold text-white font-outfit mb-3">
@@ -1105,33 +1091,33 @@ const App: React.FC = () => {
                           </p>
                           <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-orange">✓</span> V8 sandboxed environments
+                              <span className="text-brand-sui">✓</span> V8 sandboxed environments
                             </li>
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-orange">✓</span> On-chain trigger coordination
+                              <span className="text-brand-sui">✓</span> On-chain trigger coordination
                             </li>
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-orange">✓</span> Immutable Walrus logic library
+                              <span className="text-brand-sui">✓</span> Immutable Walrus logic library
                             </li>
                           </ul>
                         </div>
 
                         {/* Right Side: Visual terminal */}
                         <div className="pl-12 lg:pl-16">
-                          <div className="bg-[#050608]/90 border border-brand-orange/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
-                            <div className="absolute top-0 left-0 w-2 h-full bg-brand-orange opacity-40" />
+                          <div className="bg-[#050608]/90 border border-brand-sui/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-2 h-full bg-brand-sui opacity-40" />
                             <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse" />
+                                <span className="w-2 h-2 rounded-full bg-brand-sui animate-pulse" />
                                 <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Isolate Daemon Log</span>
                               </div>
                               <span className="text-[8px] text-slate-600 font-mono">active</span>
                             </div>
                             <div className="space-y-1.5">
-                              <div className="text-brand-orange font-semibold">[init] Google V8 Isolate initialized</div>
+                              <div className="text-brand-sui font-semibold">[init] Google V8 Isolate initialized</div>
                               <div className="text-slate-400">[mem] Heap limit set to 128MB</div>
                               <div className="text-slate-400">[exec] Running script blob 0x5f71e...</div>
-                              <div className="text-brand-green font-semibold">[done] Execution success: 2.14ms</div>
+                              <div className="text-brand-cyan font-semibold">[done] Execution success: 2.14ms</div>
                             </div>
                           </div>
                         </div>
@@ -1141,20 +1127,20 @@ const App: React.FC = () => {
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                         {/* Left Side: Visual terminal */}
                         <div className="pl-12 lg:pl-0 lg:pr-16 order-2 lg:order-1">
-                          <div className="bg-[#050608]/90 border border-brand-blue/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
-                            <div className="absolute top-0 left-0 w-2 h-full bg-brand-blue opacity-40" />
+                          <div className="bg-[#050608]/90 border border-brand-indigo/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-2 h-full bg-brand-indigo opacity-40" />
                             <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
+                                <span className="w-2 h-2 rounded-full bg-brand-indigo animate-pulse" />
                                 <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">zkVM &amp; Market Terminal</span>
                               </div>
                               <span className="text-[8px] text-slate-600 font-mono">in_dev</span>
                             </div>
                             <div className="space-y-1.5">
-                              <div className="text-brand-blue font-semibold">[market] Purchasing function 0x4f12...</div>
+                              <div className="text-brand-indigo font-semibold">[market] Purchasing function 0x4f12...</div>
                               <div className="text-slate-400">[fees] Routing: 95% operator, 5% protocol treasury</div>
                               <div className="text-slate-400">[proof] Executing SP1 zkVM cycle count</div>
-                              <div className="text-brand-green font-semibold">[verify] Execution verified &amp; payout settled</div>
+                              <div className="text-brand-cyan font-semibold">[verify] Execution verified &amp; payout settled</div>
                             </div>
                           </div>
                         </div>
@@ -1162,12 +1148,12 @@ const App: React.FC = () => {
                         {/* Right Side: Content */}
                         <div className="pl-12 lg:pl-16 text-left order-1 lg:order-2 relative">
                           {/* Timeline node icon */}
-                          <div className="absolute top-1 left-[-42px] lg:left-[-52px] lg:-translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-blue flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)] z-20">
-                            <div className="w-3 h-3 rounded-full bg-brand-blue animate-ping opacity-75 absolute" />
-                            <div className="w-2 h-2 rounded-full bg-brand-blue relative z-10" />
+                          <div className="absolute top-1 left-[-42px] lg:left-[-52px] lg:-translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-indigo flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)] z-20">
+                            <div className="w-3 h-3 rounded-full bg-brand-indigo animate-ping opacity-75 absolute" />
+                            <div className="w-2 h-2 rounded-full bg-brand-indigo relative z-10" />
                           </div>
 
-                          <span className="inline-block px-3 py-1 rounded-full bg-brand-blue/5 border border-brand-blue/20 text-[9px] font-mono font-bold text-brand-blue uppercase tracking-wider mb-3">
+                          <span className="inline-block px-3 py-1 rounded-full bg-brand-indigo/5 border border-brand-indigo/20 text-[9px] font-mono font-bold text-brand-indigo uppercase tracking-wider mb-3">
                             Phase 2 (Q3 2026) • Compute Marketplace
                           </span>
                           <h3 className="text-2xl font-bold text-white font-outfit mb-3">
@@ -1178,16 +1164,16 @@ const App: React.FC = () => {
                           </p>
                           <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-blue">●</span> Compiled WebAssembly runtimes
+                              <span className="text-brand-indigo">●</span> Compiled WebAssembly runtimes
                             </li>
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-blue">●</span> RISC Zero / SP1 zkVM proofs
+                              <span className="text-brand-indigo">●</span> RISC Zero / SP1 zkVM proofs
                             </li>
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-blue">●</span> Verified Functions Marketplace
+                              <span className="text-brand-indigo">●</span> Verified Functions Marketplace
                             </li>
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-blue">●</span> Protocol fee &amp; operator rewards
+                              <span className="text-brand-indigo">●</span> Protocol fee &amp; operator rewards
                             </li>
                           </ul>
                         </div>
@@ -1239,7 +1225,7 @@ const App: React.FC = () => {
                               <div className="text-cyan-400 font-semibold">[relay] Intercepting execution request...</div>
                               <div className="text-slate-400">[auth] Verified zkLogin payload</div>
                               <div className="text-slate-400">[vault] Deducting 0.007 SUI from workspace balance</div>
-                              <div className="text-brand-green font-semibold">[sponsor] Network gas paid &amp; tx committed successfully</div>
+                              <div className="text-brand-cyan font-semibold">[sponsor] Network gas paid &amp; tx committed successfully</div>
                             </div>
                           </div>
                         </div>
@@ -1262,7 +1248,7 @@ const App: React.FC = () => {
                               <div className="text-purple-400 font-semibold">[prove] Generating RISC Zero receipt...</div>
                               <div className="text-slate-400">[compute] 250M cycle count reached</div>
                               <div className="text-slate-400">[verify] Publishing Groth16 proof to Sui</div>
-                              <div className="text-brand-green font-semibold">[chain] Execution mathematically verified</div>
+                              <div className="text-brand-cyan font-semibold">[chain] Execution mathematically verified</div>
                             </div>
                           </div>
                         </div>
@@ -1302,11 +1288,11 @@ const App: React.FC = () => {
                         {/* Left Side: Content */}
                         <div className="pl-12 lg:pl-0 lg:pr-16 text-left lg:text-right relative">
                           {/* Timeline node icon */}
-                          <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-green/30 flex items-center justify-center text-brand-green z-20">
+                          <div className="absolute top-1 left-[-42px] lg:left-auto lg:right-[-52px] lg:translate-x-1/2 w-10 h-10 rounded-full bg-[#06070a] border-2 border-brand-cyan/30 flex items-center justify-center text-brand-cyan z-20">
                             <Shield size={16} />
                           </div>
 
-                          <span className="inline-block px-3 py-1 rounded-full bg-brand-green/5 border border-brand-green/20 text-[9px] font-mono font-bold text-brand-green uppercase tracking-wider mb-3">
+                          <span className="inline-block px-3 py-1 rounded-full bg-brand-cyan/5 border border-brand-cyan/20 text-[9px] font-mono font-bold text-brand-cyan uppercase tracking-wider mb-3">
                             Phase 5 (Q2 2027) • Confidential TEE Enclaves
                           </span>
                           <h3 className="text-2xl font-bold text-white font-outfit mb-3">
@@ -1317,33 +1303,33 @@ const App: React.FC = () => {
                           </p>
                           <ul className="inline-flex flex-col gap-2.5 font-mono text-[10px] text-slate-400 text-left">
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-green">●</span> Hardware-isolated enclaves
+                              <span className="text-brand-cyan">●</span> Hardware-isolated enclaves
                             </li>
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-green">●</span> Encrypted environment variables
+                              <span className="text-brand-cyan">●</span> Encrypted environment variables
                             </li>
                             <li className="flex items-center gap-2">
-                              <span className="text-brand-green">●</span> Native Nautilus parity
+                              <span className="text-brand-cyan">●</span> Native Nautilus parity
                             </li>
                           </ul>
                         </div>
 
                         {/* Right Side: Visual terminal */}
                         <div className="pl-12 lg:pl-16">
-                          <div className="bg-[#050608]/90 border border-brand-green/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
-                            <div className="absolute top-0 left-0 w-2 h-full bg-brand-green opacity-40" />
+                          <div className="bg-[#050608]/90 border border-brand-cyan/15 rounded-2xl p-5 font-mono text-[10px] text-slate-300 shadow-[0_15px_40px_rgba(0,0,0,0.4)] text-left relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-2 h-full bg-brand-cyan opacity-40" />
                             <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
+                                <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse" />
                                 <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Secure Enclave Monitor</span>
                               </div>
                               <span className="text-[8px] text-slate-600 font-mono">future</span>
                             </div>
                             <div className="space-y-1.5">
-                              <div className="text-brand-green font-semibold">[tee] AWS Nitro Enclave handshakes active</div>
+                              <div className="text-brand-cyan font-semibold">[tee] AWS Nitro Enclave handshakes active</div>
                               <div className="text-slate-400">[env] Loading encrypted environment variables</div>
                               <div className="text-slate-400">[key] Ephemeral key generated in hardware memory</div>
-                              <div className="text-brand-green font-semibold">[secure] Isolated execution pipeline sealed</div>
+                              <div className="text-brand-cyan font-semibold">[secure] Isolated execution pipeline sealed</div>
                             </div>
                           </div>
                         </div>
@@ -1358,7 +1344,7 @@ const App: React.FC = () => {
                   <div className="relative rounded-[40px] border border-brand-card-border/80 overflow-hidden bg-brand-card/90 py-16 md:py-24 px-8 md:px-16 shadow-card-glow text-center">
 
                     {/* CTA Orange Background radial flare */}
-                    <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-orange/10 blur-[120px] rounded-full pointer-events-none" />
+                    <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-sui/10 blur-[120px] rounded-full pointer-events-none" />
 
                     <div className="relative z-10 max-w-3xl mx-auto">
                       <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
@@ -1384,7 +1370,7 @@ const App: React.FC = () => {
                           onClick={() => window.open('https://github.com/Kellie-Brighty/sui-functions', '_blank')}
                           variant="outline"
                           size="lg"
-                          className="w-full sm:w-auto hover:bg-[#12131C] px-10"
+                          className="w-full sm:w-auto hover:bg-[#082035] px-10"
                         >
                           Explore Code Moat
                         </Button>

@@ -17,10 +17,10 @@ export const Card: React.FC<CardProps> = ({
   onClick
 }) => {
   const glowStyles = {
-    orange: 'hover:border-brand-orange/40 hover:shadow-[0_0_30px_rgba(255,126,33,0.15)] border-l-2 border-l-brand-orange/60',
-    blue: 'hover:border-brand-blue/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] border-l-2 border-l-brand-blue/60',
-    green: 'hover:border-brand-green/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] border-l-2 border-l-brand-green/60',
-    none: 'hover:border-[#2A2B3C] border-l border-l-[#161722]'
+    orange: 'hover:border-brand-sui/40 hover:shadow-[0_0_30px_rgba(56,152,255,0.15)] border-l-2 border-l-brand-sui/60',
+    blue: 'hover:border-brand-indigo/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] border-l-2 border-l-brand-indigo/60',
+    green: 'hover:border-brand-cyan/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] border-l-2 border-l-brand-cyan/60',
+    none: 'hover:border-[#183B5E] border-l border-l-[#102A44]'
   };
 
   const Component = hoverEffect ? motion.div : 'div';

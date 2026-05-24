@@ -44,14 +44,14 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={(e) => handleNavClick(e, 'home')}
           className="flex items-center gap-3.5 group"
         >
-          <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-brand-card border border-brand-card-border flex items-center justify-center group-hover:border-brand-orange/40 transition-colors duration-300">
+          <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-brand-card border border-brand-card-border flex items-center justify-center group-hover:border-brand-sui/40 transition-colors duration-300">
             <img 
               src="/sui-func-logo.png" 
               alt="Sui-Functions Logo" 
               className="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-300"
             />
           </div>
-          <span className="text-xl font-bold tracking-tight text-white group-hover:text-brand-orange transition-colors duration-300 font-outfit flex items-center">
+          <span className="text-xl font-bold tracking-tight text-white group-hover:text-brand-sui transition-colors duration-300 font-outfit flex items-center">
             <span className="whitespace-nowrap">Sui-Functions</span>
           </span>
         </a>
@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
           <a 
             href="#docs" 
             onClick={(e) => handleNavClick(e, 'docs')}
-            className={`text-sm font-bold transition-all duration-200 px-4 py-2 rounded-lg ${viewMode === 'docs' ? 'text-brand-orange bg-brand-orange/10 border border-brand-orange/20' : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'}`}
+            className={`text-sm font-bold transition-all duration-200 px-4 py-2 rounded-lg ${viewMode === 'docs' ? 'text-brand-sui bg-brand-sui/10 border border-brand-sui/20' : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             Docs
           </a>
@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={onConnectClick}
               variant="primary" 
               size="md"
-              className="!px-5 !py-2.5 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,126,33,0.3)] hover:shadow-[0_0_30px_rgba(255,126,33,0.5)] transition-shadow"
+              className="!px-5 !py-2.5 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(56,152,255,0.3)] hover:shadow-[0_0_30px_rgba(56,152,255,0.5)] transition-shadow"
             >
               <span>Deploy Now</span>
               <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />
@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
           <a 
             href="#docs" 
             onClick={(e) => { setMobileMenuOpen(false); handleNavClick(e, 'docs'); }}
-            className={`text-lg font-semibold py-1 ${viewMode === 'docs' ? 'text-brand-orange' : 'text-slate-200 hover:text-brand-orange'}`}
+            className={`text-lg font-semibold py-1 ${viewMode === 'docs' ? 'text-brand-sui' : 'text-slate-200 hover:text-brand-sui'}`}
           >
             Docs
           </a>
@@ -103,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => { setMobileMenuOpen(false); onConnectClick?.(); }}
               variant="primary" 
               size="md"
-              className="!w-full !justify-center !px-5 !py-3 flex items-center gap-2 shadow-[0_0_20px_rgba(255,126,33,0.2)]"
+              className="!w-full !justify-center !px-5 !py-3 flex items-center gap-2 shadow-[0_0_20px_rgba(56,152,255,0.2)]"
             >
               <span>Deploy Now</span>
               <img src="/deploy.svg" alt="Deploy Icon" className="w-4 h-4 object-contain" />

@@ -43,10 +43,10 @@ export const CodeWindow: React.FC<CodeWindowProps> = ({
                   className={`px-3 py-1.5 rounded-md text-xs font-mono font-bold transition-all duration-200 flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-[#090b11] text-white border border-[#23263b] shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#07090d]/50'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#03192E]/50'
                   }`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${isActive ? (tab.id === 'trigger' ? 'bg-brand-orange' : tab.id === 'logic' ? 'bg-brand-blue' : 'bg-brand-green') : 'bg-slate-600'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${isActive ? (tab.id === 'trigger' ? 'bg-brand-sui' : tab.id === 'logic' ? 'bg-brand-indigo' : 'bg-brand-cyan') : 'bg-slate-600'}`} />
                   {tab.label}
                 </button>
               );

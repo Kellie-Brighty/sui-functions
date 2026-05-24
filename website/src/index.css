@@ -7,12 +7,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    background-color: #05060a !important;
+    background-color: #0B101E !important;
   }
   
   body {
     @apply antialiased bg-brand-dark text-slate-100 font-sans;
-    background-color: #05060a !important;
+    background-color: #0B101E !important;
   }
 
   /* Custom Scrollbar */
@@ -22,36 +22,36 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #05060a;
+    background: #0B101E;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1e2030;
+    background: #14304A;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #2d3047;
+    background: #204768;
   }
 }
 
 /* Premium UI Utilities */
-.glow-orange {
+.glow-sui {
   position: relative;
 }
 
-.glow-orange::before {
+.glow-sui::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  box-shadow: 0 0 40px rgba(255, 126, 33, 0.12);
+  box-shadow: 0 0 40px rgba(56, 152, 255, 0.12);
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
   pointer-events: none;
 }
 
-.glow-orange:hover::before {
+.glow-sui:hover::before {
   opacity: 1;
 }
 
@@ -65,12 +65,12 @@
 }
 
 /* Radial light glow effects */
-.radial-glow-orange {
-  background: radial-gradient(circle 600px at 50% 200px, rgba(255, 126, 33, 0.08), #05060a 80%);
+.radial-glow-sui {
+  background: radial-gradient(circle 600px at 50% 200px, rgba(56, 152, 255, 0.08), #0B101E 80%);
 }
 
 .radial-glow-footer {
-  background: radial-gradient(circle 400px at 50% 100%, rgba(255, 126, 33, 0.05), #030407 70%);
+  background: radial-gradient(circle 400px at 50% 100%, rgba(56, 152, 255, 0.05), #010E1A 70%);
 }
 
 /* Shimmer animation for headers or glowing text */
@@ -84,7 +84,7 @@
 }
 
 .text-shimmer {
-  background: linear-gradient(90deg, #ff7e21, #ffbe85, #ff7e21);
+  background: linear-gradient(90deg, #3898FF, #6FB7B7, #3898FF);
   background-size: 200% auto;
   color: transparent;
   -webkit-background-clip: text;
