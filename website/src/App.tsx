@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCurrentAccount, ConnectModal } from '@mysten/dapp-kit';
-import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users, Loader2, Wallet } from 'lucide-react';
+import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users, Loader2, Wallet, Layers, ShieldCheck } from 'lucide-react';
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 import { DocsView } from './components/DocsView';
@@ -135,9 +135,9 @@ const App: React.FC = () => {
                       transition={{ duration: 0.6, delay: 0.1 }}
                       className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-outfit text-white leading-[1.1] mb-6"
                     >
-                      Decentralized Compute <br />
+                      The Zero-Downtime <br />
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
-                        Backbone for the Agentic Web
+                        Compute Economy
                       </span>
                     </motion.h1>
 
@@ -148,7 +148,7 @@ const App: React.FC = () => {
                       transition={{ duration: 0.6, delay: 0.2 }}
                       className="text-lg text-slate-200 leading-relaxed mb-10 max-w-2xl font-medium"
                     >
-                      Sui-Functions provides the essential agentic compute layer, allowing autonomous agents to execute, react, and store state without centralized cloud middleware. We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution.
+                      Sui-Functions is a globally distributed, cryptoeconomically secured compute layer. By replacing fragile Web2 middleware with a massive network of independent Node Operators, we guarantee 100% uptime for autonomous agents and decentralized applications.
                     </motion.p>
 
                     {/* Buttons */}
@@ -171,12 +171,13 @@ const App: React.FC = () => {
                         </Button>
                       </div>
                       <Button
-                        onClick={scrollToDemo}
+                        onClick={() => setShowConnectModal(true)}
                         variant="outline"
                         size="lg"
-                        className="w-full sm:w-auto hover:bg-[#12131C]"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2.5 hover:bg-[#12131C]"
                       >
-                        Explore Sandbox
+                        <ShieldCheck size={20} className="text-brand-orange" />
+                        <span>Become an Operator</span>
                       </Button>
                     </motion.div>
                   </div>
@@ -218,26 +219,26 @@ const App: React.FC = () => {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-[#1A1C29]">
                       <div className="flex flex-col items-center md:items-start md:pl-4 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Total Invocations</span>
-                        <span className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 font-outfit tracking-tight">1.2B+</span>
+                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Total SUI Staked</span>
+                        <span className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 font-outfit tracking-tight">4.2M+</span>
                       </div>
                       <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Network Status</span>
+                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Uptime Guarantee</span>
                         <div className="flex items-center gap-2.5 bg-brand-green/5 border border-brand-green/20 px-3 py-1 rounded-full mt-1">
                           <span className="w-2 h-2 rounded-full bg-brand-green shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
-                          <span className="text-[11px] font-bold text-[#10B981] font-mono tracking-wider uppercase">Operational</span>
+                          <span className="text-[11px] font-bold text-[#10B981] font-mono tracking-wider uppercase">100.000%</span>
                         </div>
                       </div>
                       <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Avg. Cold Start</span>
+                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Network APY</span>
                         <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-extrabold text-white font-outfit tracking-tight">&lt; 14</span>
-                          <span className="text-amber-500 font-bold font-mono text-sm">ms</span>
+                          <span className="text-3xl font-extrabold text-brand-orange font-outfit tracking-tight">18.4</span>
+                          <span className="text-brand-orange font-bold font-mono text-sm">%</span>
                         </div>
                       </div>
                       <div className="flex flex-col items-center md:items-start md:pl-8 pt-4 md:pt-0">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Active Workers</span>
-                        <span className="text-3xl font-extrabold text-white font-outfit tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">12,402</span>
+                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-2">Active Node Operators</span>
+                        <span className="text-3xl font-extrabold text-white font-outfit tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">1,402</span>
                       </div>
                     </div>
                   </Card>
@@ -321,11 +322,11 @@ const App: React.FC = () => {
                       <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit leading-[1.15]">
                         Engineered for <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-amber-400 to-[#F76707] text-shimmer">
-                          Absolute Security
+                          Zero Downtime
                         </span>
                       </h2>
                       <p className="text-slate-300 text-sm leading-relaxed font-medium mb-6 max-w-md">
-                        Sui-Functions decouples state, compute, and logic to deliver a trustless, sovereign execution environment for agentic applications without compromising speed.
+                        By incentivizing a decentralized pool of operators, Sui-Functions delivers a trustless, sovereign execution environment that never crashes.
                       </p>
                       <div className="flex items-center gap-3 text-brand-orange font-bold text-[10px] uppercase tracking-wider font-mono">
                         <span className="w-2.5 h-2.5 rounded-full bg-brand-orange animate-ping" />
@@ -895,6 +896,59 @@ const App: React.FC = () => {
                           <div className="text-white font-semibold pl-6">suifunctions/runner-node</div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* TRUE DECENTRALIZATION - TEE CONTRAST */}
+                <section className="mb-32 relative py-12">
+                  <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-blue/5 blur-[120px] pointer-events-none" />
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                    {/* Left: Terminal Visual representing TEE pain */}
+                    <div className="lg:col-span-6 relative z-10 w-full order-2 lg:order-1">
+                      <div className="bg-[#030407] border border-[#141624] rounded-2xl p-6 md:p-8 font-mono text-[11px] md:text-xs text-slate-300 shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-left w-full relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-blue opacity-60" />
+                        <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                          <div className="flex items-center gap-2">
+                            <Layers size={14} className="text-brand-blue" />
+                            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">The Legacy TEE Approach</span>
+                          </div>
+                          <span className="text-[9px] text-red-400 font-bold px-2 py-1 bg-red-500/10 rounded border border-red-500/20">AWS DEPENDENT</span>
+                        </div>
+                        <div className="space-y-3 opacity-60">
+                          <div className="text-red-400">ERROR: Hardware Enclave Not Found</div>
+                          <div className="text-slate-400"># Traditional off-chain compute requires proprietary hardware</div>
+                          <div className="text-slate-500">aws ec2 run-instances --instance-type m5.xlarge --enclave-options Enabled=true</div>
+                          <div className="text-slate-400 mt-4"># Result: Centralized cloud provider dependency (Web2.5)</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Content */}
+                    <div className="lg:col-span-6 text-left relative z-10 order-1 lg:order-2">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-blue/40 bg-brand-blue/10 text-brand-blue text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                        <ShieldCheck size={10} /> True Decentralization
+                      </div>
+                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
+                        Zero Cloud Lock-in. <br className="hidden lg:block" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-cyan-400">Hardware Agnostic.</span>
+                      </h2>
+                      <p className="text-slate-200 text-base leading-relaxed mb-8 max-w-lg font-medium">
+                        Other off-chain compute networks force you to rent expensive, centralized AWS Nitro Enclaves. Sui-Functions uses mathematically secure V8 Sandboxing, meaning our network is truly decentralized, and you can deploy your logic in 10 seconds with our beautiful UI—no complex CLI required.
+                      </p>
+                      
+                      <ul className="flex flex-col gap-3 font-mono text-[11px] text-slate-400">
+                        <li className="flex items-center gap-2">
+                          <span className="text-brand-blue">✓</span> No proprietary AWS hardware required
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-brand-blue">✓</span> 1-Click Dashboard Deploy vs Raw SDKs
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-brand-blue">✓</span> A true DePIN economy, not a rented server
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </section>

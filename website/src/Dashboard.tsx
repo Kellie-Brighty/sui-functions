@@ -35,11 +35,13 @@ import {
   Shield,
   Copy,
   BookOpen,
-  Wallet
+  Wallet,
+  Server,
+  ShieldCheck
 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID, PROTOCOL_TREASURY_ID, ADMIN_CAP_TYPE } from './constants';
+import { PACKAGE_ID, PROTOCOL_TREASURY_ID, ADMIN_CAP_TYPE, PUBLIC_POOL_REGISTRY_ID } from './constants';
 import { DocsView } from './components/DocsView';
 
 interface SearchItem {
@@ -165,6 +167,290 @@ const SEARCH_ITEMS: SearchItem[] = [
   }
 ];
 
+const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: (type: 'success' | 'error' | 'info' | 'warning', title: string, message: string, hash?: string) => void }) => {
+  const [isStaked, setIsStaked] = React.useState(false);
+  const [runnerAddress, setRunnerAddress] = React.useState("");
+  const [isLinked, setIsLinked] = React.useState(false);
+  const [isStaking, setIsStaking] = React.useState(false);
+  const [copiedCommand, setCopiedCommand] = React.useState(false);
+  const [fundAmount, setFundAmount] = React.useState("");
+  const [isFundingRunner, setIsFundingRunner] = React.useState(false);
+  
+  const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+
+  // Fetch Runner SUI Balance
+  const { data: runnerBalanceData, refetch: refetchRunnerBalance } = useSuiClientQuery(
+    'getBalance',
+    { owner: runnerAddress as string },
+    { enabled: !!runnerAddress && isLinked, refetchInterval: 10000 }
+  );
+
+  const runnerSuiBalance = runnerBalanceData ? (Number(runnerBalanceData.totalBalance) / 1e9).toFixed(4) : "0.0000";
+
+  // Check if user already has a NodeOperator object
+  const { data: operatorObjects } = useSuiClientQuery('getOwnedObjects', {
+    owner: account?.address || '',
+    filter: { StructType: `${PACKAGE_ID}::trigger::NodeOperator` },
+    options: { showContent: true }
+  }, {
+    enabled: !!account,
+    refetchInterval: 5000,
+  });
+
+  React.useEffect(() => {
+    if (operatorObjects && operatorObjects.data.length > 0) {
+      setIsStaked(true);
+      // Optional: Check if runner address is already linked in the object content
+      const content = operatorObjects.data[0].data?.content as any;
+      if (content && content.fields && content.fields.runner_address !== '0x0000000000000000000000000000000000000000000000000000000000000000') {
+         setIsLinked(true);
+         setRunnerAddress(content.fields.runner_address);
+      }
+    } else {
+      setIsStaked(false);
+      setIsLinked(false);
+      setRunnerAddress("");
+    }
+  }, [operatorObjects]);
+
+  const handleStakeSui = () => {
+    if (!account) return showToast('warning', 'Wallet Required', 'Please connect wallet first');
+    
+    setIsStaking(true);
+    try {
+      const tx = new Transaction();
+      
+      // 0.5 SUI (500_000_000 MIST) minimum stake
+      const stakeCoin = tx.splitCoins(tx.gas, [500_000_000]);
+      
+      tx.moveCall({
+        target: `${PACKAGE_ID}::trigger::stake_node`,
+        arguments: [stakeCoin],
+      });
+
+      signAndExecute(
+        { transaction: tx },
+        {
+          onSuccess: (result) => {
+            console.log("Stake Successful!", result);
+            setIsStaked(true);
+            setIsStaking(false);
+            showToast('success', 'Staking Successful', 'You have successfully staked 0.5 SUI.');
+          },
+          onError: (error) => {
+            console.error("Stake Failed", error);
+            showToast('error', 'Staking Failed', error.message);
+            setIsStaking(false);
+          }
+        }
+      );
+    } catch (e: any) {
+      console.error(e);
+      showToast('error', 'Error', e.message);
+      setIsStaking(false);
+    }
+  };
+
+  const handleLinkRunner = () => {
+    if (!account) return showToast('warning', 'Wallet Required', 'Please connect wallet first');
+    if (!operatorObjects || operatorObjects.data.length === 0) return showToast('warning', 'Operator Not Found', 'No staked node operator found');
+    if (!runnerAddress) return showToast('warning', 'Input Required', 'Please enter a runner address');
+
+    try {
+      const tx = new Transaction();
+      const operatorId = operatorObjects.data[0].data?.objectId;
+
+      tx.moveCall({
+        target: `${PACKAGE_ID}::trigger::link_runner_address`,
+        arguments: [
+          tx.object(operatorId!),
+          tx.pure.address(runnerAddress),
+          tx.object(PUBLIC_POOL_REGISTRY_ID),
+        ],
+      });
+
+      signAndExecute(
+        { transaction: tx },
+        {
+          onSuccess: (result) => {
+            console.log("Link Successful!", result);
+            setIsLinked(true);
+            showToast('success', 'Runner Linked', 'Your runner address has been successfully linked to your node.');
+          },
+          onError: (error) => {
+            console.error("Link Failed", error);
+            showToast('error', 'Linking Failed', error.message);
+          }
+        }
+      );
+    } catch (e: any) {
+      console.error(e);
+      showToast('error', 'Error', e.message);
+    }
+  };
+
+  const handleFundRunner = () => {
+    if (!runnerAddress || !fundAmount) return;
+    setIsFundingRunner(true);
+    try {
+      const tx = new Transaction();
+      const amountInMist = parseFloat(fundAmount) * 1e9;
+      
+      const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(Math.floor(amountInMist))]);
+      tx.transferObjects([coin], tx.pure.address(runnerAddress));
+      
+      signAndExecute({ transaction: tx }, {
+        onSuccess: () => {
+          setIsFundingRunner(false);
+          setFundAmount("");
+          refetchRunnerBalance();
+          showToast('success', 'Funding Successful', `Successfully sent ${fundAmount} SUI to Runner.`);
+        },
+        onError: (err) => {
+          setIsFundingRunner(false);
+          showToast('error', 'Funding Failed', err.message);
+        }
+      });
+    } catch(e: any) {
+       setIsFundingRunner(false);
+       showToast('error', 'Error', e.message);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto animate-in fade-in duration-300">
+      <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="w-20 h-20 bg-brand-green/10 border border-brand-green/20 rounded-full flex items-center justify-center mb-6">
+          <Server size={40} className="text-brand-green" />
+        </div>
+        <h2 className="text-3xl font-bold text-white font-outfit mb-3">Node Operator Hub</h2>
+        <p className="text-slate-400 max-w-md mx-auto text-sm mb-8 leading-relaxed">
+          Stake your SUI to join the decentralized compute network. Process workloads for Web3 applications and earn yield automatically with zero downtime guarantees.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-8">
+          <div className="bg-[#141624] border border-[#252838] rounded-xl p-6 text-center shadow-inner">
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Current Network APY</h4>
+            <div className="text-4xl font-extrabold text-brand-orange font-outfit">18.4%</div>
+          </div>
+          <div className="bg-[#141624] border border-[#252838] rounded-xl p-6 text-center shadow-inner">
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Your Staked SUI</h4>
+            <div className="text-4xl font-extrabold text-white font-outfit">{isStaked ? '0.50' : '0.00'}</div>
+          </div>
+          <div className="bg-[#141624] border border-[#252838] rounded-xl p-6 text-center shadow-inner">
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Yield Earned</h4>
+            <div className="text-4xl font-extrabold text-brand-green font-outfit">0.00</div>
+          </div>
+        </div>
+
+        {!isStaked ? (
+          <button 
+            onClick={handleStakeSui}
+            disabled={isStaking}
+            className="bg-gradient-to-r from-brand-green to-emerald-500 text-white font-bold py-3.5 px-10 rounded-xl hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            {isStaking ? <Activity className="animate-spin" size={18} /> : <Zap size={18} />} 
+            {isStaking ? "Staking 0.5 SUI..." : "Stake 0.5 SUI & Start Processing"}
+          </button>
+        ) : (
+          <div className="w-full bg-[#05060a] border border-brand-green/30 rounded-xl p-6 text-left animate-in zoom-in-95 duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-brand-green font-bold flex items-center gap-2">
+                <ShieldCheck size={18} /> Staking Successful
+              </h4>
+            </div>
+            
+            <p className="text-slate-400 text-sm mb-4">
+              Your node is registered. Run this exact command in your terminal to boot the decentralized execution engine directly from Walrus.
+            </p>
+            <div className="bg-[#0a0b10] border border-[#252838] rounded-lg p-4 font-mono text-xs text-brand-orange select-all mb-6 flex justify-between items-center group">
+              <span>npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</span>
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText("npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo");
+                  setCopiedCommand(true);
+                  setTimeout(() => setCopiedCommand(false), 2000);
+                }}
+                className="text-slate-500 hover:text-white transition-colors p-1"
+                title="Copy Command"
+              >
+                {copiedCommand ? <Check size={14} className="text-brand-green" /> : <Copy size={14} />}
+              </button>
+            </div>
+
+            <div className="border-t border-[#252838] pt-6">
+              <h4 className="text-white font-bold mb-2">Link Runner Address</h4>
+              <p className="text-slate-400 text-xs mb-3">
+                When your terminal boots, it will generate a Runner Address. Paste it here to authorize it to process workloads on your behalf.
+              </p>
+              <div className="flex gap-3">
+                <input 
+                  type="text" 
+                  placeholder="0x..." 
+                  value={runnerAddress}
+                  onChange={(e) => setRunnerAddress(e.target.value)}
+                  disabled={isLinked}
+                  className="flex-1 bg-[#141624] border border-[#252838] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-orange disabled:opacity-50"
+                />
+                <button 
+                  onClick={handleLinkRunner}
+                  disabled={isLinked || !runnerAddress}
+                  className="bg-[#252838] hover:bg-[#2d3142] disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors"
+                >
+                  {isLinked ? 'Linked ✓' : 'Authorize Node'}
+                </button>
+              </div>
+            </div>
+
+            {isLinked && (
+              <div className="border-t border-[#252838] pt-6 mt-6">
+                <div className="flex justify-between items-center mb-2">
+                  <h4 className="text-white font-bold">Fund Runner Gas</h4>
+                  <span className="text-xs font-mono bg-[#141624] border border-[#252838] rounded-md px-2 py-1 text-emerald-400 flex items-center gap-1">
+                    <Wallet size={12}/> {runnerSuiBalance} SUI
+                  </span>
+                </div>
+                <p className="text-slate-400 text-xs mb-3">
+                  Your runner address needs a tiny amount of SUI to pay for gas when executing workloads (e.g. 0.05 SUI).
+                </p>
+                <div className="flex gap-3">
+                  <input 
+                    type="number" 
+                    placeholder="Amount (SUI)" 
+                    value={fundAmount}
+                    onChange={(e) => setFundAmount(e.target.value)}
+                    disabled={isFundingRunner}
+                    className="flex-1 bg-[#141624] border border-[#252838] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-orange disabled:opacity-50"
+                  />
+                  <button 
+                    onClick={handleFundRunner}
+                    disabled={isFundingRunner || !fundAmount}
+                    className="bg-brand-orange hover:bg-brand-orange/80 disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
+                  >
+                    {isFundingRunner ? <Activity className="animate-spin" size={16} /> : <ArrowUpRight size={16} />}
+                    {isFundingRunner ? 'Sending...' : 'Fund Runner'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="bg-[#0a0b10] border border-[#252838] rounded-2xl p-6">
+        <h3 className="text-white font-bold font-outfit text-lg mb-4 flex items-center gap-2">
+          <Activity size={18} className="text-brand-orange animate-pulse" /> Live Workload Feed
+        </h3>
+        <div className="bg-[#05060a] border border-[#141624] rounded-xl p-8 text-center text-slate-500 text-sm font-mono flex flex-col items-center justify-center gap-3">
+          <Terminal size={24} className="text-slate-600 mb-2" />
+          {isStaked 
+            ? (isLinked ? "Node linked! Listening for workloads on the Sui network..." : "Awaiting runner address linkage...")
+            : "Awaiting node registration. Stake SUI to begin receiving Web3 workloads."}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Dashboard: React.FC = () => {
   const account = useCurrentAccount();
   const client = useSuiClient();
@@ -242,6 +528,7 @@ const Dashboard: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [triggerFunctionName, setTriggerFunctionName] = useState("");
   const [triggerInputJson, setTriggerInputJson] = useState("{}");
+  const [persona, setPersona] = useState<'developer' | 'operator'>('developer');
   
   const handleUpdateComputeFee = async () => {
     if (!adminCapId || !newComputeFee) return;
@@ -896,6 +1183,14 @@ const Dashboard: React.FC = () => {
       ]
     });
 
+    tx.moveCall({
+      target: `${PACKAGE_ID}::trigger::update_execution_mode`,
+      arguments: [
+        tx.object(activeProject.id),
+        tx.pure.u8(isCustomRunner ? 1 : 0)
+      ]
+    });
+
     signAndExecute(
       { transaction: tx },
       {
@@ -1181,7 +1476,9 @@ const Dashboard: React.FC = () => {
         tx.pure.u8(registerTriggerType),
         tx.pure.string(registerTriggerConfig),
         tx.object(PROTOCOL_TREASURY_ID),
-        deployFee
+        deployFee,
+        tx.object(PUBLIC_POOL_REGISTRY_ID),
+        tx.object("0x6") // SUI Clock
       ],
     });
 
@@ -1237,7 +1534,9 @@ const Dashboard: React.FC = () => {
       target: `${PACKAGE_ID}::trigger::request_verification`,
       arguments: [
         tx.object(activeProject.id),
-        tx.pure.string(functionName)
+        tx.pure.string(functionName),
+        tx.object(PUBLIC_POOL_REGISTRY_ID),
+        tx.object("0x6") // SUI Clock
       ],
     });
 
@@ -1349,7 +1648,9 @@ const Dashboard: React.FC = () => {
       arguments: [
         tx.object(activeProject.id),
         tx.pure.string(functionName),
-        tx.pure.string(triggerInputJson || "{}")
+        tx.pure.string(triggerInputJson || "{}"),
+        tx.object(PUBLIC_POOL_REGISTRY_ID),
+        tx.object("0x6") // SUI Clock
       ],
     });
 
@@ -2399,7 +2700,37 @@ const Dashboard: React.FC = () => {
         {/* 3. Main Operational Workplate */}
         <main className="flex-1 p-6 md:p-8 lg:p-10 overflow-y-auto max-w-[1400px] mx-auto w-full flex flex-col gap-6">
           
-          {/* Global Unconfigured Runner Alert */}
+          {/* Persona Toggle */}
+          <div className="flex justify-center mb-2">
+            <div className="bg-[#0a0b10] p-1.5 rounded-2xl border border-[#252838] flex items-center gap-2 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+              <button
+                onClick={() => setPersona('developer')}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'developer'
+                    ? 'bg-gradient-to-r from-brand-orange/20 to-[#F76707]/10 text-brand-orange border border-brand-orange/30 shadow-[0_0_15px_rgba(255,126,33,0.15)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <Code size={16} /> Developer Workspace
+              </button>
+              <button
+                onClick={() => setPersona('operator')}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'operator'
+                    ? 'bg-gradient-to-r from-brand-green/20 to-emerald-500/10 text-brand-green border border-brand-green/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <Server size={16} /> Node Operator Yield
+              </button>
+            </div>
+          </div>
+          
+          {persona === 'operator' ? (
+            <OperatorDashboardUI account={account} showToast={showToast} />
+          ) : (
+            <>
+              {/* Global Unconfigured Runner Alert */}
           {activeProject && (!activeProject.runnerAddress || activeProject.runnerAddress === "0x0" || activeProject.runnerAddress === "0x0000000000000000000000000000000000000000000000000000000000000000" || /^0x0+$/.test(activeProject.runnerAddress)) && (
             <div className="bg-amber-950/15 border border-amber-500/30 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_4px_20px_rgba(245,158,11,0.05)] animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="flex items-start gap-4">
@@ -3434,6 +3765,8 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           )}
+          </>
+        )}
 
         </main>
 
@@ -3660,20 +3993,26 @@ const Dashboard: React.FC = () => {
                         : "bg-[#05060a]/50 border-[#252838] hover:border-[#2d3047] text-slate-300"
                     }`}
                   >
-                    <span className="text-xs font-bold font-outfit">Managed Mode</span>
-                    <span className="text-[9px] leading-normal opacity-85">Shared execution fleet. Zero local configuration.</span>
+                    <span className="text-xs font-bold font-outfit">Public Compute Pool</span>
+                    <span className="text-[9px] leading-normal opacity-85">Free decentralized execution fleet.</span>
                   </button>
                   
                   <button
                     type="button"
-                    disabled={true}
-                    className="flex flex-col items-start gap-1 p-3 rounded-xl border border-[#252838]/60 bg-[#05060a]/30 text-slate-400 opacity-60 cursor-not-allowed text-left transition-all w-full"
+                    onClick={() => {
+                      setIsCustomRunner(true);
+                    }}
+                    className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      isCustomRunner
+                        ? "bg-brand-orange/10 border-brand-orange/50 shadow-[0_0_12px_rgba(255,126,33,0.1)] text-white"
+                        : "bg-[#05060a]/50 border-[#252838] hover:border-[#2d3047] text-slate-300"
+                    }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold font-outfit text-slate-300">Self-Hosted</span>
-                      <span className="text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#F76707]/10 border border-[#F76707]/30 text-[#F76707] leading-none shrink-0 font-mono">Soon</span>
+                      <span className="text-xs font-bold font-outfit text-white">Dedicated Runner</span>
+                      <span className="text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-orange/20 border border-brand-orange text-brand-orange leading-none shrink-0 font-mono">Paid</span>
                     </div>
-                    <span className="text-[9px] leading-normal opacity-85 font-medium">Your own private AWS/VPS. Complete sovereignty.</span>
+                    <span className="text-[9px] leading-normal opacity-85 font-medium">Lease a dedicated Node Operator with an SLA.</span>
                   </button>
                 </div>
               </div>
@@ -3682,10 +4021,9 @@ const Dashboard: React.FC = () => {
                 <div className="bg-[#141622]/30 border border-[#252838]/60 p-4 rounded-xl flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-brand-orange/10 flex items-center justify-center text-brand-orange text-[10px] shrink-0 mt-0.5 font-bold">ℹ</div>
                   <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
-                    <strong className="text-white block mb-1">Managed Serverless Mode Active</strong>
-                    By default, your serverless functions execute inside our decentralized, isolated V8 sandboxes. We pay the blockchain gas fees to register and run your scripts automatically.
+                    <strong className="text-white block mb-1">Public Serverless Mode Active</strong>
+                    Your serverless functions execute inside our decentralized, isolated V8 sandboxes. Any staked node operator can pick up and run your workloads for free.
                     <div className="mt-2 text-[9px] font-mono text-slate-400 break-all select-all font-bold">
-                      Default Runner: 0x66e2384110dfebe33a817f76f8f7916bdd92b1046b7ac699b59701f2c965a875
                     </div>
                   </div>
                 </div>
@@ -3708,7 +4046,7 @@ const Dashboard: React.FC = () => {
                   <div className="bg-amber-950/10 border border-amber-900/30 p-4 rounded-xl flex items-start gap-3">
                     <span className="text-amber-500 font-bold text-xs shrink-0 mt-0.5">⚠️</span>
                     <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
-                      Configure your cloud VPS (e.g. AWS) to run the Sui-Functions listener daemon. Load it with a hot-wallet key, and input the address here. Only transactions signed by this address will be allowed to submit execution results to this workspace.
+                      Only the Node Operator running with the Runner Address below will be allowed to pick up and execute your functions. Ensure you have coordinated with them.
                     </div>
                   </div>
                 </div>

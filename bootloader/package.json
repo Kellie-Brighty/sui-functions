@@ -1,0 +1,19 @@
+{
+  "name": "sui-functions-node",
+  "version": "1.0.1",
+  "description": "Decentralized Bootloader for Sui Functions Node Operators",
+  "main": "bin/start.js",
+  "type": "module",
+  "bin": {
+    "sui-functions-node": "./bin/start.js"
+  },
+  "scripts": {
+    "start": "node ./bin/start.js"
+  },
+  "dependencies": {
+    "isolated-vm": "^6.1.2",
+    "@mysten/sui": "^2.16.2",
+    "axios": "^1.16.1",
+    "dotenv": "^17.4.2"
+  }
+}

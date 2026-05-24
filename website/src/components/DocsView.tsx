@@ -21,7 +21,8 @@ import {
   Ticket,
   ExternalLink,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  ShieldCheck
 } from 'lucide-react';
 
 interface DocsSection {
@@ -360,7 +361,7 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToLanding, isDashboard
             <p className="text-xs text-slate-400 leading-relaxed">
               Alternatively, you can PUT the raw file data directly to the testnet publisher endpoint:
             </p>
-            <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden font-mono text-xs text-slate-350 p-4 bg-[#07080D]">
+            <div className="border border-brand-card-border rounded-xl overflow-hidden font-mono text-xs text-slate-350 p-4 bg-[#07080D]">
               <span className="text-brand-blue font-bold">PUT</span> https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=5
             </div>
           </div>
@@ -414,7 +415,7 @@ tx.moveCall({
             </p>
 
             <h5 className="text-xs font-semibold text-white font-mono uppercase tracking-wider">1. Create a `.env` file inside the `runner/` directory:</h5>
-            <div className="bg-[#08090e] border border-brand-card-border rounded-xl overflow-hidden font-mono text-xs text-slate-350 p-4 bg-[#07080D] space-y-1">
+            <div className="border border-brand-card-border rounded-xl overflow-hidden font-mono text-xs text-slate-350 p-4 bg-[#07080D] space-y-1">
               <div>SUI_RPC_URL=https://fullnode.testnet.sui.io:443</div>
               <div>SUI_PRIVATE_KEY=suiprivkey1... <span className="text-slate-500"># Private key of the operator executing submits</span></div>
               <div>PACKAGE_ID=0xad8287a8b7535edb784a72d1ba9a5fe8f29c83f7f404db95df0560defa3a64ce</div>
@@ -889,6 +890,85 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
           </div>
         </div>
       )
+    },
+    {
+      id: 'vs-tees',
+      title: 'Sui-Functions vs. TEEs',
+      category: 'Overview',
+      icon: ShieldCheck,
+      keywords: ['tee', 'nautilus', 'aws', 'enclaves', 'comparison', 'vs', 'decentralization'],
+      layman: (
+        <div className="space-y-6 animate-fade-in-up">
+          <div className="p-5 border border-brand-blue/20 bg-brand-blue/5 rounded-2xl">
+            <h4 className="text-brand-blue font-bold text-lg mb-2 flex items-center gap-2">
+              <ShieldCheck size={20} />
+              The Decentralization Difference
+            </h4>
+            <p className="text-slate-300 leading-relaxed text-sm">
+              Some other platforms use "Trusted Execution Environments" (TEEs) for off-chain compute. While TEEs sound secure, they actually force you to rent specific servers from massive corporations like Amazon (AWS). Sui-Functions takes a different path, allowing anyone to run a secure node anywhere, ensuring true Web3 decentralization.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-white">Why V8 Sandboxes Beat Enclaves</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl">
+                <h5 className="font-semibold text-white mb-1">True DePIN Economy</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Because Sui-Functions doesn't require proprietary AWS hardware, anyone with a laptop or Raspberry Pi can become a compute node and earn SUI.
+                </p>
+              </div>
+              <div className="bg-brand-card border border-brand-card-border p-4 rounded-xl">
+                <h5 className="font-semibold text-white mb-1">Zero AWS Lock-in</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Your compute layer shouldn't go offline just because a cloud provider suspends an account. Our sandboxes run entirely independently of big tech infrastructure.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      developer: (
+        <div className="space-y-6 animate-fade-in-up">
+          <p className="text-slate-300 leading-relaxed">
+            When evaluating off-chain compute on Sui, developers often compare Sui-Functions to legacy TEE frameworks (like Nautilus). Here is a technical breakdown of why Sui-Functions offers superior sovereignty and developer experience:
+          </p>
+          <div className="space-y-4">
+            <div className="border border-brand-card-border rounded-xl overflow-hidden text-xs">
+              <table className="w-full text-left border-collapse font-mono">
+                <thead>
+                  <tr className="bg-brand-card border-b border-brand-card-border text-slate-300">
+                    <th className="p-4 border-r border-brand-card-border">Feature</th>
+                    <th className="p-4 border-r border-brand-card-border text-brand-orange">Sui-Functions</th>
+                    <th className="p-4 text-slate-400">Legacy TEEs (e.g. Nautilus)</th>
+                  </tr>
+                </thead>
+                <tbody className="text-slate-300 divide-y divide-brand-card-border">
+                  <tr>
+                    <td className="p-4 border-r border-brand-card-border font-bold">Execution Engine</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">V8 Isolate Sandboxes</td>
+                    <td className="p-4 text-slate-400 bg-white/5">AWS Nitro Enclaves</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 border-r border-brand-card-border font-bold">Decentralization</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">100% Hardware Agnostic</td>
+                    <td className="p-4 text-slate-400 bg-white/5">Requires active AWS account</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 border-r border-brand-card-border font-bold">Developer UX</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">1-Click Web Dashboard</td>
+                    <td className="p-4 text-slate-400 bg-white/5">Complex CLI & Cloud config</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 border-r border-brand-card-border font-bold">Miner Network</td>
+                    <td className="p-4 border-r border-brand-card-border text-brand-orange bg-brand-orange/5">Consumer DePIN ready</td>
+                    <td className="p-4 text-slate-400 bg-white/5">Enterprise servers only</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )
     }
   ], [copiedId]);
 
@@ -910,7 +990,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
   const currentSection = sections.find(s => s.id === activeSectionId) || sections[0];
 
   return (
-    <div className="w-full text-slate-100 flex flex-col min-h-screen">
+    <div className="w-full text-slate-100 flex flex-col h-screen overflow-hidden">
       {/* Top Banner / Breadcrumb */}
       {!isDashboardView && (
         <div className="bg-[#0b0c15]/60 border-b border-brand-card-border/60 backdrop-blur-md px-6 py-4 flex justify-between items-center sticky top-0 z-40">
@@ -936,10 +1016,10 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
       )}
 
       {/* Main Grid: Sidebar + Content */}
-      <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8 overflow-hidden">
         
         {/* Left Column: Navigation Sidebar */}
-        <div className="lg:col-span-1 space-y-6">
+        <div className="lg:col-span-1 space-y-6 flex flex-col h-full overflow-hidden">
           
           {/* Search bar */}
           <div className="relative">
@@ -954,7 +1034,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
           </div>
 
           {/* Sidebar Menu Panel */}
-          <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-4 space-y-2 backdrop-blur-md lg:sticky lg:top-24">
+          <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-4 space-y-2 backdrop-blur-md flex-shrink min-h-0 overflow-y-auto">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono px-3">
               Sections
             </span>
@@ -988,7 +1068,7 @@ return { valid: false, discount: 0, reason: "Coupon code not found in workspace 
         </div>
 
         {/* Right Column: Documentation Content Panel */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="lg:col-span-3 space-y-6 overflow-y-auto h-full pr-2 pb-20">
           
           {/* Content Header Card */}
           <div className="bg-[#08090e]/80 border border-brand-card-border rounded-2xl p-6 md:p-8 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-6">

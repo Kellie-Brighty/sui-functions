@@ -33,3 +33,4 @@ yarn-error.log*
 runner/.cache/
 test_walrus.txt
 video/
+/*.md

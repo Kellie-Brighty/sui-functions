@@ -8,6 +8,7 @@ module sui_functions::trigger {
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use std::string::{String};
+    use sui::clock::{Self, Clock};
 
     /// Errors
     const EFunctionNotFound: u64 = 0;
@@ -15,6 +16,7 @@ module sui_functions::trigger {
     const ENotAuthorizedRunner: u64 = 2;
     const EFunctionNotVerified: u64 = 3;
     const EInsufficientFunds: u64 = 4;
+    const EInsufficientStake: u64 = 5;
 
     /// Status constants
     const STATUS_PENDING: u8 = 0;
@@ -24,6 +26,12 @@ module sui_functions::trigger {
     /// Global almighty platform auditor blob ID (immutable check)
     const GLOBAL_AUDITOR_BLOB_ID: vector<u8> = b"TJgeWW4t-MOv1K2klEsC0eDTDZbmcUu610eHptXD9mA";
 
+    public struct ExecutionRecord has store, drop {
+        assigned_runner: address,
+        timestamp_ms: u64,
+        completed: bool
+    }
+
     /// User-owned Project object
     public struct Project has key, store {
         id: UID,
@@ -31,8 +39,19 @@ module sui_functions::trigger {
         description: String,
         owner: address,
         runner_address: address,
+        execution_mode: u8,
         functions: Table<String, FunctionMetadata>,
-        vault: Balance<SUI>
+        vault: Balance<SUI>,
+        execution_nonce: u64,
+        executions: Table<u64, ExecutionRecord>,
+        verification_nonce: u64,
+        verifications: Table<u64, ExecutionRecord>
+    }
+
+    public struct PublicPoolRegistry has key {
+        id: UID,
+        active_nodes: vector<address>,
+        stakes: Table<address, u64>
     }
 
     /// Global treasury to collect protocol fees
@@ -57,6 +76,14 @@ module sui_functions::trigger {
         trigger_config: String
     }
 
+    /// Represents a staked Node Operator in the network
+    public struct NodeOperator has key, store {
+        id: UID,
+        owner: address,
+        runner_address: address,
+        staked_sui: Balance<SUI>
+    }
+
     /// Event emitted when a new project is created
     public struct ProjectCreated has copy, drop {
         project_id: ID,
@@ -69,7 +96,9 @@ module sui_functions::trigger {
         project_id: ID,
         function_name: String,
         walrus_blob_id: String,
-        auditor_blob_id: String
+        auditor_blob_id: String,
+        assigned_runner: address,
+        nonce: u64
     }
 
     /// Event emitted when a function execution is triggered
@@ -78,7 +107,10 @@ module sui_functions::trigger {
         function_name: String,
         walrus_blob_id: String,
         caller: address,
-        input_data: String
+        input_data: String,
+        execution_mode: u8,
+        assigned_runner: address,
+        nonce: u64
     }
 
     /// Event emitted when the backend runner completes execution and submits the result
@@ -87,6 +119,44 @@ module sui_functions::trigger {
         function_name: String,
         runner: address,
         result_data: String
+    }
+
+    /// Event emitted when an operator stakes SUI
+    public struct NodeStaked has copy, drop {
+        operator_id: ID,
+        owner: address,
+        amount: u64
+    }
+
+    /// Event emitted when an operator links a runner address
+    public struct RunnerLinked has copy, drop {
+        operator_id: ID,
+        owner: address,
+        runner_address: address
+    }
+
+    /// Event emitted when an operator unstakes SUI
+    public struct NodeUnstaked has copy, drop {
+        operator_id: ID,
+        owner: address,
+        amount: u64
+    }
+
+    public struct ProjectDeleted has copy, drop {
+        project_id: ID,
+        owner: address
+    }
+
+    public struct FunctionDeleted has copy, drop {
+        project_id: ID,
+        function_name: String
+    }
+
+    fun assign_public_runner(registry: &PublicPoolRegistry, clock: &Clock): address {
+        let len = std::vector::length(&registry.active_nodes);
+        if (len == 0) return @0x0;
+        let index = (clock::timestamp_ms(clock) % (len as u64));
+        *std::vector::borrow(&registry.active_nodes, index)
     }
 
     /// Create a new Project and transfer it to the creator's wallet
@@ -119,8 +189,13 @@ module sui_functions::trigger {
             description,
             owner,
             runner_address: @0x0,
+            execution_mode: 0,
             functions: table::new(ctx),
-            vault: balance::zero()
+            vault: balance::zero(),
+            execution_nonce: 0,
+            executions: table::new(ctx),
+            verification_nonce: 0,
+            verifications: table::new(ctx)
         };
 
         event::emit(ProjectCreated {
@@ -132,7 +207,7 @@ module sui_functions::trigger {
         transfer::public_share_object(project);
     }
 
-    /// Initialize the protocol treasury (usually called once by protocol admin)
+    /// Initialize the protocol treasury and registry
     fun init(ctx: &mut TxContext) {
         let treasury = ProtocolTreasury {
             id: object::new(ctx),
@@ -140,6 +215,13 @@ module sui_functions::trigger {
             base_compute_fee: 7_000_000 // default 0.007 SUI
         };
         transfer::share_object(treasury);
+
+        let registry = PublicPoolRegistry {
+            id: object::new(ctx),
+            active_nodes: std::vector::empty(),
+            stakes: table::new(ctx)
+        };
+        transfer::share_object(registry);
 
         let admin_cap = AdminCap {
             id: object::new(ctx)
@@ -155,6 +237,103 @@ module sui_functions::trigger {
     ) {
         let coin_balance = coin::into_balance(payment);
         balance::join(&mut project.vault, coin_balance);
+    }
+
+    /// Stake SUI to become a Node Operator (Minimum 0.5 SUI)
+    public entry fun stake_node(
+        mut payment: Coin<SUI>,
+        ctx: &mut TxContext
+    ) {
+        let min_stake = 500_000_000; // 0.5 SUI
+        let amount = coin::value(&payment);
+        assert!(amount >= min_stake, EInsufficientStake);
+        
+        let owner = tx_context::sender(ctx);
+        let id = object::new(ctx);
+        let operator_id = object::uid_to_inner(&id);
+
+        let operator = NodeOperator {
+            id,
+            owner,
+            runner_address: @0x0,
+            staked_sui: coin::into_balance(payment)
+        };
+
+        event::emit(NodeStaked {
+            operator_id,
+            owner,
+            amount
+        });
+
+        transfer::public_transfer(operator, owner);
+    }
+
+    /// Update execution mode (0 = Public Compute, 1 = Dedicated Runner)
+    public entry fun update_execution_mode(
+        project: &mut Project,
+        new_mode: u8,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(project.owner == sender, ENotOwner);
+        assert!(new_mode == 0 || new_mode == 1, 99);
+        project.execution_mode = new_mode;
+    }
+
+    /// Link a runner address to a staked NodeOperator
+    public entry fun link_runner_address(
+        operator: &mut NodeOperator,
+        runner_address: address,
+        registry: &mut PublicPoolRegistry,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(operator.owner == sender, ENotOwner);
+        operator.runner_address = runner_address;
+
+        if (!table::contains(&registry.stakes, runner_address)) {
+            std::vector::push_back(&mut registry.active_nodes, runner_address);
+            table::add(&mut registry.stakes, runner_address, balance::value(&operator.staked_sui));
+        } else {
+            let stake_ref = table::borrow_mut(&mut registry.stakes, runner_address);
+            *stake_ref = balance::value(&operator.staked_sui);
+        };
+
+        event::emit(RunnerLinked {
+            operator_id: object::id(operator),
+            owner: sender,
+            runner_address
+        });
+    }
+
+    /// Unstake and destroy the NodeOperator object, refunding SUI
+    public entry fun unstake_node(
+        operator: NodeOperator,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(operator.owner == sender, ENotOwner);
+
+        let NodeOperator {
+            id,
+            owner,
+            runner_address: _,
+            staked_sui
+        } = operator;
+
+        let operator_id = object::uid_to_inner(&id);
+        let amount = balance::value(&staked_sui);
+
+        object::delete(id);
+        
+        let refund_coin = coin::from_balance(staked_sui, ctx);
+        transfer::public_transfer(refund_coin, owner);
+
+        event::emit(NodeUnstaked {
+            operator_id,
+            owner,
+            amount
+        });
     }
 
     /// Update the authorized runner address for the project
@@ -177,6 +356,8 @@ module sui_functions::trigger {
         trigger_config: String,
         treasury: &mut ProtocolTreasury,
         mut payment: Coin<SUI>,
+        registry: &PublicPoolRegistry,
+        clock: &Clock,
         ctx: &mut TxContext
     ) {
         let deployment_fee = 50_000_000; // 0.05 SUI
@@ -207,12 +388,28 @@ module sui_functions::trigger {
         };
         table::add(&mut project.functions, name, metadata);
 
+        let assigned_runner = if (project.execution_mode == 1) {
+            project.runner_address
+        } else {
+            assign_public_runner(registry, clock)
+        };
+        
+        let nonce = project.verification_nonce;
+        project.verification_nonce = nonce + 1;
+        table::add(&mut project.verifications, nonce, ExecutionRecord {
+            assigned_runner,
+            timestamp_ms: clock::timestamp_ms(clock),
+            completed: false
+        });
+
         // Emit verification request with the global platform auditor ID
         event::emit(VerificationRequested {
             project_id: object::id(project),
             function_name: name,
             walrus_blob_id,
-            auditor_blob_id: std::string::utf8(GLOBAL_AUDITOR_BLOB_ID)
+            auditor_blob_id: std::string::utf8(GLOBAL_AUDITOR_BLOB_ID),
+            assigned_runner,
+            nonce
         });
     }
 
@@ -221,12 +418,26 @@ module sui_functions::trigger {
         project: &mut Project,
         name: String,
         approved: bool,
+        nonce: u64,
+        clock: &Clock,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
-        // Only the authorized runner node can sign off on verification results
-        assert!(project.runner_address == sender, ENotAuthorizedRunner);
         assert!(table::contains(&project.functions, name), EFunctionNotFound);
+        assert!(table::contains(&project.verifications, nonce), 999);
+
+        let record = table::borrow_mut(&mut project.verifications, nonce);
+        assert!(!record.completed, 888);
+
+        if (project.execution_mode == 1) {
+            assert!(sender == project.runner_address, ENotAuthorizedRunner);
+        } else {
+            if (sender != record.assigned_runner) {
+                assert!(clock::timestamp_ms(clock) >= record.timestamp_ms + 10_000, ENotAuthorizedRunner);
+            };
+        };
+
+        record.completed = true;
 
         let metadata = table::borrow_mut(&mut project.functions, name);
         if (approved) {
@@ -238,9 +449,11 @@ module sui_functions::trigger {
 
     /// Trigger off-chain execution of a function
     public entry fun call_function(
-        project: &Project,
+        project: &mut Project,
         name: String,
         input_data: String,
+        registry: &PublicPoolRegistry,
+        clock: &Clock,
         ctx: &mut TxContext
     ) {
         assert!(table::contains(&project.functions, name), EFunctionNotFound);
@@ -249,12 +462,29 @@ module sui_functions::trigger {
         // Assert that the function is verified by the platform auditor before running
         assert!(metadata.status == STATUS_VERIFIED, EFunctionNotVerified);
 
+        let assigned_runner = if (project.execution_mode == 1) {
+            project.runner_address
+        } else {
+            assign_public_runner(registry, clock)
+        };
+
+        let nonce = project.execution_nonce;
+        project.execution_nonce = nonce + 1;
+        table::add(&mut project.executions, nonce, ExecutionRecord {
+            assigned_runner,
+            timestamp_ms: clock::timestamp_ms(clock),
+            completed: false
+        });
+
         event::emit(ExecutionTriggered {
             project_id: object::id(project),
             function_name: name,
             walrus_blob_id: metadata.walrus_blob_id,
             caller: tx_context::sender(ctx),
-            input_data
+            input_data,
+            execution_mode: project.execution_mode,
+            assigned_runner,
+            nonce
         });
     }
 
@@ -265,6 +495,8 @@ module sui_functions::trigger {
         new_walrus_blob_id: String,
         treasury: &mut ProtocolTreasury,
         mut payment: Coin<SUI>,
+        registry: &PublicPoolRegistry,
+        clock: &Clock,
         ctx: &mut TxContext
     ) {
         let deployment_fee = 50_000_000; // 0.05 SUI
@@ -291,12 +523,28 @@ module sui_functions::trigger {
         metadata.version = metadata.version + 1;
         metadata.status = status;
 
+        let assigned_runner = if (project.execution_mode == 1) {
+            project.runner_address
+        } else {
+            assign_public_runner(registry, clock)
+        };
+        
+        let nonce = project.verification_nonce;
+        project.verification_nonce = nonce + 1;
+        table::add(&mut project.verifications, nonce, ExecutionRecord {
+            assigned_runner,
+            timestamp_ms: clock::timestamp_ms(clock),
+            completed: false
+        });
+
         // Emit verification request with the global platform auditor ID
         event::emit(VerificationRequested {
             project_id: object::id(project),
             function_name: name,
             walrus_blob_id: new_walrus_blob_id,
-            auditor_blob_id: std::string::utf8(GLOBAL_AUDITOR_BLOB_ID)
+            auditor_blob_id: std::string::utf8(GLOBAL_AUDITOR_BLOB_ID),
+            assigned_runner,
+            nonce
         });
     }
 
@@ -319,8 +567,10 @@ module sui_functions::trigger {
 
     /// Re-request verification for a function
     public entry fun request_verification(
-        project: &Project,
+        project: &mut Project,
         name: String,
+        registry: &PublicPoolRegistry,
+        clock: &Clock,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
@@ -329,25 +579,29 @@ module sui_functions::trigger {
 
         let metadata = table::borrow(&project.functions, name);
 
+        let assigned_runner = if (project.execution_mode == 1) {
+            project.runner_address
+        } else {
+            assign_public_runner(registry, clock)
+        };
+        
+        let nonce = project.verification_nonce;
+        project.verification_nonce = nonce + 1;
+        table::add(&mut project.verifications, nonce, ExecutionRecord {
+            assigned_runner,
+            timestamp_ms: clock::timestamp_ms(clock),
+            completed: false
+        });
+
         // Emit verification request with the global platform auditor ID
         event::emit(VerificationRequested {
             project_id: object::id(project),
             function_name: name,
             walrus_blob_id: metadata.walrus_blob_id,
-            auditor_blob_id: std::string::utf8(GLOBAL_AUDITOR_BLOB_ID)
+            auditor_blob_id: std::string::utf8(GLOBAL_AUDITOR_BLOB_ID),
+            assigned_runner,
+            nonce
         });
-    }
-
-    /// Event emitted when a project is deleted
-    public struct ProjectDeleted has copy, drop {
-        project_id: ID,
-        owner: address
-    }
-
-    /// Event emitted when a function is deleted
-    public struct FunctionDeleted has copy, drop {
-        project_id: ID,
-        function_name: String
     }
 
     /// Delete/destroy a Project workspace object (reclaims storage rebate)
@@ -358,19 +612,13 @@ module sui_functions::trigger {
         let sender = tx_context::sender(ctx);
         assert!(project.owner == sender, ENotOwner);
 
-        let Project {
-            id,
-            name: _,
-            description: _,
-            owner,
-            runner_address: _,
-            functions,
-            vault
-        } = project;
-
+        let Project { id, owner, name: _, description: _, runner_address: _, execution_mode: _, functions, vault, execution_nonce: _, executions, verification_nonce: _, verifications } = project;
         let project_id = object::uid_to_inner(&id);
+        
+        table::drop(functions);
+        table::drop(executions);
+        table::drop(verifications);
         object::delete(id);
-        table::destroy_empty(functions);
 
         // Refund any remaining balance to the owner
         let remaining_coin = coin::from_balance(vault, ctx);
@@ -405,12 +653,26 @@ module sui_functions::trigger {
         treasury: &mut ProtocolTreasury,
         function_name: String,
         result_data: String,
+        nonce: u64,
+        clock: &Clock,
         ctx: &mut TxContext
     ) {
-        // Assert runner authorization
         let runner = tx_context::sender(ctx);
-        assert!(runner == project.runner_address, ENotAuthorizedRunner);
         assert!(table::contains(&project.functions, function_name), EFunctionNotFound);
+        assert!(table::contains(&project.executions, nonce), 999);
+
+        let record = table::borrow_mut(&mut project.executions, nonce);
+        assert!(!record.completed, 888);
+
+        if (project.execution_mode == 1) {
+            assert!(runner == project.runner_address, ENotAuthorizedRunner);
+        } else {
+            if (runner != record.assigned_runner) {
+                assert!(clock::timestamp_ms(clock) >= record.timestamp_ms + 10_000, ENotAuthorizedRunner);
+            };
+        };
+
+        record.completed = true;
 
         // Constant fee mapping
         let compute_fee = treasury.base_compute_fee;
@@ -435,6 +697,7 @@ module sui_functions::trigger {
             result_data
         });
     }
+
     public entry fun withdraw_fees(
         _admin: &AdminCap,
         treasury: &mut ProtocolTreasury,
@@ -461,8 +724,10 @@ module sui_functions::trigger {
         project: Project,
         ctx: &mut TxContext
     ) {
-        let Project { id, owner, name: _, description: _, runner_address: _, functions, vault } = project;
+        let Project { id, owner, name: _, description: _, runner_address: _, execution_mode: _, functions, vault, execution_nonce: _, executions, verification_nonce: _, verifications } = project;
         table::drop(functions);
+        table::drop(executions);
+        table::drop(verifications);
         
         if (balance::value(&vault) > 0) {
             let vault_coin = coin::from_balance(vault, ctx);
