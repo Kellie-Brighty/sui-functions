@@ -2073,30 +2073,6 @@ const Dashboard: React.FC = () => {
               </span>
             </div>
 
-            {/* Persona Toggle */}
-            <div className="hidden lg:flex bg-[#0A1C2E] p-1 rounded-[14px] border border-[#14304A] items-center shadow-[0_0_15px_rgba(0,0,0,0.3)] mx-4 shrink-0">
-              <button
-                onClick={() => setPersona('developer')}
-                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
-                  persona === 'developer'
-                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[inset_0_0_10px_rgba(56,152,255,0.1)]'
-                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
-                }`}
-              >
-                <Code size={14} /> Developer Workspace
-              </button>
-              <button
-                onClick={() => setPersona('operator')}
-                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
-                  persona === 'operator'
-                    ? 'bg-gradient-to-r from-[#6FB7B7]/20 to-brand-sui/10 text-[#6FB7B7] border border-[#6FB7B7]/30 shadow-[inset_0_0_10px_rgba(111,183,183,0.1)]'
-                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
-                }`}
-              >
-                <HardDrive size={14} /> Node Operator Yield
-              </button>
-            </div>
-
             {/* Global Search */}
             <div ref={searchRef} className="hidden md:flex items-center relative w-96 shrink-0">
               <Search size={16} className="text-slate-300 absolute left-3.5" />
@@ -2135,6 +2111,30 @@ const Dashboard: React.FC = () => {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Persona Toggle */}
+            <div className="hidden lg:flex bg-[#0A1C2E] p-1 rounded-[14px] border border-[#14304A] items-center shadow-[0_0_15px_rgba(0,0,0,0.3)] mx-4 shrink-0">
+              <button
+                onClick={() => setPersona('developer')}
+                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'developer'
+                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[inset_0_0_10px_rgba(56,152,255,0.1)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <Code size={14} /> Developer Workspace
+              </button>
+              <button
+                onClick={() => setPersona('operator')}
+                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'operator'
+                    ? 'bg-gradient-to-r from-[#6FB7B7]/20 to-brand-sui/10 text-[#6FB7B7] border border-[#6FB7B7]/30 shadow-[inset_0_0_10px_rgba(111,183,183,0.1)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <HardDrive size={14} /> Node Operator Yield
+              </button>
             </div>
 
             {/* Right Controls */}
