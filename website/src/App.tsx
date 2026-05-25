@@ -323,21 +323,21 @@ const App: React.FC = () => {
 
                     {/* Left Column: Context & Sticky Title */}
                     <div className="lg:col-span-5 flex flex-col justify-center text-left">
-                      <span className="px-3.5 py-1.5 rounded-full bg-brand-sui-glow border border-brand-sui/20 text-[9px] font-mono font-bold uppercase tracking-widest text-brand-sui inline-block mb-4 self-start">
+                      <span className="px-3 py-1 rounded-full bg-transparent border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-slate-400 inline-block mb-4 self-start">
                         Core Capabilities
                       </span>
-                      <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit leading-[1.15]">
+                      <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4 font-outfit leading-[1.15]">
                         Engineered for <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-sui via-cyan-400 to-[#6FB7B7] text-shimmer">
+                        <span className="text-slate-400">
                           Zero Downtime
                         </span>
                       </h2>
-                      <p className="text-slate-300 text-sm leading-relaxed font-medium mb-6 max-w-md">
+                      <p className="text-slate-400 text-[13px] leading-relaxed font-normal mb-8 max-w-sm">
                         By incentivizing a decentralized pool of operators, Sui-Functions delivers a trustless, sovereign execution environment that never crashes.
                       </p>
-                      <div className="flex items-center gap-3 text-brand-sui font-bold text-[10px] uppercase tracking-wider font-mono">
-                        <span className="w-2.5 h-2.5 rounded-full bg-brand-sui animate-ping" />
-                        Zero Trust Architecture Active
+                      <div className="flex items-center gap-2 px-3 py-1.5 border border-[#14304A] bg-[#0A1225] text-slate-400 font-bold text-[8px] uppercase tracking-widest font-mono w-max">
+                        <span className="w-1.5 h-1.5 bg-[#3898FF]" />
+                        ZERO TRUST ARCHITECTURE ACTIVE
                       </div>
                     </div>
 
@@ -345,63 +345,54 @@ const App: React.FC = () => {
                     <div className="lg:col-span-7 flex flex-col gap-6">
 
                       {/* Feature Item 1 */}
-                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-sui/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
-                        {/* Accent glow line on top left */}
-                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-sui to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
+                      <div className="flex gap-6 p-6 md:p-8 bg-[#050608] border border-[#14304A] rounded-xl text-left shadow-[4px_4px_0_0_#14304A]">
                         {/* Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-brand-sui-glow border border-brand-sui/25 flex items-center justify-center text-brand-sui shadow-[0_4px_15px_rgba(56,152,255,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                          <Shield size={26} />
+                        <div className="w-12 h-12 rounded-lg border border-[#14304A] bg-[#090C15] flex items-center justify-center text-slate-400 flex-shrink-0">
+                          <Shield size={20} />
                         </div>
 
                         {/* Description */}
                         <div>
-                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-sui transition-colors duration-200">
+                          <h3 className="text-lg font-bold text-[#E2E8F0] mb-2 font-outfit">
                             Secure V8 Sandboxing
                           </h3>
-                          <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                          <p className="text-slate-500 text-[13px] leading-relaxed font-normal">
                             Execute code in secure Google V8 isolates. Enforces strict 128MB memory heap caps, 5s CPU execution limits, and robust filesystem-blocking security shims.
                           </p>
                         </div>
                       </div>
 
                       {/* Feature Item 2 */}
-                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-indigo/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
-                        {/* Accent glow line on top left */}
-                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-indigo to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
+                      <div className="flex gap-6 p-6 md:p-8 bg-[#050608] border border-[#14304A] rounded-xl text-left shadow-[4px_4px_0_0_#14304A]">
                         {/* Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-brand-indigo-glow border border-brand-indigo/25 flex items-center justify-center text-brand-indigo shadow-[0_4px_15px_rgba(59,130,246,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                          <Zap size={26} />
+                        <div className="w-12 h-12 rounded-lg border border-[#14304A] bg-[#090C15] flex items-center justify-center text-slate-400 flex-shrink-0">
+                          <Zap size={20} />
                         </div>
 
                         {/* Description */}
                         <div>
-                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-indigo transition-colors duration-200">
+                          <h3 className="text-lg font-bold text-[#E2E8F0] mb-2 font-outfit">
                             On-Chain Trigger Bus
                           </h3>
-                          <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                          <p className="text-slate-500 text-[13px] leading-relaxed font-normal">
                             Decouple event-driven logic via high-speed Sui smart contracts. Dynamic execution registry controls strict actor permissions and commits verified results.
                           </p>
                         </div>
                       </div>
 
                       {/* Feature Item 3 */}
-                      <div className="flex gap-6 p-6 md:p-8 bg-[#07080c]/50 hover:bg-[#0a0c12]/70 border border-brand-card-border/30 hover:border-brand-cyan/30 rounded-2xl transition-all duration-300 group text-left relative overflow-hidden shadow-inner">
-                        {/* Accent glow line on top left */}
-                        <div className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-brand-cyan to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
+                      <div className="flex gap-6 p-6 md:p-8 bg-[#050608] border border-[#14304A] rounded-xl text-left shadow-[4px_4px_0_0_#14304A]">
                         {/* Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-brand-cyan-glow border border-brand-cyan/25 flex items-center justify-center text-brand-cyan shadow-[0_4px_15px_rgba(16,185,129,0.15)] group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                          <Server size={26} />
+                        <div className="w-12 h-12 rounded-lg border border-[#14304A] bg-[#090C15] flex items-center justify-center text-slate-400 flex-shrink-0">
+                          <Server size={20} />
                         </div>
 
                         {/* Description */}
                         <div>
-                          <h3 className="text-xl font-bold text-white mb-2 font-outfit group-hover:text-brand-cyan transition-colors duration-200">
+                          <h3 className="text-lg font-bold text-[#E2E8F0] mb-2 font-outfit">
                             Walrus Logic Registry
                           </h3>
-                          <p className="text-slate-200 text-sm leading-relaxed font-medium">
+                          <p className="text-slate-500 text-[13px] leading-relaxed font-normal">
                             Upload agentic logic and edge code directly to the Walrus Storage Network as permanent, immutable, content-addressed, and cryptographically secure storage blobs.
                           </p>
                         </div>
