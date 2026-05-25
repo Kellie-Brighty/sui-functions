@@ -168,7 +168,7 @@ const SEARCH_ITEMS: SearchItem[] = [
   }
 ];
 
-const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: (type: 'success' | 'error' | 'info' | 'warning', title: string, message: string, hash?: string) => void }) => {
+const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any, showToast: (type: 'success' | 'error' | 'info' | 'warning', title: string, message: string, hash?: string) => void, activeMenu?: string }) => {
   const [isStaked, setIsStaked] = React.useState(false);
   const [runnerAddress, setRunnerAddress] = React.useState("");
   const [isLinked, setIsLinked] = React.useState(false);
@@ -320,134 +320,249 @@ const OperatorDashboardUI = ({ account, showToast }: { account: any, showToast: 
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto animate-in fade-in duration-300">
-      <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-        <div className="w-20 h-20 bg-brand-cyan/10 border border-brand-cyan/20 rounded-full flex items-center justify-center mb-6">
-          <Server size={40} className="text-brand-cyan" />
-        </div>
-        <h2 className="text-3xl font-bold text-white font-outfit mb-3">Node Operator Hub</h2>
-        <p className="text-slate-400 max-w-md mx-auto text-sm mb-8 leading-relaxed">
-          Stake your SUI to join the decentralized compute network. Process workloads for Web3 applications and earn yield automatically with zero downtime guarantees.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-8">
-          <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner">
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Current Network APY</h4>
-            <div className="text-4xl font-extrabold text-brand-sui font-outfit">18.4%</div>
-          </div>
-          <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner">
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Your Staked SUI</h4>
-            <div className="text-4xl font-extrabold text-white font-outfit">{isStaked ? '0.50' : '0.00'}</div>
-          </div>
-          <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner">
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Yield Earned</h4>
-            <div className="text-4xl font-extrabold text-brand-cyan font-outfit">0.00</div>
-          </div>
-        </div>
-
-        {!isStaked ? (
-          <button 
-            onClick={handleStakeSui}
-            disabled={isStaking}
-            className="bg-gradient-to-r from-brand-cyan to-emerald-500 text-white font-bold py-3.5 px-10 rounded-xl hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-            {isStaking ? <Activity className="animate-spin" size={18} /> : <Zap size={18} />} 
-            {isStaking ? "Staking 0.5 SUI..." : "Stake 0.5 SUI & Start Processing"}
-          </button>
-        ) : (
-          <div className="w-full bg-[#05060a] border border-brand-cyan/30 rounded-xl p-6 text-left animate-in zoom-in-95 duration-300">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-brand-cyan font-bold flex items-center gap-2">
-                <ShieldCheck size={18} /> Staking Successful
-              </h4>
+      
+      {/* Operator-1: Overview */}
+      {(!activeMenu || activeMenu === 'operator-1') && (
+        <>
+          <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            <div className="w-20 h-20 bg-brand-cyan/10 border border-brand-cyan/20 rounded-full flex items-center justify-center mb-6 shadow-inner">
+              <Server size={40} className="text-brand-cyan" />
             </div>
-            
-            <p className="text-slate-400 text-sm mb-4">
-              Your node is registered. Run this exact command in your terminal to boot the decentralized execution engine directly from Walrus.
+            <h2 className="text-3xl font-bold text-white font-outfit mb-3">Node Operator Hub</h2>
+            <p className="text-slate-400 max-w-md mx-auto text-sm mb-8 leading-relaxed">
+              Stake your SUI to join the decentralized compute network. Process workloads for Web3 applications and earn yield automatically with zero downtime guarantees.
             </p>
-            <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs text-brand-sui select-all mb-6 flex justify-between items-center group">
-              <span>npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</span>
-              <button 
-                onClick={() => {
-                  navigator.clipboard.writeText("npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo");
-                  setCopiedCommand(true);
-                  setTimeout(() => setCopiedCommand(false), 2000);
-                }}
-                className="text-slate-500 hover:text-white transition-colors p-1"
-                title="Copy Command"
-              >
-                {copiedCommand ? <Check size={14} className="text-brand-cyan" /> : <Copy size={14} />}
-              </button>
-            </div>
 
-            <div className="border-t border-[#14304A] pt-6">
-              <h4 className="text-white font-bold mb-2">Link Runner Address</h4>
-              <p className="text-slate-400 text-xs mb-3">
-                When your terminal boots, it will generate a Runner Address. Paste it here to authorize it to process workloads on your behalf.
-              </p>
-              <div className="flex gap-3">
-                <input 
-                  type="text" 
-                  placeholder="0x..." 
-                  value={runnerAddress}
-                  onChange={(e) => setRunnerAddress(e.target.value)}
-                  disabled={isLinked}
-                  className="flex-1 bg-[#141624] border border-[#14304A] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-sui disabled:opacity-50"
-                />
-                <button 
-                  onClick={handleLinkRunner}
-                  disabled={isLinked || !runnerAddress}
-                  className="bg-[#14304A] hover:bg-[#2d3142] disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors"
-                >
-                  {isLinked ? 'Linked ✓' : 'Authorize Node'}
-                </button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-8">
+              <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner relative overflow-hidden group hover:border-brand-sui/50 transition-colors">
+                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity"><Activity size={24} className="text-brand-sui"/></div>
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Current Network APY</h4>
+                <div className="text-4xl font-extrabold text-brand-sui font-outfit">18.4%</div>
+              </div>
+              <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner relative overflow-hidden group hover:border-brand-cyan/50 transition-colors">
+                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity"><Wallet size={24} className="text-brand-cyan"/></div>
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Your Staked SUI</h4>
+                <div className="text-4xl font-extrabold text-white font-outfit">{isStaked ? '0.50' : '0.00'}</div>
+              </div>
+              <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity"><ArrowUpRight size={24} className="text-emerald-500"/></div>
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Yield Earned</h4>
+                <div className="text-4xl font-extrabold text-emerald-400 font-outfit">0.00</div>
               </div>
             </div>
 
-            {isLinked && (
-              <div className="border-t border-[#14304A] pt-6 mt-6">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="text-white font-bold">Fund Runner Gas</h4>
-                  <span className="text-xs font-mono bg-[#141624] border border-[#14304A] rounded-md px-2 py-1 text-emerald-400 flex items-center gap-1">
-                    <Wallet size={12}/> {runnerSuiBalance} SUI
-                  </span>
+            {/* Fake Chart Area */}
+            <div className="w-full bg-[#141624] border border-[#14304A] rounded-xl p-6 relative overflow-hidden h-64 flex flex-col justify-between group">
+              <div className="flex justify-between items-center z-10 relative">
+                <div className="text-left">
+                  <h4 className="text-white font-bold text-lg font-outfit">Yield Performance</h4>
+                  <p className="text-slate-400 text-xs">Last 30 days workload execution</p>
                 </div>
-                <p className="text-slate-400 text-xs mb-3">
-                  Your runner address needs a tiny amount of SUI to pay for gas when executing workloads (e.g. 0.05 SUI).
+                <div className="flex gap-2">
+                  <span className="bg-[#041829] border border-[#14304A] text-xs text-brand-sui px-3 py-1 rounded-full font-semibold cursor-pointer">1W</span>
+                  <span className="bg-[#0A1C2E] border border-brand-sui/30 text-xs text-white px-3 py-1 rounded-full font-semibold shadow-[0_0_10px_rgba(56,152,255,0.15)] cursor-pointer">1M</span>
+                  <span className="bg-[#041829] border border-[#14304A] text-xs text-slate-400 px-3 py-1 rounded-full font-semibold cursor-pointer">ALL</span>
+                </div>
+              </div>
+              
+              {/* Fake gradient chart line */}
+              <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-brand-sui/20 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full opacity-50">
+                  <path d="M0,100 L0,80 Q20,90 40,60 T80,40 T100,20 L100,100 Z" fill="rgba(56,152,255,0.2)" />
+                  <path d="M0,80 Q20,90 40,60 T80,40 T100,20" fill="none" stroke="rgba(56,152,255,0.8)" strokeWidth="1" />
+                </svg>
+              </div>
+
+              {/* Data points */}
+              <div className="absolute inset-0 flex items-end justify-between px-10 pb-6 opacity-30 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="w-px h-16 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
+                <div className="w-px h-24 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
+                <div className="w-px h-32 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
+                <div className="w-px h-40 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
+                <div className="w-px h-48 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Operator-2: Node Logs */}
+      {activeMenu === 'operator-2' && (
+        <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 h-[calc(100vh-140px)] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <h3 className="text-white font-bold font-outfit text-lg mb-4 flex items-center gap-2 shrink-0">
+            <Terminal size={18} className="text-brand-sui animate-pulse" /> Live Workload Feed
+          </h3>
+          <div className="bg-[#05060a] border border-[#141624] rounded-xl p-6 md:p-8 text-left text-slate-300 text-sm font-mono flex-1 overflow-y-auto relative shadow-inner">
+            <div className="absolute top-4 right-4 flex gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+              <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+            </div>
+            
+            <div className="mt-4 flex flex-col gap-3">
+              <div className="flex gap-4">
+                <span className="text-slate-600">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-emerald-400">INFO</span>
+                <span>Node initialized. Connected to Sui Network.</span>
+              </div>
+              <div className="flex gap-4">
+                <span className="text-slate-600">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-brand-sui">SYNC</span>
+                <span>{isStaked ? (isLinked ? "Node linked and active! Listening for workloads..." : "Awaiting runner address linkage...") : "Awaiting node registration..."}</span>
+              </div>
+              {isLinked && (
+                <>
+                  <div className="flex gap-4 opacity-50 mt-4">
+                    <span className="text-slate-600">[{new Date().toLocaleTimeString()}]</span>
+                    <span className="text-slate-400">WAIT</span>
+                    <span className="animate-pulse">Polling mempool for assigned tasks...</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Operator-3: Performance */}
+      {activeMenu === 'operator-3' && (
+        <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-10 text-center flex flex-col items-center justify-center h-96 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <Activity size={48} className="text-[#14304A] mb-4" />
+          <h3 className="text-white font-bold font-outfit text-xl mb-2">Performance Analytics</h3>
+          <p className="text-slate-400 max-w-md mx-auto text-sm">Detailed hardware utilization and execution latency metrics are coming in the next update.</p>
+        </div>
+      )}
+
+      {/* Operator-4: Runner Vault */}
+      {activeMenu === 'operator-4' && (
+        <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-6 border-b border-[#14304A]">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-brand-sui/10 border border-brand-sui/20 rounded-2xl flex items-center justify-center shadow-inner">
+                <Wallet size={28} className="text-brand-sui" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white font-outfit">Runner Vault</h2>
+                <p className="text-slate-400 text-sm">Manage your validator node's stake and gas funds.</p>
+              </div>
+            </div>
+          </div>
+
+          {!isStaked ? (
+            <div className="bg-[#141624] border border-[#14304A] rounded-xl p-8 text-center flex flex-col items-center shadow-inner">
+              <Shield size={48} className="text-brand-cyan mb-4 opacity-50" />
+              <h3 className="text-white font-bold text-lg mb-2">Register Validator Node</h3>
+              <p className="text-slate-400 text-sm mb-6 max-w-md">Stake a minimum of 0.5 SUI to register your node on the network and start processing Web3 workloads.</p>
+              
+              <button 
+                onClick={handleStakeSui}
+                disabled={isStaking}
+                className="bg-gradient-to-r from-brand-cyan to-emerald-500 text-white font-bold py-3.5 px-10 rounded-xl hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                {isStaking ? <Activity className="animate-spin" size={18} /> : <Zap size={18} />} 
+                {isStaking ? "Staking 0.5 SUI..." : "Stake 0.5 SUI & Register"}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-8">
+              {/* Registration Success Block */}
+              <div className="w-full bg-[#05060a] border border-brand-cyan/30 rounded-xl p-6 md:p-8 text-left animate-in zoom-in-95 duration-300 relative overflow-hidden shadow-inner">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-brand-cyan/5 blur-[60px] rounded-full"></div>
+                <div className="flex items-center justify-between mb-4 relative z-10">
+                  <h4 className="text-brand-cyan font-bold flex items-center gap-2 text-lg">
+                    <ShieldCheck size={20} /> Node Registered
+                  </h4>
+                  <span className="bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20 px-3 py-1 rounded-md text-xs font-bold font-mono shadow-sm">0.5 SUI Staked</span>
+                </div>
+                
+                <p className="text-slate-300 text-sm mb-4 relative z-10 leading-relaxed">
+                  To boot the decentralized execution engine locally, run this exact command in your terminal. It will download the container and connect to Walrus.
                 </p>
-                <div className="flex gap-3">
-                  <input 
-                    type="number" 
-                    placeholder="Amount (SUI)" 
-                    value={fundAmount}
-                    onChange={(e) => setFundAmount(e.target.value)}
-                    disabled={isFundingRunner}
-                    className="flex-1 bg-[#141624] border border-[#14304A] rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-sui disabled:opacity-50"
-                  />
+                <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs md:text-sm text-brand-sui select-all flex justify-between items-center group relative z-10 shadow-inner">
+                  <span>npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</span>
                   <button 
-                    onClick={handleFundRunner}
-                    disabled={isFundingRunner || !fundAmount}
-                    className="bg-brand-sui hover:bg-brand-sui/80 disabled:opacity-50 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
+                    onClick={() => {
+                      navigator.clipboard.writeText("npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo");
+                      setCopiedCommand(true);
+                      setTimeout(() => setCopiedCommand(false), 2000);
+                    }}
+                    className="text-slate-500 hover:text-white transition-colors p-2 bg-[#05060a] rounded-md border border-[#14304A]"
+                    title="Copy Command"
                   >
-                    {isFundingRunner ? <Activity className="animate-spin" size={16} /> : <ArrowUpRight size={16} />}
-                    {isFundingRunner ? 'Sending...' : 'Fund Runner'}
+                    {copiedCommand ? <Check size={16} className="text-brand-cyan" /> : <Copy size={16} />}
                   </button>
                 </div>
               </div>
-            )}
-          </div>
-        )}
-      </div>
 
-      <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6">
-        <h3 className="text-white font-bold font-outfit text-lg mb-4 flex items-center gap-2">
-          <Activity size={18} className="text-brand-sui animate-pulse" /> Live Workload Feed
-        </h3>
-        <div className="bg-[#05060a] border border-[#141624] rounded-xl p-8 text-center text-slate-500 text-sm font-mono flex flex-col items-center justify-center gap-3">
-          <Terminal size={24} className="text-slate-600 mb-2" />
-          {isStaked 
-            ? (isLinked ? "Node linked! Listening for workloads on the Sui network..." : "Awaiting runner address linkage...")
-            : "Awaiting node registration. Stake SUI to begin receiving Web3 workloads."}
+              {/* Linking and Funding block */}
+              <div className="grid grid-cols-1 gap-6">
+                <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 md:p-8 shadow-inner relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-5"><Terminal size={64}/></div>
+                  <h4 className="text-white font-bold mb-3 flex items-center gap-2 text-lg"><Terminal size={18} className="text-brand-sui"/> Link Runner Address</h4>
+                  <p className="text-slate-400 text-sm mb-5 leading-relaxed max-w-2xl">
+                    When your terminal boots, it will generate a unique Runner Address. Paste it here to authorize that runner to process workloads using your node's stake.
+                  </p>
+                  <div className="flex flex-col md:flex-row gap-3">
+                    <input 
+                      type="text" 
+                      placeholder="0x..." 
+                      value={runnerAddress}
+                      onChange={(e) => setRunnerAddress(e.target.value)}
+                      disabled={isLinked}
+                      className="flex-1 bg-[#0A1C2E] border border-[#14304A] rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-brand-sui disabled:opacity-50 transition-colors shadow-inner"
+                    />
+                    <button 
+                      onClick={handleLinkRunner}
+                      disabled={isLinked || !runnerAddress}
+                      className="bg-brand-sui hover:bg-brand-sui/80 disabled:opacity-50 text-white px-8 py-3.5 rounded-xl text-sm font-bold transition-all shadow-[0_4px_15px_rgba(56,152,255,0.2)] md:w-auto w-full whitespace-nowrap"
+                    >
+                      {isLinked ? 'Linked ✓' : 'Authorize Node'}
+                    </button>
+                  </div>
+                </div>
+
+                {isLinked && (
+                  <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 md:p-8 shadow-inner animate-in slide-in-from-top-4 duration-300 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-5"><Zap size={64}/></div>
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-5 gap-4 relative z-10">
+                      <div>
+                        <h4 className="text-white font-bold flex items-center gap-2 text-lg mb-2"><Zap size={18} className="text-emerald-400"/> Fund Runner Gas</h4>
+                        <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
+                          Your runner needs a small amount of SUI to pay for gas fees when publishing workload results back to the blockchain. We recommend keeping at least 0.05 SUI funded.
+                        </p>
+                      </div>
+                      <div className="shrink-0">
+                        <span className="text-sm font-mono bg-[#0A1C2E] border border-[#14304A] shadow-inner rounded-xl px-4 py-2.5 text-emerald-400 flex items-center gap-2 font-bold">
+                          <Wallet size={16}/> {runnerSuiBalance} SUI
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col md:flex-row gap-3 relative z-10">
+                      <input 
+                        type="number" 
+                        placeholder="Amount (SUI)" 
+                        value={fundAmount}
+                        onChange={(e) => setFundAmount(e.target.value)}
+                        disabled={isFundingRunner}
+                        className="flex-1 bg-[#0A1C2E] border border-[#14304A] rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-emerald-500 disabled:opacity-50 transition-colors shadow-inner"
+                      />
+                      <button 
+                        onClick={handleFundRunner}
+                        disabled={isFundingRunner || !fundAmount}
+                        className="bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-[#05060a] px-8 py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2 shadow-[0_4px_15px_rgba(16,185,129,0.3)] md:w-auto w-full whitespace-nowrap"
+                      >
+                        {isFundingRunner ? <Activity className="animate-spin" size={16} /> : <ArrowUpRight size={16} />}
+                        {isFundingRunner ? 'Sending...' : 'Fund Runner'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
+
     </div>
   );
 };
@@ -2116,7 +2231,7 @@ const Dashboard: React.FC = () => {
             {/* Persona Toggle */}
             <div className="hidden lg:flex bg-[#0A1C2E] p-1 rounded-[14px] border border-[#14304A] items-center shadow-[0_0_15px_rgba(0,0,0,0.3)] mx-4 shrink-0">
               <button
-                onClick={() => setPersona('developer')}
+                onClick={() => { setPersona('developer'); setActiveMenu('1'); }}
                 className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'developer'
                     ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[inset_0_0_10px_rgba(56,152,255,0.1)]'
@@ -2126,7 +2241,7 @@ const Dashboard: React.FC = () => {
                 <Code size={14} /> Developer Workspace
               </button>
               <button
-                onClick={() => setPersona('operator')}
+                onClick={() => { setPersona('operator'); setActiveMenu('operator-1'); }}
                 className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'operator'
                     ? 'bg-gradient-to-r from-[#6FB7B7]/20 to-brand-sui/10 text-[#6FB7B7] border border-[#6FB7B7]/30 shadow-[inset_0_0_10px_rgba(111,183,183,0.1)]'
@@ -2342,14 +2457,17 @@ const Dashboard: React.FC = () => {
               <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#14304A] scrollbar-track-transparent">
                 {persona === 'operator' ? (
                   <nav className="flex flex-col gap-1.5">
-                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]">
+                    <button onClick={() => setActiveMenu('operator-1')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-1' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <LayoutDashboard size={16} /> Overview
                     </button>
-                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                    <button onClick={() => setActiveMenu('operator-2')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-2' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Terminal size={16} /> Node Logs
                     </button>
-                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                    <button onClick={() => setActiveMenu('operator-3')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-3' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Activity size={16} /> Performance
+                    </button>
+                    <button onClick={() => setActiveMenu('operator-4')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-4' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
+                      <Wallet size={16} /> Runner Vault
                     </button>
                   </nav>
                 ) : (
@@ -2435,10 +2553,6 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col gap-4 border-t border-[#14304A]/60 pt-4 shrink-0 mt-4">
               {persona === 'operator' ? (
                 <>
-                  <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer">
-                    <Plus size={16} /> Register Validator Node
-                  </button>
-
                   <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
                     <BookOpen size={16} /> Operator Documentation
                   </button>
@@ -2711,14 +2825,17 @@ const Dashboard: React.FC = () => {
 
                 <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#14304A] scrollbar-track-transparent">
                   <nav className="flex flex-col gap-1.5">
-                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]">
+                    <button onClick={() => setActiveMenu('operator-1')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-1' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <LayoutDashboard size={16} /> Overview
                     </button>
-                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                    <button onClick={() => setActiveMenu('operator-2')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-2' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Terminal size={16} /> Node Logs
                     </button>
-                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                    <button onClick={() => setActiveMenu('operator-3')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-3' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Activity size={16} /> Performance
+                    </button>
+                    <button onClick={() => setActiveMenu('operator-4')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-4' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
+                      <Wallet size={16} /> Runner Vault
                     </button>
                   </nav>
                 </div>
@@ -2818,7 +2935,7 @@ const Dashboard: React.FC = () => {
           <div className="flex lg:hidden justify-center mb-2">
             <div className="bg-[#0A1C2E] p-1.5 rounded-2xl border border-[#14304A] flex items-center gap-2 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
               <button
-                onClick={() => setPersona('developer')}
+                onClick={() => { setPersona('developer'); setActiveMenu('1'); }}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'developer'
                     ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[0_0_15px_rgba(56,152,255,0.15)]'
@@ -2828,7 +2945,7 @@ const Dashboard: React.FC = () => {
                 <Code size={14} /> Developer Workspace
               </button>
               <button
-                onClick={() => setPersona('operator')}
+                onClick={() => { setPersona('operator'); setActiveMenu('operator-1'); }}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'operator'
                     ? 'bg-gradient-to-r from-[#6FB7B7]/20 to-brand-sui/10 text-[#6FB7B7] border border-[#6FB7B7]/30 shadow-[0_0_15px_rgba(111,183,183,0.15)]'
@@ -2841,7 +2958,7 @@ const Dashboard: React.FC = () => {
           </div>
           
           {persona === 'operator' ? (
-            <OperatorDashboardUI account={account} showToast={showToast} />
+            <OperatorDashboardUI account={account} showToast={showToast} activeMenu={activeMenu} />
           ) : (
             <>
               {/* Global Unconfigured Runner Alert */}
