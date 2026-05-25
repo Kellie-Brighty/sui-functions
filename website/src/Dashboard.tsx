@@ -342,7 +342,7 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto animate-in fade-in duration-300">
+    <div className="flex flex-col gap-6 w-full animate-in fade-in duration-300">
       
       {/* Operator-1: Overview */}
       {(!activeMenu || activeMenu === 'operator-1') && (
