@@ -797,7 +797,7 @@ const App: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Card 1 */}
                     <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full">
                       <div>
