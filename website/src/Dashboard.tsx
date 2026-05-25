@@ -2073,6 +2073,30 @@ const Dashboard: React.FC = () => {
               </span>
             </div>
 
+            {/* Persona Toggle */}
+            <div className="hidden lg:flex bg-[#0A1C2E] p-1 rounded-[14px] border border-[#14304A] items-center shadow-[0_0_15px_rgba(0,0,0,0.3)] mx-4 shrink-0">
+              <button
+                onClick={() => setPersona('developer')}
+                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'developer'
+                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[inset_0_0_10px_rgba(56,152,255,0.1)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <Code size={14} /> Developer Workspace
+              </button>
+              <button
+                onClick={() => setPersona('operator')}
+                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'operator'
+                    ? 'bg-gradient-to-r from-[#6FB7B7]/20 to-brand-sui/10 text-[#6FB7B7] border border-[#6FB7B7]/30 shadow-[inset_0_0_10px_rgba(111,183,183,0.1)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <HardDrive size={14} /> Node Operator Yield
+              </button>
+            </div>
+
             {/* Global Search */}
             <div ref={searchRef} className="hidden md:flex items-center relative w-96 shrink-0">
               <Search size={16} className="text-slate-300 absolute left-3.5" />
@@ -2704,28 +2728,28 @@ const Dashboard: React.FC = () => {
         {/* 3. Main Operational Workplate */}
         <main className="flex-1 p-6 md:p-8 lg:p-10 overflow-y-auto max-w-[1400px] mx-auto w-full flex flex-col gap-6">
           
-          {/* Persona Toggle */}
-          <div className="flex justify-center mb-2">
+          {/* Mobile Persona Toggle */}
+          <div className="flex lg:hidden justify-center mb-2">
             <div className="bg-[#0A1C2E] p-1.5 rounded-2xl border border-[#14304A] flex items-center gap-2 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
               <button
                 onClick={() => setPersona('developer')}
-                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'developer'
                     ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[0_0_15px_rgba(56,152,255,0.15)]'
                     : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
                 }`}
               >
-                <Code size={16} /> Developer Workspace
+                <Code size={14} /> Developer Workspace
               </button>
               <button
                 onClick={() => setPersona('operator')}
-                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'operator'
-                    ? 'bg-gradient-to-r from-brand-cyan/20 to-emerald-500/10 text-brand-cyan border border-brand-cyan/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                    ? 'bg-gradient-to-r from-[#6FB7B7]/20 to-brand-sui/10 text-[#6FB7B7] border border-[#6FB7B7]/30 shadow-[0_0_15px_rgba(111,183,183,0.15)]'
                     : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
                 }`}
               >
-                <Server size={16} /> Node Operator Yield
+                <HardDrive size={14} /> Node Operator Yield
               </button>
             </div>
           </div>
