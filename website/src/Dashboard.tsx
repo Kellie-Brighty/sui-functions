@@ -2310,19 +2310,15 @@ const Dashboard: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="mt-2">
-                      <Button 
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setIsCreateProjectModalOpen(true);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className="w-full flex items-center justify-center gap-1.5 border-dashed"
-                      >
-                        <Plus size={14} /> New Workspace
-                      </Button>
-                    </div>
+                    <button 
+                      onClick={() => {
+                        setIsCreateProjectModalOpen(true);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-sui/40 hover:border-brand-sui text-brand-sui hover:bg-brand-sui/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-sui/5"
+                    >
+                      <Plus size={14} /> New Workspace
+                    </button>
                   </div>
                 )}
               </div>
@@ -2408,8 +2404,8 @@ const Dashboard: React.FC = () => {
 
             {/* Sidebar Footer Operations */}
             <div className="flex flex-col gap-4 border-t border-[#14304A]/60 pt-4 shrink-0 mt-4">
-              <Button 
-                variant="primary"
+
+              <button 
                 onClick={() => {
                   if (!activeProject) {
                     alert("Create or select a workspace first!");
@@ -2419,30 +2415,32 @@ const Dashboard: React.FC = () => {
                   setIsMobileMenuOpen(false);
                 }}
                 disabled={!activeProject}
-                className="w-full flex items-center justify-center gap-2"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Plus size={16} /> Deploy New Function
-              </Button>
+              </button>
 
-              <Button 
-                variant="secondary"
+              <button 
                 onClick={() => { setActiveMenu('6'); setIsMobileMenuOpen(false); }}
-                className="w-full flex items-center justify-center gap-2"
+                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeMenu === '6' 
+                    ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
+                    : 'bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white'
+                }`}
               >
                 <BookOpen size={16} /> Documentation
-              </Button>
+              </button>
 
-              <Button 
-                variant="secondary"
+              <button 
                 onClick={() => {
                   setIsSettingsModalOpen(true);
                   setIsMobileMenuOpen(false);
                 }}
                 disabled={!activeProject}
-                className="w-full flex items-center justify-center gap-2"
+                className="w-full flex items-center justify-center gap-2 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] hover:border-brand-sui/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <Settings size={14} /> Workspace Settings
-              </Button>
+                <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
+              </button>
 
               {isAdmin && (
                 <button 
@@ -2564,16 +2562,12 @@ const Dashboard: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="mt-2">
-                    <Button 
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsCreateProjectModalOpen(true)}
-                      className="w-full flex items-center justify-center gap-1.5 border-dashed"
-                    >
-                      <Plus size={14} /> New Workspace
-                    </Button>
-                  </div>
+                  <button 
+                    onClick={() => setIsCreateProjectModalOpen(true)}
+                    className="w-full flex items-center justify-center gap-1.5 border border-dashed border-brand-sui/40 hover:border-brand-sui text-brand-sui hover:bg-brand-sui/5 py-2.5 rounded-xl text-xs font-bold transition-all bg-transparent mt-1 cursor-pointer shadow-sm shadow-brand-sui/5"
+                  >
+                    <Plus size={14} /> New Workspace
+                  </button>
                 </div>
               )}
             </div>
@@ -2660,9 +2654,10 @@ const Dashboard: React.FC = () => {
           {/* Sidebar Footer Operations (Fixed at Bottom) */}
           <div className="flex flex-col gap-4 border-t border-[#14304A]/60 pt-4 shrink-0 mt-4">
             
+
+            
             {/* Deploy New Function Trigger */}
-            <Button 
-              variant="primary"
+            <button 
               onClick={() => {
                 if (!activeProject) {
                   alert("Create or select a workspace first!");
@@ -2671,28 +2666,30 @@ const Dashboard: React.FC = () => {
                 setIsRegisterModalOpen(true);
               }}
               disabled={!activeProject}
-              className="w-full flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Plus size={16} /> Deploy New Function
-            </Button>
+            </button>
 
-            <Button 
-              variant="secondary"
+            <button 
               onClick={() => setActiveMenu('6')}
-              className="w-full flex items-center justify-center gap-2"
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                activeMenu === '6' 
+                  ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
+                  : 'bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white'
+              }`}
             >
               <BookOpen size={16} /> Documentation
-            </Button>
+            </button>
 
             {/* Workspace Settings */}
-            <Button 
-              variant="secondary"
+            <button 
               onClick={() => setIsSettingsModalOpen(true)}
               disabled={!activeProject}
-              className="w-full flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] hover:border-brand-sui/30 text-slate-300 hover:text-white py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Settings size={14} /> Workspace Settings
-            </Button>
+              <Settings size={14} className="text-slate-300 group-hover:text-white" /> Workspace Settings
+            </button>
 
             {isAdmin && (
               <button 
@@ -4351,13 +4348,14 @@ const Dashboard: React.FC = () => {
                 </div>
               )}
 
-              <button 
+              <Button 
+                variant="primary"
                 onClick={handleUpdateTrigger}
                 disabled={isUpdatingTrigger}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#F56910] to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+                className="w-full flex items-center justify-center gap-2 mt-2"
               >
                 {isUpdatingTrigger ? "Syncing smart contracts..." : "Save Trigger Configuration"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
