@@ -853,6 +853,145 @@ const App: React.FC = () => {
                   </div>
                 </section>
 
+                {/* LIVE DEMO SHOWCASE (USE CASES) */}
+                <section className="mb-32">
+                  <div className="flex flex-col items-center text-center mb-16 gap-4">
+                    <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                      AGENT SHOWCASES
+                    </span>
+                    <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight font-outfit leading-tight">
+                      Use Cases
+                    </h2>
+                    <p className="text-slate-400 text-[13px] max-w-2xl mx-auto leading-relaxed">
+                      Explore dynamic, high-performance web applications powered entirely by secure V8 execution isolates and immutable Walrus data publishing.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-6 w-full">
+                    {/* Featured Large Card */}
+                    <div className="bg-[#050608] border border-[#14304A] rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
+                      <div className="grid grid-cols-1 lg:grid-cols-12">
+                        {/* Left Content */}
+                        <div className="lg:col-span-6 p-8 md:p-12 flex flex-col justify-center text-left">
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#00FFAA]/30 bg-[#00FFAA]/10 text-[#00FFAA] text-[9px] font-mono font-bold uppercase tracking-widest mb-8 w-fit">
+                            <Globe size={10} /> AGENT SHOWCASE
+                          </div>
+                          <h3 className="text-2xl sm:text-3xl font-bold text-white font-outfit mb-4">
+                            Autonomous DeFi Agent
+                          </h3>
+                          <p className="text-slate-400 text-[13px] leading-relaxed mb-8 max-w-md">
+                            Utilizing on-chain triggers to audit live inventory valuations and evaluate market deviations within secure V8 sandboxes. This agent executes automatically, maintaining consensus criteria independently of traditional off-chain scripts.
+                          </p>
+                          <div className="flex flex-wrap gap-2 mb-10">
+                            <span className="text-[9px] font-mono font-bold text-slate-400 bg-[#090C15] border border-[#14304A] px-2.5 py-1.5 rounded uppercase tracking-wider">Agentic Web</span>
+                            <span className="text-[9px] font-mono font-bold text-slate-400 bg-[#090C15] border border-[#14304A] px-2.5 py-1.5 rounded uppercase tracking-wider">Walrus Logic Registry</span>
+                            <span className="text-[9px] font-mono font-bold text-slate-400 bg-[#090C15] border border-[#14304A] px-2.5 py-1.5 rounded uppercase tracking-wider">Sui Event Bus</span>
+                          </div>
+                          <a
+                            href="https://sui-inventory.web.app/"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-fit inline-block"
+                          >
+                            <Button
+                              variant="primary"
+                              className="bg-[#00FFAA] hover:bg-[#00FFAA]/80 text-[#050608] font-bold border-none flex items-center gap-2 px-6"
+                            >
+                              <span>LAUNCH AGENT SHOWCASE</span>
+                              <ArrowRight size={14} />
+                            </Button>
+                          </a>
+                        </div>
+                        {/* Right Decorative Visual */}
+                        <div className="lg:col-span-6 bg-[#030407] border-t lg:border-t-0 lg:border-l border-[#14304A] p-8 md:p-12 flex items-center justify-center relative overflow-hidden">
+                          {/* Ambient glow */}
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#00FFAA]/5 blur-[80px] rounded-full pointer-events-none" />
+                          
+                          <div className="w-full max-w-md border border-[#14304A] rounded-2xl bg-[#090C15] p-6 shadow-2xl relative z-10">
+                            <div className="flex flex-col gap-4 mb-8">
+                              <div className="h-1.5 w-full bg-[#14304A] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#00FFAA] w-[85%] rounded-full shadow-[0_0_10px_#00FFAA]"></div>
+                              </div>
+                              <div className="h-1.5 w-full bg-[#14304A] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#00FFAA] w-[60%] rounded-full shadow-[0_0_10px_#00FFAA]"></div>
+                              </div>
+                              <div className="h-1.5 w-full bg-[#14304A] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#00FFAA] w-[40%] rounded-full shadow-[0_0_10px_#00FFAA]"></div>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 border-t border-[#14304A] pt-6">
+                              <div className="flex flex-col items-center justify-center text-center">
+                                <span className="text-[#00FFAA] font-mono font-bold text-lg">1.2s</span>
+                                <span className="text-slate-500 font-mono text-[9px] uppercase tracking-widest mt-1">LATENCY</span>
+                              </div>
+                              <div className="flex flex-col items-center justify-center border-l border-[#14304A] text-center">
+                                <span className="text-white font-mono font-bold text-lg">+$200</span>
+                                <span className="text-slate-500 font-mono text-[9px] uppercase tracking-widest mt-1">PROFIT</span>
+                              </div>
+                              <div className="flex flex-col items-center justify-center border-l border-[#14304A] text-center">
+                                <span className="text-white font-mono font-bold text-lg">98ms</span>
+                                <span className="text-slate-500 font-mono text-[9px] uppercase tracking-widest mt-1">EXECUTION</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3 Smaller Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                      {/* Card 1 */}
+                      <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300">
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#3898FF]">
+                            <Layers size={16} />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2 border border-[#14304A] px-2 py-1 rounded bg-[#090C15]">
+                            TUTORIAL
+                          </span>
+                        </div>
+                        <h4 className="text-lg font-bold text-white font-outfit mb-3">Dynamic NFT's</h4>
+                        <p className="text-slate-400 text-xs leading-relaxed font-normal">
+                          Unlock dynamically changing NFT traits updated programmatically by agentic workflows running on-chain.
+                        </p>
+                      </div>
+                      
+                      {/* Card 2 */}
+                      <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300">
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
+                            <Wallet size={16} />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] mt-2 border border-[#00FFAA]/20 px-2 py-1 rounded bg-[#00FFAA]/10">
+                            LIVE DEMO
+                          </span>
+                        </div>
+                        <h4 className="text-lg font-bold text-white font-outfit mb-3">Secure Dex Trade</h4>
+                        <p className="text-slate-400 text-xs leading-relaxed font-normal">
+                          Autonomous dex trading execution bots leveraging secure hardware enclaves to validate complex logic flows.
+                        </p>
+                      </div>
+
+                      {/* Card 3 */}
+                      <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300">
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-purple-400">
+                            <Server size={16} />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2 border border-[#14304A] px-2 py-1 rounded bg-[#090C15]">
+                            TUTORIAL
+                          </span>
+                        </div>
+                        <h4 className="text-lg font-bold text-white font-outfit mb-3">Knowledge Base</h4>
+                        <p className="text-slate-400 text-xs leading-relaxed font-normal">
+                          Interactive, decentralized agents that automate data indexing and knowledge management for web3 protocols.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
                 {/* VAULT & BILLING SYSTEM */}
                 <motion.section
                   initial={{ opacity: 0, y: 20 }}
@@ -874,9 +1013,9 @@ const App: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
                     {/* Card 1 */}
-                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full">
+                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full text-left">
                       <div>
                         <div className="flex justify-between items-start mb-6">
                           <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
@@ -898,7 +1037,7 @@ const App: React.FC = () => {
                     </div>
 
                     {/* Card 2 */}
-                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full">
+                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full text-left">
                       <div>
                         <div className="flex justify-between items-start mb-6">
                           <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
@@ -920,7 +1059,7 @@ const App: React.FC = () => {
                     </div>
 
                     {/* Card 3 */}
-                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full">
+                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full text-left">
                       <div>
                         <div className="flex justify-between items-start mb-6">
                           <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
@@ -997,69 +1136,6 @@ const App: React.FC = () => {
                   </div>
                 </section>
                 )}
-
-                {/* LIVE DEMO SHOWCASE */}
-                <section className="mb-32">
-                  <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/30 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.1)]">
-                      <Zap size={10} /> Use Case
-                    </div>
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
-                      Use Cases
-                    </h2>
-                    <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
-                      Explore dynamic, high-performance web applications powered entirely by secure V8 execution isolates and immutable Walrus data publishing.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 max-w-xl mx-auto">
-                    {/* Card 1: SuiNode Storefront */}
-                    <div className="relative group rounded-3xl border border-[#161722]/80 bg-[#06070a]/90 p-8 hover:border-brand-indigo/30 transition-all duration-300 shadow-lg flex flex-col justify-between">
-                      {/* Card Blue Flare */}
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-indigo/5 blur-[50px] rounded-full group-hover:bg-brand-indigo/10 transition-colors pointer-events-none" />
-
-                      <div>
-                        <div className="flex justify-between items-start mb-6">
-                          <div className="w-12 h-12 rounded-2xl border border-brand-indigo/20 bg-brand-indigo-glow flex items-center justify-center text-brand-indigo shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-                            <Globe size={20} />
-                          </div>
-                          <span className="text-[9px] font-mono font-extrabold text-brand-indigo bg-brand-indigo-glow/65 border border-brand-indigo/30 px-2 py-1 rounded-full uppercase tracking-wider">
-                            Live Demo
-                          </span>
-                        </div>
-
-                        <h3 className="text-xl font-bold text-white font-outfit mb-3 group-hover:text-brand-indigo transition-colors">
-                          Autonomous DeFi Agent
-                        </h3>
-                        <p className="text-slate-200 text-xs leading-relaxed font-medium mb-6">
-                          A protocol showcase of an autonomous DeFi agent utilizing on-chain triggers to audit live inventory valuations and evaluate market deviations within secure V8 sandboxes.
-                        </p>
-
-                        <div className="flex flex-wrap gap-2 mb-8">
-                          <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Agentic Web</span>
-                          <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Walrus Logic Registry</span>
-                          <span className="text-[9px] font-mono text-slate-300 bg-[#0d0e15] border border-white/5 px-2 py-1 rounded-md">Sui Event Bus</span>
-                        </div>
-                      </div>
-
-                      <a
-                        href="https://sui-inventory.web.app/"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full animate-none"
-                      >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full justify-center gap-2 border border-brand-indigo/30 hover:bg-brand-indigo/10 text-brand-indigo hover:text-white font-bold h-11"
-                        >
-                          <span>Launch Agent Showcase</span>
-                          <ArrowRight size={14} />
-                        </Button>
-                      </a>
-                    </div>
-                  </div>
-                </section>
 
                 {/* ENTERPRISE AVAILABILITY */}
                 {false && (
