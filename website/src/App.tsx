@@ -656,35 +656,32 @@ const App: React.FC = () => {
                   transition={{ duration: 0.6 }}
                   className="mb-32 py-12 relative overflow-hidden"
                 >
-                  {/* Decorative glowing background elements */}
-                  <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-sui/5 blur-[120px] pointer-events-none" />
-
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     {/* Left: Interactive Visual Representation */}
                     <div className="lg:col-span-6 order-2 lg:order-1 flex justify-center items-center w-full">
-                      <div className="w-full max-w-lg bg-[#040508]/90 border border-[#1A1C29] rounded-[24px] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
+                      <div className="w-full max-w-lg bg-[#050608] border border-[#14304A] rounded-2xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.8)] relative">
                         {/* Visual Header */}
-                        <div className="flex items-center justify-between border-b border-[#1A1C29] pb-4 mb-6">
+                        <div className="flex items-center justify-between border-b border-[#14304A] pb-4 mb-6">
                           <div className="flex items-center gap-3">
-                            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#00FFAA] animate-pulse"></span>
                             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Upgrade Request Proposal</span>
                           </div>
-                          <span className="px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono font-bold text-[9px] uppercase tracking-wider">Awaiting Sigs</span>
+                          <span className="px-2.5 py-1 rounded-full bg-[#0B2027] border border-[#14304A] text-[#00FFAA] font-mono font-bold text-[9px] uppercase tracking-wider">Awaiting Sigs</span>
                         </div>
 
                         {/* Proposal Metadata */}
-                        <div className="flex flex-col gap-0 font-mono text-[12px] mb-6 border border-[#1A1C29] rounded-xl overflow-hidden">
-                          <div className="flex justify-between items-center px-4 py-3 bg-[#0A0C13] border-b border-[#1A1C29]">
+                        <div className="flex flex-col gap-0 font-mono text-[12px] mb-6 border border-[#14304A] rounded-xl overflow-hidden">
+                          <div className="flex justify-between items-center px-4 py-3 bg-[#090C15] border-b border-[#14304A]">
                             <span className="text-slate-500 font-bold">TARGET FUNCTION:</span>
                             <span className="text-white font-bold">sui_usd_oracle.js</span>
                           </div>
-                          <div className="flex justify-between items-center px-4 py-3 bg-[#07080D] border-b border-[#1A1C29]">
+                          <div className="flex justify-between items-center px-4 py-3 bg-[#050608] border-b border-[#14304A]">
                             <span className="text-slate-500 font-bold">CURRENT BLOB ID:</span>
-                            <span className="text-brand-indigo font-bold select-all">K9YtZ1pL0L8q...</span>
+                            <span className="text-slate-300 font-bold select-all">K9YtZ1pL0L8q...</span>
                           </div>
-                          <div className="flex justify-between items-center px-4 py-3 bg-[#07080D]">
+                          <div className="flex justify-between items-center px-4 py-3 bg-[#050608]">
                             <span className="text-slate-500 font-bold">PROPOSED BLOB ID:</span>
-                            <span className="text-brand-sui font-bold select-all">W7VwX2jrIH5y...</span>
+                            <span className="text-[#3898FF] font-bold select-all">W7VwX2jrIH5y...</span>
                           </div>
                         </div>
 
@@ -692,33 +689,33 @@ const App: React.FC = () => {
                         <div className="flex flex-col gap-3.5 mb-6">
                           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 pl-1">Consensus Progress (2/3 Approved)</span>
 
-                          <div className="flex items-center justify-between p-3 rounded-xl bg-[#090A10] border border-[#1A1C29]">
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-[#090C15] border border-[#14304A]">
                             <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-md bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
+                              <div className="w-6 h-6 rounded-md bg-[#0B2027] border border-[#14304A] flex items-center justify-center text-[#00FFAA] font-bold">✓</div>
                               <span className="text-[12px] font-mono font-medium text-slate-300">0x8a4c...4086 (Lead Dev)</span>
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-brand-cyan uppercase">Approved</span>
+                            <span className="text-[10px] font-mono font-bold text-[#00FFAA] uppercase">Approved</span>
                           </div>
 
-                          <div className="flex items-center justify-between p-3 rounded-xl bg-[#090A10] border border-[#1A1C29]">
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-[#090C15] border border-[#14304A]">
                             <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-md bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">✓</div>
+                              <div className="w-6 h-6 rounded-md bg-[#0B2027] border border-[#14304A] flex items-center justify-center text-[#00FFAA] font-bold">✓</div>
                               <span className="text-[12px] font-mono font-medium text-slate-300">0x2528...9832 (Security Auditor)</span>
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-brand-cyan uppercase">Approved</span>
+                            <span className="text-[10px] font-mono font-bold text-[#00FFAA] uppercase">Approved</span>
                           </div>
 
-                          <div className="flex items-center justify-between p-3 rounded-xl bg-[#0A0C13] border border-[#1A1C29]">
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-[#090C15] border border-[#14304A]">
                             <div className="flex items-center gap-3">
-                              <span className="w-6 h-6 rounded-md bg-cyan-500/5 border border-cyan-500/20 flex items-center justify-center text-cyan-500 font-mono text-[10px] animate-pulse">●</span>
-                              <span className="text-[12px] font-mono font-medium text-slate-400">0xf767...1104 (Sponsor Treasury)</span>
+                              <span className="w-6 h-6 rounded-md bg-[#050608] border border-[#14304A] flex items-center justify-center text-[#00FFAA] font-mono text-[10px] animate-pulse">●</span>
+                              <span className="text-[12px] font-mono font-medium text-slate-500">0xf767...1104 (Sponsor Treasury)</span>
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-cyan-500 uppercase animate-pulse">Pending</span>
+                            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase animate-pulse">Pending</span>
                           </div>
                         </div>
 
                         {/* Explanatory visual note */}
-                        <div className="p-4 bg-brand-sui/5 border border-brand-sui/20 rounded-xl text-[11px] text-slate-400 leading-relaxed font-medium">
+                        <div className="p-4 bg-[#090C15] border border-[#14304A] rounded-xl text-[11px] text-slate-400 leading-relaxed font-medium">
                           Sui layer-1 smart contracts natively block updates to edge runners until the registered Multisig object triggers a verified state change transaction.
                         </div>
                       </div>
@@ -726,49 +723,50 @@ const App: React.FC = () => {
 
                     {/* Right: Rich Explanatory Copy */}
                     <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-start text-left justify-center">
-                      <span className="px-3.5 py-1.5 rounded-full bg-brand-sui-glow border border-brand-sui/20 text-[10px] font-extrabold uppercase tracking-widest text-brand-sui mb-4 font-mono">
-                        Decentralized DevSecOps
+                      <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2 mb-4">
+                        <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                        IMMUTABLE REGISTRY
                       </span>
-                      <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-6">
+                      <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight font-outfit leading-tight mb-6">
                         Sovereign Upgrade Governance <br />
-                        <span className="text-brand-sui">Controlled by Consensus</span>
+                        <span className="text-[#00FFAA]">Controlled by Consensus</span>
                       </h2>
-                      <p className="text-slate-200 text-sm leading-relaxed font-medium mb-6">
+                      <p className="text-slate-400 text-[13px] leading-relaxed font-normal mb-8">
                         Unlike traditional Web2 cloud functions, where a single hacked developer key or hijacked CI/CD pipeline can secretly poison hosted code, Sui-Functions introduces an unhackable deployment lifecycle for agentic logic.
                       </p>
 
-                      <div className="flex flex-col gap-6 w-full mb-6">
+                      <div className="flex flex-col gap-6 w-full">
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-indigo-glow border border-brand-indigo/30 flex items-center justify-center text-brand-indigo flex-shrink-0">
-                            <Shield size={20} />
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA] flex-shrink-0">
+                            <Shield size={16} />
                           </div>
                           <div>
-                            <h4 className="text-base font-bold text-white mb-1 font-outfit">Content-Addressed Integrity</h4>
-                            <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                            <h4 className="text-base font-bold text-white mb-2 font-outfit">Content-Addressed Integrity</h4>
+                            <p className="text-slate-500 text-xs leading-relaxed font-normal">
                               Scripts are pinned permanently to Walrus using cryptographic Blob IDs. If a single character is altered, the Blob hash changes, completely neutralizing supply-chain injection attacks.
                             </p>
                           </div>
                         </div>
 
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-cyan-glow border border-brand-cyan/30 flex items-center justify-center text-brand-cyan flex-shrink-0">
-                            <Users size={20} />
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA] flex-shrink-0">
+                            <Users size={16} />
                           </div>
                           <div>
-                            <h4 className="text-base font-bold text-white mb-1 font-outfit">Consensus-Gated Deployments</h4>
-                            <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                            <h4 className="text-base font-bold text-white mb-2 font-outfit">Consensus-Gated Deployments</h4>
+                            <p className="text-slate-500 text-xs leading-relaxed font-normal">
                               Ownership of deployment projects can be held by on-chain multisigs or community DAO smart contracts. Upgrades demand cryptographic consensus before code can execute.
                             </p>
                           </div>
                         </div>
 
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-sui-glow border border-brand-sui/30 flex items-center justify-center text-brand-sui flex-shrink-0">
-                            <CheckCircle2 size={20} />
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA] flex-shrink-0">
+                            <CheckCircle2 size={16} />
                           </div>
                           <div>
-                            <h4 className="text-base font-bold text-white mb-1 font-outfit">100% Provable & Auditable</h4>
-                            <p className="text-slate-200 text-xs leading-relaxed font-medium">
+                            <h4 className="text-base font-bold text-white mb-2 font-outfit">100% Provable & Auditable</h4>
+                            <p className="text-slate-500 text-xs leading-relaxed font-normal">
                               The active code mapped to any function is recorded transparently on the public Sui ledger. Anyone can download the exact matching script, auditable down to the byte.
                             </p>
                           </div>
