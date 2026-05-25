@@ -40,6 +40,44 @@ interface PriceFeedEvent {
   isFallback: boolean;
 }
 
+function formatTime12h(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true });
+  } catch (e) {
+    return dateStr;
+  }
+}
+
+function getRelativeTimeString(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSecs = Math.max(0, Math.floor(diffMs / 1000));
+    
+    if (diffSecs < 60) {
+      return 'just now';
+    }
+    const diffMins = Math.floor(diffSecs / 60);
+    if (diffMins < 60) {
+      return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+    }
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 30) {
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    }
+    const diffMonths = Math.floor(diffDays / 30);
+    return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
+  } catch (e) {
+    return '';
+  }
+}
+
 function App() {
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
@@ -962,7 +1000,7 @@ function App() {
                         {item.isFallback ? 'CoinGecko API' : `Tx: ${item.digest.slice(0, 6)}...${item.digest.slice(-4)}`}
                       </span>
                       <span>
-                        {new Date(item.timestamp).toLocaleTimeString()}
+                        {formatTime12h(item.timestamp)} • {getRelativeTimeString(item.timestamp)}
                       </span>
                     </div>
                   </div>
