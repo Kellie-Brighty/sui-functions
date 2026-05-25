@@ -412,86 +412,77 @@ const App: React.FC = () => {
                   className="flex flex-col mb-32 py-12"
                 >
                   {/* Section Header */}
-                  <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 text-left">
-                    <div>
-                      <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-outfit leading-tight mb-3">
-                        Three Pillars <span className="text-brand-sui">Architecture</span>
-                      </h2>
-                      <p className="text-slate-400 text-sm max-w-xl leading-relaxed">
-                        Experience the decentralized agentic execution cycle step-by-step: from fast blockchain triggers to immutable storage retrieval and secure sandbox execution.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 font-mono text-[10px] text-slate-500 bg-[#090A10]/60 px-4 py-2 border border-[#1A1C29] rounded-xl self-start">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-sui animate-pulse" />
-                      SYSTEM PROTOCOL STATUS: OPERATIONAL
-                    </div>
+                  <div className="flex flex-col items-center text-center mb-16 gap-4">
+                    <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                      CORE PROTOCOL LOGIC PIPELINE
+                    </span>
+                    <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight font-outfit leading-tight">
+                      Three Pillars Architecture
+                    </h2>
+                    <p className="text-slate-400 text-[13px] max-w-xl mx-auto leading-relaxed">
+                      Experience the decentralized agentic execution cycle step-by-step: from fast blockchain triggers to immutable storage retrieval and secure sandbox execution.
+                    </p>
                   </div>
 
                   {/* Horizontal Step Pipeline (3 Columns) */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-12 relative select-none">
-                    {/* Visual connector line behind steps (MD and above) */}
-                    <div className="absolute top-1/2 left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-brand-sui via-brand-indigo to-brand-cyan opacity-15 -translate-y-1/2 hidden md:block z-0" />
+                    
+                    {/* Visual vertical separators for desktop (optional, based on design) */}
+                    <div className="hidden md:block absolute top-10 bottom-10 left-[33%] w-[1px] bg-[#14304A] z-0" />
+                    <div className="hidden md:block absolute top-10 bottom-10 left-[66%] w-[1px] bg-[#14304A] z-0" />
 
                     {/* Step 1 Tab Card */}
                     <button
                       onClick={() => setActivePillar('trigger')}
-                      className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${activePillar === 'trigger'
-                          ? 'border-brand-sui/45 bg-[#0b0705] shadow-[0_0_25px_rgba(56,152,255,0.1)] scale-[1.01]'
-                          : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
+                      className={`relative z-10 p-8 rounded-none border-y sm:border-y-0 sm:border-l-0 text-left transition-all duration-300 flex flex-col gap-6 group ${activePillar === 'trigger'
+                          ? 'bg-[#050608] border-[#14304A]'
+                          : 'bg-transparent border-transparent hover:bg-[#050608]'
                         }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 01</span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'trigger' ? 'bg-brand-sui/15 text-brand-sui scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
-                          }`}>
-                          <Zap size={14} />
-                        </div>
+                      <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 01</span>
+                      <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#090C15] text-[#3898FF]">
+                        <Zap size={16} />
                       </div>
                       <div>
-                        <h4 className="text-base font-bold text-white font-outfit mb-1">Trigger Event Bus</h4>
-                        <p className="text-xs text-slate-455 leading-relaxed">Sui Ledger Move smart contracts orchestrate and verify execution receipts on-chain.</p>
+                        <h4 className="text-lg font-bold text-white font-outfit mb-3">Trigger Event Bus</h4>
+                        <p className="text-[13px] text-slate-500 leading-relaxed font-normal">Sui Ledger Move smart contracts orchestrate and verify execution receipts on-chain.</p>
                       </div>
                     </button>
 
                     {/* Step 2 Tab Card */}
                     <button
                       onClick={() => setActivePillar('logic')}
-                      className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${activePillar === 'logic'
-                          ? 'border-brand-indigo/45 bg-[#05070c] shadow-[0_0_25px_rgba(59,130,246,0.1)] scale-[1.01]'
-                          : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
+                      className={`relative z-10 p-8 rounded-none border-y sm:border-y-0 sm:border-l-0 text-left transition-all duration-300 flex flex-col gap-6 group ${activePillar === 'logic'
+                          ? 'bg-[#050608] border-[#14304A]'
+                          : 'bg-transparent border-transparent hover:bg-[#050608]'
                         }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 02</span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'logic' ? 'bg-brand-indigo/15 text-brand-indigo scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
-                          }`}>
-                          <Server size={14} />
-                        </div>
+                      <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 02</span>
+                      <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#090C15] text-slate-300">
+                        <Server size={16} />
                       </div>
                       <div>
-                        <h4 className="text-base font-bold text-white font-outfit mb-1">Logic Library</h4>
-                        <p className="text-xs text-slate-455 leading-relaxed">Permanent, content-addressed WebAssembly code blobs stored cryptographically on Walrus.</p>
+                        <h4 className="text-lg font-bold text-white font-outfit mb-3">Logic Library</h4>
+                        <p className="text-[13px] text-slate-500 leading-relaxed font-normal">Permanent, content-addressed WebAssembly code blobs stored cryptographically in Walrus.</p>
                       </div>
                     </button>
 
                     {/* Step 3 Tab Card */}
                     <button
                       onClick={() => setActivePillar('worker')}
-                      className={`relative z-10 p-6 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-3 group ${activePillar === 'worker'
-                          ? 'border-brand-cyan/45 bg-[#050c08] shadow-[0_0_25px_rgba(16,185,129,0.1)] scale-[1.01]'
-                          : 'border-[#1A1C29] bg-[#07080d]/60 hover:border-slate-800 hover:bg-[#090a10]/80'
+                      className={`relative z-10 p-8 rounded-none border-y sm:border-y-0 sm:border-l-0 text-left transition-all duration-300 flex flex-col gap-6 group ${activePillar === 'worker'
+                          ? 'bg-[#050608] border-[#14304A]'
+                          : 'bg-transparent border-transparent hover:bg-[#050608]'
                         }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 03</span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activePillar === 'worker' ? 'bg-brand-cyan/15 text-brand-cyan scale-105' : 'bg-[#090A10] border border-[#1A1C29] text-slate-400 group-hover:scale-105'
-                          }`}>
-                          <Shield size={14} />
-                        </div>
+                      <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Step 03</span>
+                      <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#090C15] text-cyan-400">
+                        <Shield size={16} />
                       </div>
                       <div>
-                        <h4 className="text-base font-bold text-white font-outfit mb-1">Isolated Workers</h4>
-                        <p className="text-xs text-slate-455 leading-relaxed">TypeScript worker daemons invoke highly secure, airgapped Google V8 isolates dynamically.</p>
+                        <h4 className="text-lg font-bold text-white font-outfit mb-3">Isolated Workers</h4>
+                        <p className="text-[13px] text-slate-500 leading-relaxed font-normal">Sui-Functions worker daemons invoke highly secure, VM-based Google v8 isolates dynamically.</p>
                       </div>
                     </button>
                   </div>
