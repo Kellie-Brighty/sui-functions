@@ -236,13 +236,16 @@ async function triggerFunctionExecution(projectId: string, functionName: string,
     }
     try {
         const packageId = process.env.PACKAGE_ID || FALLBACK_PACKAGE_ID;
+        const registryId = process.env.REGISTRY_ID || FALLBACK_REGISTRY_ID;
         const tx = new Transaction();
         tx.moveCall({
             target: `${packageId}::trigger::call_function`,
             arguments: [
                 tx.object(projectId),
                 tx.pure.string(functionName),
-                tx.pure.string(inputData)
+                tx.pure.string(inputData),
+                tx.object(registryId),
+                tx.object('0x6')
             ]
         });
 
