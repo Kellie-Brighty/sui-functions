@@ -886,6 +886,7 @@ const App: React.FC = () => {
                 </section>
 
                 {/* TRUE DECENTRALIZATION - TEE CONTRAST */}
+                {false && (
                 <section className="mb-32 relative py-12">
                   <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-indigo/5 blur-[120px] pointer-events-none" />
 
@@ -937,6 +938,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </section>
+                )}
 
                 {/* LIVE DEMO SHOWCASE */}
                 <section className="mb-32">
@@ -1002,6 +1004,7 @@ const App: React.FC = () => {
                 </section>
 
                 {/* ENTERPRISE AVAILABILITY */}
+                {false && (
                 <section className="mb-32 relative rounded-[48px] overflow-hidden border border-[#161722]/50 bg-[#0A1C2E]/60">
                   {/* Enterprise map image background */}
                   <div className="absolute inset-0 bg-[url('/enterprice-bg.png')] bg-cover bg-center opacity-70 pointer-events-none" />
@@ -1049,8 +1052,10 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </section>
+                )}
 
                 {/* ROADMAP SECTION */}
+                {false && (
                 <section id="roadmap" className="mb-32 relative">
                   <div className="text-center mb-16">
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/30 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.1)]">
@@ -1337,6 +1342,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </section>
+                )}
 
                 {/* CALL TO ACTION */}
                 <section className="mb-24">
