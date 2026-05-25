@@ -97,7 +97,7 @@ const SEARCH_ITEMS: SearchItem[] = [
     keywords: ["alerts", "warnings", "incidents", "errors", "severity", "audit", "security"]
   },
   {
-    title: "Top Performing Functions",
+    title: "Recent Validated Workloads",
     description: "Analytics table of active registered functions",
     tab: "1",
     anchorId: "overview-top-functions",
@@ -376,7 +376,7 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
               <div className="text-4xl font-bold text-white font-outfit mb-2">100.0%</div>
               <div className="text-emerald-400 text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Dynamic execution validation</div>
               <div className="flex justify-between text-xs font-mono">
-                <span className="text-slate-400">OK: <span className="text-white">3</span></span>
+                <span className="text-slate-400">OK: <span className="text-white">0.002 SUI</span></span>
                 <span className="text-slate-400">ERR: <span className="text-red-400">0</span></span>
               </div>
             </div>
@@ -401,10 +401,10 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
             {/* Chart Area */}
             <div className="md:col-span-2 bg-[#111722] border border-[#212E40] rounded-xl p-6 shadow-lg relative min-h-[300px] flex flex-col">
               <div className="flex justify-between items-center mb-8">
-                <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Execution Volume (Global)</h4>
+                <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Workload Process Volume</h4>
                 <div className="flex gap-4 text-[10px] font-bold text-slate-400">
-                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#304B76]"></div> SUI EVENT BUS</div>
-                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-brand-sui"></div> WALRUS WORKERS</div>
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#304B76]"></div> NETWORK DISCOVERY</div>
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-brand-sui"></div> CONTAINER EXECUTIONS</div>
                 </div>
               </div>
               
@@ -455,10 +455,10 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
               </div>
             </div>
 
-            {/* Active Alerts */}
+            {/* Node Activity Stream */}
             <div className="bg-[#111722] border border-[#212E40] rounded-xl p-0 shadow-lg flex flex-col">
               <div className="p-5 flex justify-between items-center border-b border-[#212E40]">
-                <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Active Alerts</h4>
+                <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Node Activity Stream</h4>
                 <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[9px] font-bold">5 ACTIVE</span>
               </div>
               
@@ -467,12 +467,12 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                   <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-                      <Info size={14} className="text-brand-sui" /> VM Isolate Completed
+                      <Info size={14} className="text-brand-sui" /> Container Executed
                     </div>
                     <span className="text-[10px] font-mono text-slate-500">17:33</span>
                   </div>
                   <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-                    Executed 'Hello world' successfully inside V8 sandbox. Output: Function executed successfully
+                    Processed decentralized workload. State transition verified and proof published.
                   </p>
                   <button className="text-[9px] font-bold text-slate-300 uppercase tracking-wider hover:text-white">Acknowledge</button>
                 </div>
@@ -481,12 +481,12 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                   <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-                      <Info size={14} className="text-brand-sui" /> VM Isolate Completed
+                      <Info size={14} className="text-brand-sui" /> Container Executed
                     </div>
                     <span className="text-[10px] font-mono text-slate-500">17:30</span>
                   </div>
                   <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-                    Executed 'Hello world' successfully inside V8 sandbox. Output: Function executed successfully
+                    Processed decentralized workload. State transition verified and proof published.
                   </p>
                   <button className="text-[9px] font-bold text-slate-300 uppercase tracking-wider hover:text-white">Acknowledge</button>
                 </div>
@@ -495,7 +495,7 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                   <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-                      <Info size={14} className="text-brand-sui" /> VM Isolate Completed
+                      <Info size={14} className="text-brand-sui" /> Container Executed
                     </div>
                     <span className="text-[10px] font-mono text-slate-500">17:24</span>
                   </div>
@@ -508,30 +508,30 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
           {/* Bottom Data Table */}
           <div className="w-full bg-[#111722] border border-[#212E40] rounded-xl shadow-lg">
             <div className="p-5 flex justify-between items-center border-b border-[#212E40]">
-              <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Top Performing Functions</h4>
-              <button className="text-xs text-brand-sui font-bold hover:text-brand-cyan transition-colors">View Performance Suite</button>
+              <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Recent Validated Workloads</h4>
+              <button className="text-xs text-brand-sui font-bold hover:text-brand-cyan transition-colors">View All Logs</button>
             </div>
             
             <div className="w-full overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-[#212E40]">
-                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Function Name</th>
-                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Invocations</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Workload ID</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Gas Consumed</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Success Rate</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Latency</th>
-                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Trigger</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Network</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Status</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b border-[#212E40]/50 hover:bg-[#141A26] transition-colors group">
-                    <td className="px-6 py-4 text-sm font-mono text-white">Hello world</td>
+                    <td className="px-6 py-4 text-sm font-mono text-white">wrk_9f2a...</td>
                     <td className="px-6 py-4 text-sm font-mono text-slate-400">{isStaked ? '3' : '0'}</td>
                     <td className="px-6 py-4 text-sm font-mono text-emerald-400">100.0%</td>
                     <td className="px-6 py-4 text-sm font-mono text-slate-400">5010 ms</td>
-                    <td className="px-6 py-4 text-sm font-mono text-slate-500">Manual</td>
+                    <td className="px-6 py-4 text-sm font-mono text-slate-500">Sui Mainnet</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max">
                         <CheckCircle size={10} /> VERIFIED
@@ -973,7 +973,7 @@ const Dashboard: React.FC = () => {
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
   const [isDashboardLoading, setIsDashboardLoading] = useState(false);
 
-  // Active Alerts state
+  // Node Activity Stream state
   const [alerts, setAlerts] = useState([
     {
       id: 1,
@@ -2142,7 +2142,7 @@ const Dashboard: React.FC = () => {
       } else {
         alertsList.push({
           id: `comp-${idx}`,
-          title: `VM Isolate Completed`,
+          title: `Container Executed`,
           time: timeString,
           desc: `Executed '${funcName}' successfully inside V8 sandbox. Output: ${displayResult.slice(0, 45)}${displayResult.length > 45 ? '...' : ''}`,
           severity: "info"
@@ -3063,10 +3063,6 @@ const Dashboard: React.FC = () => {
               </>
             ) : (
               <>
-                <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer">
-                  <Plus size={16} /> Register Validator Node
-                </button>
-
                 <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
                   <BookOpen size={16} /> Operator Documentation
                 </button>
@@ -3269,24 +3265,24 @@ const Dashboard: React.FC = () => {
 
               </div>
 
-              {/* Middle Section: Global Volume stacked bar chart & Active Alerts */}
+              {/* Middle Section: Global Volume stacked bar chart & Node Activity Stream */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 
                 {/* Stacked Chart container */}
                 <div id="overview-execution-volume" className="xl:col-span-2 bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 relative">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
-                      Execution Volume (Global)
+                      Workload Process Volume
                     </span>
                     {/* Legends */}
                     <div className="flex items-center gap-4 text-xs text-slate-200 font-bold font-mono">
                       <div className="flex items-center gap-1.5">
                         <span className="w-2.5 h-2.5 rounded-full bg-blue-500/40 border border-blue-400/50"></span>
-                        SUI EVENT BUS
+                        NETWORK DISCOVERY
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="w-2.5 h-2.5 rounded-full bg-brand-sui/40 border border-brand-sui/50"></span>
-                        WALRUS WORKERS
+                        CONTAINER EXECUTIONS
                       </div>
                     </div>
                   </div>
@@ -3335,11 +3331,11 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Active Alerts Widget */}
+                {/* Node Activity Stream Widget */}
                 <div id="overview-active-alerts" className="xl:col-span-1 bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 flex flex-col">
                   <div className="flex items-center justify-between mb-5">
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-outfit">
-                      Active Alerts
+                      Node Activity Stream
                     </span>
                     {activeAlerts.length > 0 && (
                       <span className="bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.15)]">
@@ -3406,14 +3402,14 @@ const Dashboard: React.FC = () => {
 
               </div>
 
-              {/* Bottom Section: Top Performing Functions Table */}
+              {/* Bottom Section: Recent Validated Workloads Table */}
               <div id="overview-top-functions" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 relative">
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-xs font-bold text-slate-200 uppercase tracking-wider font-outfit">
-                    Top Performing Functions
+                    Recent Validated Workloads
                   </span>
                   <button className="text-xs font-bold text-brand-sui hover:underline bg-transparent border-none">
-                    View Performance Suite
+                    View All Logs
                   </button>
                 </div>
 
@@ -3421,11 +3417,11 @@ const Dashboard: React.FC = () => {
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-[#14304A]/70 text-xs text-slate-200 font-bold uppercase tracking-wider">
-                        <th className="pb-3.5 pl-2">Function Name</th>
-                        <th className="pb-3.5">Invocations</th>
+                        <th className="pb-3.5 pl-2">Workload ID</th>
+                        <th className="pb-3.5">Gas Consumed</th>
                         <th className="pb-3.5">Success Rate</th>
                         <th className="pb-3.5">Latency</th>
-                        <th className="pb-3.5">Trigger</th>
+                        <th className="pb-3.5">Network</th>
                         <th className="pb-3.5">Status</th>
                         <th className="pb-3.5 text-right pr-2">Action</th>
                       </tr>
@@ -4513,7 +4509,7 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Function Name</label>
+                <label className="text-xs font-bold uppercase text-slate-200 tracking-wider block mb-2">Workload ID</label>
                 <input 
                   type="text" 
                   value={registerFunctionName}
@@ -4673,7 +4669,7 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col gap-5">
               <div className="bg-[#05060a] border border-[#14304A] p-4 rounded-2xl flex items-center justify-between">
                 <div>
-                  <span className="text-xs text-slate-300 font-bold uppercase tracking-wider block">Function Name</span>
+                  <span className="text-xs text-slate-300 font-bold uppercase tracking-wider block">Workload ID</span>
                   <span className="text-xs font-bold text-white flex items-center gap-1.5 mt-1 font-mono">
                      {editTriggerFunctionName}
                   </span>
