@@ -776,6 +776,83 @@ const App: React.FC = () => {
                   </div>
                 </motion.section>
 
+                {/* DEPIN COMPUTE MINER (COMING SOON) */}
+                <section className="mb-32 relative">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                    {/* Left: Content */}
+                    <div className="lg:col-span-6 text-left relative z-10">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] mb-6">
+                        <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                        NODE RUNNER ECONOMY
+                      </div>
+                      <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight mb-6 font-outfit">
+                        Run a Node.<br />
+                        <span className="text-[#00FFAA]">Earn SUI.</span>
+                      </h2>
+                      <p className="text-slate-400 text-[13px] leading-relaxed mb-8 max-w-lg">
+                        Sui-Functions is building a completely decentralized compute economy. Anyone can now download our decentralized runner engine, stake SUI, and earn passive income by executing agentic workloads securely on their own hardware.
+                      </p>
+                      
+                      <ul className="flex flex-col gap-4 font-mono text-[10px] text-slate-300 uppercase font-bold tracking-wide mb-10">
+                        <li className="flex items-center gap-3">
+                          <div className="w-6 h-6 rounded bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
+                            <Terminal size={12} />
+                          </div>
+                          Zero DevOps — Just run the CLI command
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="w-6 h-6 rounded bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
+                            <Globe size={12} />
+                          </div>
+                          Hardware agnostic (Mac, Linux, Windows)
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="w-6 h-6 rounded bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
+                            <ShieldCheck size={12} />
+                          </div>
+                          Mathematically secure V8 isolation
+                        </li>
+                      </ul>
+
+                      <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <Button
+                          variant="primary"
+                          className="bg-[#00FFAA] hover:bg-[#00FFAA]/80 text-[#050608] font-bold border-none w-full sm:w-auto"
+                        >
+                          BECOME A MINER
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="border-[#14304A] text-white hover:bg-[#090C15] w-full sm:w-auto"
+                        >
+                          READ DOCUMENTATION
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Right: Terminal Visual */}
+                    <div className="lg:col-span-6 relative z-10 w-full">
+                      <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 md:p-8 font-mono text-[10px] text-slate-300 shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-left w-full relative overflow-hidden group">
+                        <div className="flex items-center justify-between mb-6 border-b border-[#14304A] pb-4">
+                          <div className="flex items-center gap-2">
+                            <Terminal size={12} className="text-slate-500" />
+                            <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Node Setup Terminal</span>
+                          </div>
+                          <span className="text-[8px] text-[#00FFAA] font-bold px-2 py-1 bg-[#00FFAA]/10 rounded border border-[#00FFAA]/20">LIVE NOW</span>
+                        </div>
+                        <div className="space-y-3 leading-relaxed">
+                          <div className="text-slate-500"># 1. Connect your private key to the global network</div>
+                          <div className="text-[#00FFAA] font-semibold">export OPERATOR_KEY_PATH="~/.sui-functions/operator.json"</div>
+                          <div className="h-3"></div>
+                          <div className="text-slate-500"># 2. Boot the decentralized runtime engine directly from Walrus</div>
+                          <div className="text-white font-semibold">npx sui-functions-node --core \</div>
+                          <div className="text-white font-semibold pl-6">OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
                 {/* VAULT & BILLING SYSTEM */}
                 <motion.section
                   initial={{ opacity: 0, y: 20 }}
@@ -865,62 +942,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </motion.section>
-
-                {/* DEPIN COMPUTE MINER (COMING SOON) */}
-                <section className="mb-32 relative py-12">
-                  {/* Decorative glowing background elements */}
-                  <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-brand-sui/5 blur-[120px] pointer-events-none" />
-
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-                    {/* Left: Content */}
-                    <div className="lg:col-span-6 text-left relative z-10">
-                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/40 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.2)] animate-pulse">
-                        <Wallet size={10} /> DePIN Miner Economy
-                      </div>
-                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
-                        Run a Node. <br className="hidden lg:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-sui to-cyan-400">Earn SUI.</span>
-                      </h2>
-                      <p className="text-slate-200 text-base leading-relaxed mb-8 max-w-lg font-medium">
-                        Sui-Functions is building a completely decentralized compute economy. Anyone can now download our decentralized runner engine, stake SUI, and earn passive income by executing agentic workloads securely on their own hardware.
-                      </p>
-                      
-                      <ul className="flex flex-col gap-3 font-mono text-[11px] text-slate-400">
-                        <li className="flex items-center gap-2">
-                          <span className="text-brand-sui">✓</span> Zero DevOps — Just run the CLI command
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-brand-sui">✓</span> Hardware agnostic (Mac, Linux, Windows)
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-brand-sui">✓</span> Mathematically secure V8 isolation
-                        </li>
-                      </ul>
-                    </div>
-
-                    {/* Right: Terminal Visual */}
-                    <div className="lg:col-span-6 relative z-10 w-full">
-                      <div className="bg-[#030407] border border-[#141624] rounded-2xl p-6 md:p-8 font-mono text-[11px] md:text-xs text-slate-300 shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-left w-full relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-sui opacity-60" />
-                        <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
-                          <div className="flex items-center gap-2">
-                            <Terminal size={14} className="text-brand-sui" />
-                            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Node Setup Terminal</span>
-                          </div>
-                          <span className="text-[9px] text-brand-cyan font-bold px-2 py-1 bg-brand-cyan/10 rounded border border-brand-cyan/20">LIVE NOW</span>
-                        </div>
-                        <div className="space-y-3">
-                          <div className="text-slate-400"># 1. Connect your private key to the global network</div>
-                          <div className="text-white font-semibold">export OPERATOR_KEY_PATH="~/.sui-functions/operator.json"</div>
-                          <div className="h-3"></div>
-                          <div className="text-slate-400"># 2. Boot the decentralized runtime engine directly from Walrus</div>
-                          <div className="text-white font-semibold">npx sui-functions-node --core \</div>
-                          <div className="text-white font-semibold pl-6">OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
 
                 {/* TRUE DECENTRALIZATION - TEE CONTRAST */}
                 {false && (
