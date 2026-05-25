@@ -948,7 +948,7 @@ const App: React.FC = () => {
                             <Layers size={16} />
                           </div>
                           <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2 border border-[#14304A] px-2 py-1 rounded bg-[#090C15]">
-                            TUTORIAL
+                            COMING SOON
                           </span>
                         </div>
                         <h4 className="text-lg font-bold text-white font-outfit mb-3">Dynamic NFT's</h4>
@@ -963,8 +963,8 @@ const App: React.FC = () => {
                           <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
                             <Wallet size={16} />
                           </div>
-                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] mt-2 border border-[#00FFAA]/20 px-2 py-1 rounded bg-[#00FFAA]/10">
-                            LIVE DEMO
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2 border border-[#14304A] px-2 py-1 rounded bg-[#090C15]">
+                            COMING SOON
                           </span>
                         </div>
                         <h4 className="text-lg font-bold text-white font-outfit mb-3">Secure Dex Trade</h4>
@@ -980,7 +980,7 @@ const App: React.FC = () => {
                             <Server size={16} />
                           </div>
                           <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2 border border-[#14304A] px-2 py-1 rounded bg-[#090C15]">
-                            TUTORIAL
+                            COMING SOON
                           </span>
                         </div>
                         <h4 className="text-lg font-bold text-white font-outfit mb-3">Knowledge Base</h4>
