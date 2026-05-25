@@ -4348,14 +4348,13 @@ const Dashboard: React.FC = () => {
                 </div>
               )}
 
-              <Button 
-                variant="primary"
+              <button 
                 onClick={handleUpdateTrigger}
                 disabled={isUpdatingTrigger}
-                className="w-full flex items-center justify-center gap-2 mt-2"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {isUpdatingTrigger ? "Syncing smart contracts..." : "Save Trigger Configuration"}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
