@@ -4448,90 +4448,115 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex flex-col gap-5">
-              {/* RUNNER OPTION SELECTOR */}
-              <div className="bg-[#141622]/40 border border-[#14304A]/60 p-4 rounded-2xl flex flex-col gap-3">
-                <span className="text-[10px] font-bold uppercase text-slate-200 tracking-wider">Execution Environment</span>
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsCustomRunner(false);
-                      setSettingsRunnerAddress("0x66e2384110dfebe33a817f76f8f7916bdd92b1046b7ac699b59701f2c965a875");
-                    }}
-                    className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      !isCustomRunner
-                        ? "bg-brand-sui/10 border-brand-sui/50 shadow-[0_0_12px_rgba(56,152,255,0.1)] text-white"
-                        : "bg-[#05060a]/50 border-[#14304A] hover:border-[#2d3047] text-slate-300"
-                    }`}
-                  >
-                    <span className="text-xs font-bold font-outfit">Public Compute Pool</span>
-                    <span className="text-[9px] leading-normal opacity-85">Free decentralized execution fleet.</span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsCustomRunner(true);
-                    }}
-                    className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      isCustomRunner
-                        ? "bg-brand-sui/10 border-brand-sui/50 shadow-[0_0_12px_rgba(56,152,255,0.1)] text-white"
-                        : "bg-[#05060a]/50 border-[#14304A] hover:border-[#2d3047] text-slate-300"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold font-outfit text-white">Dedicated Runner</span>
-                      <span className="text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-sui/20 border border-brand-sui text-brand-sui leading-none shrink-0 font-mono">Paid</span>
-                    </div>
-                    <span className="text-[9px] leading-normal opacity-85 font-medium">Lease a dedicated Node Operator with an SLA.</span>
-                  </button>
-                </div>
-              </div>
+            {(() => {
+              const defaultRunner = "0x66e2384110dfebe33a817f76f8f7916bdd92b1046b7ac699b59701f2c965a875";
+              const activeRunner = activeProject?.runnerAddress || "";
+              const isUnconfigured = !activeRunner || activeRunner === "0x0" || /^0x0+$/.test(activeRunner);
+              const isProjectDefault = !isUnconfigured && activeRunner.toLowerCase() === defaultRunner.toLowerCase();
+              const isProjectCustom = !isUnconfigured && !isProjectDefault;
+              
+              const currentSelection = isCustomRunner ? settingsRunnerAddress : defaultRunner;
+              const isSettingUnchanged = isUnconfigured 
+                ? false 
+                : isCustomRunner 
+                  ? (isProjectCustom && currentSelection.toLowerCase() === activeRunner.toLowerCase())
+                  : isProjectDefault;
 
-              {!isCustomRunner ? (
-                <div className="bg-[#141622]/30 border border-[#14304A]/60 p-4 rounded-xl flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-brand-sui/10 flex items-center justify-center text-brand-sui text-[10px] shrink-0 mt-0.5 font-bold">ℹ</div>
-                  <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
-                    <strong className="text-white block mb-1">Public Serverless Mode Active</strong>
-                    Your serverless functions execute inside our decentralized, isolated V8 sandboxes. Any staked node operator can pick up and run your workloads for free.
-                    <div className="mt-2 text-[9px] font-mono text-slate-400 break-all select-all font-bold">
+              return (
+                <div className="flex flex-col gap-5">
+                  {/* RUNNER OPTION SELECTOR */}
+                  <div className="bg-[#141622]/40 border border-[#14304A]/60 p-4 rounded-2xl flex flex-col gap-3">
+                    <span className="text-[10px] font-bold uppercase text-slate-200 tracking-wider">Execution Environment</span>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomRunner(false);
+                          setSettingsRunnerAddress(defaultRunner);
+                        }}
+                        className={`relative flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                          !isCustomRunner
+                            ? "bg-brand-sui/10 border-brand-sui/50 shadow-[0_0_12px_rgba(56,152,255,0.1)] text-white"
+                            : "bg-[#05060a]/50 border-[#14304A] hover:border-[#2d3047] text-slate-300"
+                        }`}
+                      >
+                        {isProjectDefault && (
+                          <div className="absolute top-3 right-3 text-emerald-400">
+                            <CheckCircle size={14} />
+                          </div>
+                        )}
+                        <span className="text-xs font-bold font-outfit">Public Compute Pool</span>
+                        <span className="text-[9px] leading-normal opacity-85">Free decentralized execution fleet.</span>
+                      </button>
+                      
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomRunner(true);
+                        }}
+                        className={`relative flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                          isCustomRunner
+                            ? "bg-brand-sui/10 border-brand-sui/50 shadow-[0_0_12px_rgba(56,152,255,0.1)] text-white"
+                            : "bg-[#05060a]/50 border-[#14304A] hover:border-[#2d3047] text-slate-300"
+                        }`}
+                      >
+                        {isProjectCustom && (
+                          <div className="absolute top-3 right-3 text-emerald-400">
+                            <CheckCircle size={14} />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs font-bold font-outfit text-white">Dedicated Runner</span>
+                          <span className={`text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-sui/20 border border-brand-sui text-brand-sui leading-none shrink-0 font-mono ${isProjectCustom ? 'mr-5' : ''}`}>Paid</span>
+                        </div>
+                        <span className="text-[9px] leading-normal opacity-85 font-medium">Lease a dedicated Node Operator with an SLA.</span>
+                      </button>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-bold uppercase text-slate-200 tracking-wider">Private Runner Address</label>
-                      <span className="text-[9px] text-slate-300 font-mono font-bold">Must sign transactions</span>
-                    </div>
-                    <input 
-                      type="text" 
-                      value={settingsRunnerAddress}
-                      onChange={(e) => setSettingsRunnerAddress(e.target.value)}
-                      placeholder="0x..."
-                      className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
-                    />
-                  </div>
-                  
-                  <div className="bg-amber-950/10 border border-amber-900/30 p-4 rounded-xl flex items-start gap-3">
-                    <span className="text-cyan-500 font-bold text-xs shrink-0 mt-0.5">⚠️</span>
-                    <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
-                      Only the Node Operator running with the Runner Address below will be allowed to pick up and execute your functions. Ensure you have coordinated with them.
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              <button 
-                onClick={handleSaveSettings}
-                disabled={isSavingSettings || !settingsRunnerAddress.trim()}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
-              >
-                {isSavingSettings ? "Configuring On-Chain Specs..." : "Save Workspace Configurations"}
-              </button>
+                  {!isCustomRunner ? (
+                    <div className="bg-[#141622]/30 border border-[#14304A]/60 p-4 rounded-xl flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-brand-sui/10 flex items-center justify-center text-brand-sui text-[10px] shrink-0 mt-0.5 font-bold">ℹ</div>
+                      <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
+                        <strong className="text-white block mb-1">Public Serverless Mode Active</strong>
+                        Your serverless functions execute inside our decentralized, isolated V8 sandboxes. Any staked node operator can pick up and run your workloads for free.
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-xs font-bold uppercase text-slate-200 tracking-wider">Private Runner Address</label>
+                          <span className="text-[9px] text-slate-300 font-mono font-bold">Must sign transactions</span>
+                        </div>
+                        <input 
+                          type="text" 
+                          value={settingsRunnerAddress}
+                          onChange={(e) => setSettingsRunnerAddress(e.target.value)}
+                          placeholder="0x..."
+                          className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
+                        />
+                      </div>
+                      
+                      <div className="bg-amber-950/10 border border-amber-900/30 p-4 rounded-xl flex items-start gap-3">
+                        <span className="text-cyan-500 font-bold text-xs shrink-0 mt-0.5">⚠️</span>
+                        <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
+                          Only the Node Operator running with the Runner Address below will be allowed to pick up and execute your functions. Ensure you have coordinated with them.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isSettingUnchanged && (
+                    <button 
+                      onClick={handleSaveSettings}
+                      disabled={isSavingSettings || !settingsRunnerAddress.trim()}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+                    >
+                      {isSavingSettings ? "Configuring On-Chain Specs..." : "Use this settings"}
+                    </button>
+                  )}
 
               <div className="border-t border-[#14304A]/60 pt-4 mt-2">
                 <span className="text-[10px] font-bold uppercase text-red-400 tracking-wider block mb-2">Danger Zone</span>
@@ -4550,6 +4575,8 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+            );
+            })()}
           </div>
         </div>
       )}
