@@ -658,8 +658,8 @@ const App: React.FC = () => {
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     {/* Left: Interactive Visual Representation */}
-                    <div className="lg:col-span-6 order-2 lg:order-1 flex justify-center items-center w-full">
-                      <div className="w-full max-w-lg bg-[#050608] border border-[#14304A] rounded-2xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.8)] relative">
+                    <div className="lg:col-span-6 order-2 lg:order-1 relative z-10 w-full">
+                      <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.8)] relative text-left w-full">
                         {/* Visual Header */}
                         <div className="flex items-center justify-between border-b border-[#14304A] pb-4 mb-6">
                           <div className="flex items-center gap-3">
