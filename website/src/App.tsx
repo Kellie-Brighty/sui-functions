@@ -136,7 +136,7 @@ const App: React.FC = () => {
                       className="text-5xl sm:text-6xl lg:text-[72px] font-bold tracking-tight text-[#E2E8F0] leading-[1.05] mb-6 font-outfit"
                     >
                       The Zero-Downtime <br />
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-400">
+                      <span className="text-slate-400">
                         Compute Economy
                       </span>
                     </motion.h1>
@@ -240,58 +240,82 @@ const App: React.FC = () => {
                   transition={{ duration: 0.6 }}
                   className="mb-32"
                 >
-                  <div className="bg-[#050608]/80 backdrop-blur-3xl border border-[#1A1C29] rounded-[32px] p-8 md:p-14 text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-                    <div className="absolute top-0 left-1/2 -translate-y-1/2 w-[600px] h-32 bg-brand-sui/5 blur-[80px] pointer-events-none" />
-
-                    <span className="px-3.5 py-1.5 rounded-full bg-brand-sui/5 border border-brand-sui/20 text-[10px] font-mono font-bold uppercase tracking-widest text-brand-sui inline-block mb-6">
+                  <div className="bg-[#050608] rounded-2xl p-8 md:p-14 text-center relative border border-[#14304A]">
+                    
+                    <span className="px-3 py-1 rounded-full bg-[#090C15] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-slate-400 inline-block mb-6">
                       Core Protocol Infrastructure
                     </span>
 
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
-                      Powered by the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-indigo via-blue-400 to-brand-sui">Sui Stack</span>
+                    <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4 font-outfit">
+                      Powered by the <span className="text-slate-400">Sui Stack</span>
                     </h2>
-                    <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed font-medium mb-12">
+                    <p className="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed font-normal mb-16">
                       Sui-Functions merges next-generation layer-1 consensus with decentralized object storage to create a secure, sovereign edge compute backbone for autonomous agentic workflows.
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto items-stretch">
-                      {/* Partner 1: Sui (Bento Box) */}
-                      <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-indigo/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
-                        <div className="w-16 h-16 rounded-[18px] bg-[#0A101C] border border-[#162544] flex items-center justify-center shadow-[0_10px_30px_rgba(59,130,246,0.1)] group-hover:shadow-[0_10px_30px_rgba(59,130,246,0.25)] group-hover:scale-105 transition-all duration-500">
-                          <img
-                            src="https://www.google.com/s2/favicons?domain=sui.io&sz=128"
-                            alt="Sui Network Logo"
-                            className="w-10 h-10 object-contain rounded-xl"
-                          />
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch relative">
+                      {/* Connection Line & Dot */}
+                      <div className="hidden md:block absolute top-[40%] left-[45%] w-[10%] h-[1px] bg-[#14304A] z-0" />
+                      <div className="hidden md:flex absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full border border-[#14304A] bg-[#050608] items-center justify-center z-10">
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                      </div>
+
+                      {/* Partner 1: Sui */}
+                      <div className="flex flex-col justify-between p-8 bg-[#090C15] border border-[#14304A] rounded-xl text-left relative z-10">
                         <div>
-                          <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center justify-between w-full">
+                          <div className="flex items-start justify-between mb-8">
+                            <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608]">
+                              <svg width="14" height="18" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 0C8 0 0 8.9543 0 14.3214C0 18.7397 3.58172 20 8 20C12.4183 20 16 18.7397 16 14.3214C16 8.9543 8 0 8 0ZM8 17.5C5.51472 17.5 3.5 15.4853 3.5 13C3.5 11.2335 4.54215 9.71556 6.00287 9.01898C5.97544 9.35165 6.03544 9.68233 6.18243 9.97233C6.73243 11.0557 8.04159 11.4557 9.0768 10.8256C8.8893 12.0156 8.16335 12.8953 7.15174 13.255C7.42082 13.3323 7.70582 13.375 8 13.375C9.933 13.375 11.5 11.808 11.5 9.875C11.5 8.93245 11.1352 8.0772 10.5363 7.44754C11.9054 8.79979 12.75 10.7061 12.75 12.8214C12.75 16.0355 10.6274 17.5 8 17.5Z" fill="#E2E8F0"/>
+                              </svg>
+                            </div>
+                            <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Coordination</span>
+                          </div>
+                          
+                          <h3 className="text-xl font-bold text-[#E2E8F0] font-outfit mb-3">
                             Sui Network
-                            <span className="px-2.5 py-1 rounded bg-brand-indigo/10 border border-brand-indigo/20 text-[9px] font-mono font-bold text-brand-indigo uppercase tracking-wider">Coordination</span>
                           </h3>
-                          <p className="text-slate-400 text-sm leading-relaxed font-medium group-hover:text-slate-300 transition-colors">
+                          <p className="text-slate-400 text-[13px] leading-relaxed font-normal mb-10">
                             Acts as our state coordinator and event bus. Move smart contracts manage the dynamic trigger registry and commit completed execution receipts securely on-chain.
                           </p>
                         </div>
+                        
+                        {/* Footer */}
+                        <div className="flex items-center justify-between border-t border-[#14304A] pt-6 mt-auto">
+                          <div className="w-1/2 h-[2px] bg-[#14304A] rounded-full overflow-hidden">
+                            <div className="w-2/3 h-full bg-slate-500 rounded-full" />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-widest">Sync_Ready</span>
+                        </div>
                       </div>
 
-                      {/* Partner 2: Walrus (Bento Box) */}
-                      <div className="flex flex-col items-start gap-6 p-8 bg-[#090A10] border border-[#1A1C29] rounded-[24px] hover:border-brand-sui/40 hover:bg-[#0C0E16] transition-all duration-500 text-left group shadow-inner">
-                        <div className="w-16 h-16 rounded-[18px] bg-[#160f08] border border-[#3b2311] flex items-center justify-center shadow-[0_10px_30px_rgba(56,152,255,0.1)] group-hover:shadow-[0_10px_30px_rgba(56,152,255,0.25)] group-hover:scale-105 transition-all duration-500">
-                          <img
-                            src="https://www.google.com/s2/favicons?domain=walrus.xyz&sz=128"
-                            alt="Walrus Protocol Logo"
-                            className="w-10 h-10 object-contain rounded-xl brightness-[1.8] contrast-[1.2]"
-                          />
-                        </div>
+                      {/* Partner 2: Walrus */}
+                      <div className="flex flex-col justify-between p-8 bg-[#090C15] border border-[#14304A] rounded-xl text-left relative z-10">
                         <div>
-                          <h3 className="text-xl font-bold text-white font-outfit mb-3 flex items-center justify-between w-full">
+                          <div className="flex items-start justify-between mb-8">
+                            <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608]">
+                              <svg width="16" height="18" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 0L0 5V15L9 20L18 15V5L9 0ZM16 14.1L9 18.2L2 14.1V5.9L9 1.8L16 5.9V14.1ZM9 4L4 7V13L9 16L14 13V7L9 4ZM9 14.5L5.5 12.5V7.5L9 5.5L12.5 7.5V12.5L9 14.5Z" fill="#E2E8F0"/>
+                                <circle cx="9" cy="10" r="1.5" fill="#E2E8F0"/>
+                              </svg>
+                            </div>
+                            <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Logic Registry</span>
+                          </div>
+                          
+                          <h3 className="text-xl font-bold text-[#E2E8F0] font-outfit mb-3">
                             Walrus Protocol
-                            <span className="px-2.5 py-1 rounded bg-brand-sui/10 border border-brand-sui/20 text-[9px] font-mono font-bold text-brand-sui uppercase tracking-wider">Logic Registry</span>
                           </h3>
-                          <p className="text-slate-400 text-sm leading-relaxed font-medium group-hover:text-slate-300 transition-colors">
+                          <p className="text-slate-400 text-[13px] leading-relaxed font-normal mb-10">
                             We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution via cryptographic Blob IDs.
                           </p>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between border-t border-[#14304A] pt-6 mt-auto">
+                          <div className="w-1/2 h-[2px] bg-[#14304A] rounded-full overflow-hidden">
+                            <div className="w-1/3 h-full bg-slate-500 rounded-full" />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-widest">Blob_Verified</span>
                         </div>
                       </div>
                     </div>
