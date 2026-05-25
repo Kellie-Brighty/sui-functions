@@ -335,66 +335,92 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
 
           {/* Top Metric Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
-            {/* Card 1: Cluster Health */}
+            {/* Card 1: Network APY */}
             <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
               <div className="flex justify-between items-start mb-4">
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Cluster Health</h4>
-                <Activity size={14} className="text-emerald-400" />
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Network APY</h4>
+                <Activity size={14} className="text-brand-sui" />
               </div>
-              <div className="text-4xl font-bold text-white font-outfit mb-2">100.00%</div>
-              <div className="text-emerald-400 text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Operator nodes operational</div>
-              <div className="flex gap-2">
-                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">18.4%</div>
+              <div className="text-brand-sui text-xs font-mono mb-6 flex items-center gap-1"><ArrowUpRight size={12}/> Current Network Average</div>
+              <div className="flex gap-2 h-1.5 items-end">
+                <div className="flex-1 bg-brand-sui rounded-full h-full shadow-[0_0_8px_rgba(56,152,255,0.5)]"></div>
               </div>
             </div>
 
-            {/* Card 2: Avg Latency */}
+            {/* Card 2: Staked SUI */}
             <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
               <div className="flex justify-between items-start mb-4">
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Avg Latency (P99)</h4>
-                <Cpu size={14} className="text-brand-sui" />
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Your Staked SUI</h4>
+                <Wallet size={14} className="text-brand-cyan" />
               </div>
-              <div className="text-4xl font-bold text-white font-outfit mb-2">5010 ms</div>
-              <div className="text-brand-sui text-xs font-mono mb-6 flex items-center gap-1"><ArrowUpRight size={12}/> Live round-trip runner lag</div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">{isStaked ? '0.50' : '0.00'}</div>
+              <div className="text-brand-cyan text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Actively Securing Network</div>
               <div className="flex gap-1 h-3 items-end">
-                <div className="w-full bg-[#1A3150] rounded-t-sm h-full relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-sui/40 to-brand-sui/10 rounded-t-sm"></div></div>
-                <div className="w-full bg-[#1A3150] rounded-t-sm h-2/3 relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-sui/40 to-brand-sui/10 rounded-t-sm"></div></div>
-                <div className="w-full bg-[#1A3150] rounded-t-sm h-1/2 relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-sui/40 to-brand-sui/10 rounded-t-sm"></div></div>
+                <div className="w-full bg-[#1A3150] rounded-t-sm h-full relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-cyan/40 to-brand-cyan/10 rounded-t-sm"></div></div>
+                <div className="w-full bg-[#1A3150] rounded-t-sm h-full relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-cyan/40 to-brand-cyan/10 rounded-t-sm"></div></div>
+                <div className="w-full bg-[#1A3150] rounded-t-sm h-full relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-cyan/40 to-brand-cyan/10 rounded-t-sm"></div></div>
               </div>
             </div>
 
-            {/* Card 3: Success Rate */}
+            {/* Card 3: Yield Earned */}
             <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
               <div className="flex justify-between items-start mb-4">
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Success Rate</h4>
-                <CheckCircle size={14} className="text-emerald-400" />
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Total Yield Earned</h4>
+                <Sparkles size={14} className="text-emerald-400" />
               </div>
-              <div className="text-4xl font-bold text-white font-outfit mb-2">100.0%</div>
-              <div className="text-emerald-400 text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Dynamic execution validation</div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">0.00</div>
+              <div className="text-emerald-400 text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Generated from fees</div>
               <div className="flex justify-between text-xs font-mono">
-                <span className="text-slate-400">OK: <span className="text-white">0.002 SUI</span></span>
-                <span className="text-slate-400">ERR: <span className="text-red-400">0</span></span>
+                <span className="text-slate-400">Total: <span className="text-white">0.00 SUI</span></span>
               </div>
             </div>
 
-            {/* Card 4: Total Invocations */}
+            {/* Card 4: Workloads Executed */}
             <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
               <div className="flex justify-between items-start mb-4">
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Total Invocations</h4>
-                <Zap size={14} className="text-brand-sui" />
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Workloads Processed</h4>
+                <Zap size={14} className="text-[#6FB7B7]" />
               </div>
               <div className="text-4xl font-bold text-white font-outfit mb-2">{isStaked ? '3' : '0'}</div>
-              <div className="text-brand-sui text-xs font-mono mb-6 flex items-center gap-1">▲ On-chain events queried</div>
+              <div className="text-[#6FB7B7] text-xs font-mono mb-6 flex items-center gap-1">▲ Workloads Executed since stake</div>
               <div className="h-1.5 w-full bg-[#1A3150] rounded-full overflow-hidden relative">
-                <div className="absolute top-0 left-0 h-full w-4/5 bg-brand-cyan shadow-[0_0_10px_rgba(56,152,255,0.8)]"></div>
+                <div className="absolute top-0 left-0 h-full w-4/5 bg-[#6FB7B7] shadow-[0_0_10px_rgba(111,183,183,0.8)]"></div>
               </div>
             </div>
           </div>
 
+          {isStaked && (
+            <div className="w-full bg-[#05060a] border border-brand-cyan/30 rounded-xl p-6 text-left animate-in zoom-in-95 duration-300 relative overflow-hidden shadow-inner">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-brand-cyan/5 blur-[60px] rounded-full"></div>
+              <div className="flex items-center justify-between mb-4 relative z-10">
+                <h4 className="text-brand-cyan font-bold flex items-center gap-2 text-lg">
+                  <Terminal size={18} /> Node Command
+                </h4>
+                <span className="bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20 px-3 py-1 rounded-md text-xs font-bold font-mono shadow-sm">Node Registered</span>
+              </div>
+              
+              <p className="text-slate-300 text-sm mb-4 relative z-10 leading-relaxed">
+                To boot the decentralized execution engine locally, run this exact command in your terminal. It will connect to Walrus.
+              </p>
+              <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs md:text-sm text-brand-sui select-all flex justify-between items-center group relative z-10 shadow-inner">
+                <span>npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</span>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText("npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo");
+                    setCopiedCommand(true);
+                    setTimeout(() => setCopiedCommand(false), 2000);
+                  }}
+                  className="text-slate-500 hover:text-white transition-colors p-2 bg-[#05060a] rounded-md border border-[#14304A]"
+                  title="Copy Command"
+                >
+                  {copiedCommand ? <Check size={16} className="text-brand-cyan" /> : <Copy size={16} />}
+                </button>
+              </div>
+            </div>
+          )}
+
+          
           {/* Middle Section: Chart & Alerts */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
             
