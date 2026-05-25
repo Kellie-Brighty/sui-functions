@@ -265,9 +265,7 @@ const App: React.FC = () => {
                         <div>
                           <div className="flex items-start justify-between mb-8">
                             <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608]">
-                              <svg width="14" height="18" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8 0C8 0 0 8.9543 0 14.3214C0 18.7397 3.58172 20 8 20C12.4183 20 16 18.7397 16 14.3214C16 8.9543 8 0 8 0ZM8 17.5C5.51472 17.5 3.5 15.4853 3.5 13C3.5 11.2335 4.54215 9.71556 6.00287 9.01898C5.97544 9.35165 6.03544 9.68233 6.18243 9.97233C6.73243 11.0557 8.04159 11.4557 9.0768 10.8256C8.8893 12.0156 8.16335 12.8953 7.15174 13.255C7.42082 13.3323 7.70582 13.375 8 13.375C9.933 13.375 11.5 11.808 11.5 9.875C11.5 8.93245 11.1352 8.0772 10.5363 7.44754C11.9054 8.79979 12.75 10.7061 12.75 12.8214C12.75 16.0355 10.6274 17.5 8 17.5Z" fill="#E2E8F0"/>
-                              </svg>
+                              <img src="/sui.png" alt="Sui Network Logo" className="w-5 h-5 object-contain opacity-90" />
                             </div>
                             <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Coordination</span>
                           </div>
@@ -294,10 +292,7 @@ const App: React.FC = () => {
                         <div>
                           <div className="flex items-start justify-between mb-8">
                             <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608]">
-                              <svg width="16" height="18" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 0L0 5V15L9 20L18 15V5L9 0ZM16 14.1L9 18.2L2 14.1V5.9L9 1.8L16 5.9V14.1ZM9 4L4 7V13L9 16L14 13V7L9 4ZM9 14.5L5.5 12.5V7.5L9 5.5L12.5 7.5V12.5L9 14.5Z" fill="#E2E8F0"/>
-                                <circle cx="9" cy="10" r="1.5" fill="#E2E8F0"/>
-                              </svg>
+                              <img src="/walrus.png" alt="Walrus Protocol Logo" className="w-5 h-5 object-contain opacity-90" />
                             </div>
                             <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Logic Registry</span>
                           </div>
