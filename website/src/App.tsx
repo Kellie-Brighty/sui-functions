@@ -242,8 +242,9 @@ const App: React.FC = () => {
                 >
                   <div className="bg-[#050608] rounded-2xl p-8 md:p-14 text-center relative border border-[#14304A]">
                     
-                    <span className="px-3 py-1 rounded-full bg-[#090C15] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-slate-400 inline-block mb-6">
-                      Core Protocol Infrastructure
+                    <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2 mb-6">
+                      <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                      CORE PROTOCOL INFRASTRUCTURE
                     </span>
 
                     <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4 font-outfit">
@@ -323,8 +324,9 @@ const App: React.FC = () => {
 
                     {/* Left Column: Context & Sticky Title */}
                     <div className="lg:col-span-5 flex flex-col justify-center text-left">
-                      <span className="px-3 py-1 rounded-full bg-transparent border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-slate-400 inline-block mb-4 self-start">
-                        Core Capabilities
+                      <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2 mb-4 self-start">
+                        <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                        CORE CAPABILITIES
                       </span>
                       <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4 font-outfit leading-[1.15]">
                         Engineered for <br />
