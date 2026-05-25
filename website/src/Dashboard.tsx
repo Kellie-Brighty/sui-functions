@@ -3159,7 +3159,7 @@ const Dashboard: React.FC = () => {
                                   setEditTriggerConfig(fn.triggerConfig || "{}");
                                   setIsEditTriggerModalOpen(true);
                                 }}
-                                className="px-2.5 py-1 text-[10px] font-bold uppercase rounded bg-[#14304A] hover:bg-[#343850] text-[#F56910] hover:text-white transition-all cursor-pointer border border-[#F56910]/20"
+                                className="px-2.5 py-1 text-[10px] font-bold uppercase rounded bg-[#14304A] hover:bg-[#343850] text-brand-sui hover:text-white transition-all cursor-pointer border border-brand-sui/20"
                               >
                                 Edit Trigger
                               </button>
@@ -3280,7 +3280,7 @@ const Dashboard: React.FC = () => {
 
                       <div className="bg-[#05060a]/60 p-3 rounded-lg border border-[#14304A]/40 flex items-center justify-between mb-3 text-xs">
                         <div className="flex items-center gap-2 text-slate-300">
-                          <Sliders size={12} className="text-[#F56910]" />
+                          <Sliders size={12} className="text-brand-sui" />
                           <span className="font-semibold text-slate-400">Trigger:</span>
                           <span className="font-mono text-white text-[11px]">
                             {getTriggerLabel(fn.triggerType || 0, fn.triggerConfig || "{}")}
@@ -3294,7 +3294,7 @@ const Dashboard: React.FC = () => {
                             setEditTriggerConfig(fn.triggerConfig || "{}");
                             setIsEditTriggerModalOpen(true);
                           }}
-                          className="text-[10px] text-[#F56910] hover:text-blue-400 font-bold uppercase transition-colors bg-transparent border-none cursor-pointer flex items-center gap-1"
+                          className="text-[10px] text-brand-sui hover:text-blue-400 font-bold uppercase transition-colors bg-transparent border-none cursor-pointer flex items-center gap-1"
                         >
                           <Settings size={10} /> Edit Trigger
                         </button>
@@ -4237,7 +4237,7 @@ const Dashboard: React.FC = () => {
                       setRegisterTriggerConfig(JSON.stringify({ drift_threshold: 0.001 }, null, 2));
                     }
                   }}
-                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
+                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-sans"
                 >
                   <option value={0}>Manual Trigger (On-Demand)</option>
                   <option value={1}>Cron Trigger (Periodic execution)</option>
@@ -4254,7 +4254,7 @@ const Dashboard: React.FC = () => {
                     onChange={(e) => setRegisterTriggerConfig(e.target.value)}
                     rows={4}
                     placeholder="Enter configuration JSON parameters..."
-                    className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
+                    className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
                   />
                 </div>
               )}
@@ -4283,7 +4283,7 @@ const Dashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between pb-4 border-b border-[#14304A]/60 mb-6">
               <div className="flex items-center gap-2">
-                <Settings size={18} className="text-[#F56910]" />
+                <Settings size={18} className="text-brand-sui" />
                 <span className="text-base font-bold text-white font-outfit">Edit Automation Trigger</span>
               </div>
               <button 
@@ -4326,7 +4326,7 @@ const Dashboard: React.FC = () => {
                       setEditTriggerConfig(JSON.stringify({ drift_threshold: 0.001 }, null, 2));
                     }
                   }}
-                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-sans"
+                  className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-sans"
                 >
                   <option value={0}>Manual Trigger (On-Demand)</option>
                   <option value={1}>Cron Trigger (Periodic execution)</option>
@@ -4343,7 +4343,7 @@ const Dashboard: React.FC = () => {
                     onChange={(e) => setEditTriggerConfig(e.target.value)}
                     rows={4}
                     placeholder="Enter configuration JSON parameters..."
-                    className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#F56910]/40 focus:ring-1 focus:ring-[#F56910]/20 transition-all font-mono"
+                    className="w-full bg-[#05060a] border border-[#14304A] rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-sui/40 focus:ring-1 focus:ring-brand-sui/20 transition-all font-mono"
                   />
                 </div>
               )}
