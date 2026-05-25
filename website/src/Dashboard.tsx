@@ -198,6 +198,29 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
     refetchInterval: 5000,
   });
 
+  // --- NODE OPERATOR DATA FETCHING ---
+  const { data: allExecutionEvents } = useSuiClientQuery(
+    'queryEvents',
+    {
+      query: { MoveEventType: `${PACKAGE_ID}::trigger::ExecutionCompleted` },
+      order: 'descending',
+      limit: 100
+    },
+    {
+      enabled: !!account && !!runnerAddress,
+      refetchInterval: 5000,
+    }
+  );
+
+  const operatorExecutionEvents = React.useMemo(() => {
+    if (!allExecutionEvents?.data || !runnerAddress) return [];
+    return allExecutionEvents.data.filter((ev: any) => ev.parsedJson?.runner === runnerAddress);
+  }, [allExecutionEvents, runnerAddress]);
+
+  const workloadsProcessed = operatorExecutionEvents.length;
+  // 85% of base compute fee (0.007 * 0.85 = 0.00595 SUI per workload roughly)
+  const yieldEarned = (workloadsProcessed * 0.00595).toFixed(4);
+
   React.useEffect(() => {
     if (operatorObjects && operatorObjects.data.length > 0) {
       setIsStaked(true);
@@ -2654,9 +2677,7 @@ const Dashboard: React.FC = () => {
                     <button onClick={() => setActiveMenu('operator-2')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-2' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Terminal size={16} /> Node Logs
                     </button>
-                    <button onClick={() => setActiveMenu('operator-3')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-3' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
-                      <Activity size={16} /> Performance
-                    </button>
+
                     <button onClick={() => setActiveMenu('operator-4')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-4' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Wallet size={16} /> Runner Vault
                     </button>
@@ -2744,7 +2765,7 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col gap-4 border-t border-[#14304A]/60 pt-4 shrink-0 mt-4">
               {persona === 'operator' ? (
                 <>
-                  <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
+                  <button onClick={() => { setActiveMenu('6'); setIsMobileMenuOpen(false); }} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
                     <BookOpen size={16} /> Operator Documentation
                   </button>
                 </>
@@ -3022,9 +3043,7 @@ const Dashboard: React.FC = () => {
                     <button onClick={() => setActiveMenu('operator-2')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-2' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Terminal size={16} /> Node Logs
                     </button>
-                    <button onClick={() => setActiveMenu('operator-3')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-3' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
-                      <Activity size={16} /> Performance
-                    </button>
+
                     <button onClick={() => setActiveMenu('operator-4')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-4' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Wallet size={16} /> Runner Vault
                     </button>
@@ -3089,7 +3108,7 @@ const Dashboard: React.FC = () => {
               </>
             ) : (
               <>
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
+                <button onClick={() => setActiveMenu('6')} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
                   <BookOpen size={16} /> Operator Documentation
                 </button>
               </>
