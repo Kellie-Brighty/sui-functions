@@ -819,7 +819,7 @@ const App: React.FC = () => {
                       <div className="flex flex-col sm:flex-row items-center gap-4">
                         <Button
                           variant="primary"
-                          className="bg-[#00FFAA] hover:bg-[#00FFAA]/80 text-[#050608] font-bold border-none w-full sm:w-auto"
+                          className="w-full sm:w-auto"
                         >
                           BECOME A MINER
                         </Button>
@@ -898,7 +898,7 @@ const App: React.FC = () => {
                           >
                             <Button
                               variant="primary"
-                              className="bg-[#00FFAA] hover:bg-[#00FFAA]/80 text-[#050608] font-bold border-none flex items-center gap-2 px-6"
+                              className="flex items-center gap-2 px-6"
                             >
                               <span>LAUNCH AGENT SHOWCASE</span>
                               <ArrowRight size={14} />
@@ -1498,7 +1498,7 @@ const App: React.FC = () => {
                         <Button
                           onClick={() => setShowConnectModal(true)}
                           variant="primary"
-                          className="w-full sm:w-auto px-10 h-12 bg-[#00FFAA] hover:bg-[#00FFAA]/80 text-[#050608] font-bold border-none flex items-center justify-center gap-2 uppercase tracking-wider text-[11px]"
+                          className="w-full sm:w-auto px-10 h-12 flex items-center justify-center gap-2 uppercase tracking-wider text-[11px]"
                         >
                           <span>START BUILDING</span>
                           <ArrowRight size={14} />
