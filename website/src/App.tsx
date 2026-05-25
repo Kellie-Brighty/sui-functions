@@ -1482,42 +1482,36 @@ const App: React.FC = () => {
 
                 {/* CALL TO ACTION */}
                 <section className="mb-24">
-                  <div className="relative rounded-[40px] border border-brand-card-border/80 overflow-hidden bg-brand-card/90 py-16 md:py-24 px-8 md:px-16 shadow-card-glow text-center">
+                  <div className="relative py-24 text-center overflow-hidden">
+                    {/* Ambient Glow */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#00FFAA]/5 blur-[120px] rounded-full pointer-events-none" />
 
-                    {/* CTA Orange Background radial flare */}
-                    <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-sui/10 blur-[120px] rounded-full pointer-events-none" />
-
-                    <div className="relative z-10 max-w-3xl mx-auto">
-                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
+                    <div className="relative z-10 max-w-3xl mx-auto px-6">
+                      <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6 font-outfit">
                         Power the Agentic Web
                       </h2>
-                      <p className="text-slate-200 text-base leading-relaxed mb-10 max-w-2xl mx-auto font-medium">
-                        Deploy mathematically secure, censorship-resistant agentic logic powered by Sui and Walrus. Eliminate the centralized cloud tax forever.
+                      <p className="text-slate-400 text-sm md:text-base leading-relaxed mb-10 max-w-2xl mx-auto font-normal">
+                        Launch decentralized services, orchestrate intelligent agents, and build on a network without cloud lock-in.
                       </p>
 
                       <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-                        <div className="relative">
-                          <Button
-                            onClick={() => setShowConnectModal(true)}
-                            variant="primary"
-                            size="lg"
-                            className="w-full sm:w-auto px-10 flex items-center justify-center gap-2.5"
-                          >
-                            <span>Start Deploying</span>
-                            <img src="/deploy.svg" alt="Deploy Icon" className="w-5 h-5 object-contain" />
-                          </Button>
-                        </div>
+                        <Button
+                          onClick={() => setShowConnectModal(true)}
+                          variant="primary"
+                          className="w-full sm:w-auto px-10 h-12 bg-[#00FFAA] hover:bg-[#00FFAA]/80 text-[#050608] font-bold border-none flex items-center justify-center gap-2 uppercase tracking-wider text-[11px]"
+                        >
+                          <span>START BUILDING</span>
+                          <ArrowRight size={14} />
+                        </Button>
                         <Button
                           onClick={() => window.open('https://github.com/Kellie-Brighty/sui-functions', '_blank')}
                           variant="outline"
-                          size="lg"
-                          className="w-full sm:w-auto hover:bg-[#082035] px-10"
+                          className="w-full sm:w-auto px-10 h-12 border border-[#14304A] hover:bg-[#090C15] text-slate-300 font-bold flex items-center justify-center uppercase tracking-wider text-[11px]"
                         >
-                          Explore Code Moat
+                          READ DOCUMENTATION
                         </Button>
                       </div>
                     </div>
-
                   </div>
                 </section>
               </>
