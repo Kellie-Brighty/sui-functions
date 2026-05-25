@@ -42,7 +42,7 @@ import {
 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID, PROTOCOL_TREASURY_ID, ADMIN_CAP_TYPE, PUBLIC_POOL_REGISTRY_ID } from './constants';
+import { PACKAGE_ID, PROTOCOL_TREASURY_ID, ADMIN_CAP_TYPE, PUBLIC_POOL_REGISTRY_ID, LATEST_RUNNER_BLOB_ID } from './constants';
 import { DocsView } from './components/DocsView';
 import { Button } from './components/shared/Button';
 
@@ -534,10 +534,10 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
                 To boot the decentralized execution engine locally, run this exact command in your terminal. It will connect to Walrus.
               </p>
               <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs md:text-sm text-brand-sui select-all flex justify-between items-center group relative z-10 shadow-inner">
-                <span>npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</span>
+                <span>npx sui-functions-node --core {LATEST_RUNNER_BLOB_ID}</span>
                 <button 
                   onClick={() => {
-                    navigator.clipboard.writeText("npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo");
+                    navigator.clipboard.writeText(`npx sui-functions-node --core ${LATEST_RUNNER_BLOB_ID}`);
                     setCopiedCommand(true);
                     setTimeout(() => setCopiedCommand(false), 2000);
                   }}
@@ -726,10 +726,10 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
                   To boot the decentralized execution engine locally, run this exact command in your terminal. It will download the container and connect to Walrus.
                 </p>
                 <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs md:text-sm text-brand-sui select-all flex justify-between items-center group relative z-10 shadow-inner">
-                  <span>npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</span>
+                  <span>npx sui-functions-node --core {LATEST_RUNNER_BLOB_ID}</span>
                   <button 
                     onClick={() => {
-                      navigator.clipboard.writeText("npx sui-functions-node --core OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo");
+                      navigator.clipboard.writeText(`npx sui-functions-node --core ${LATEST_RUNNER_BLOB_ID}`);
                       setCopiedCommand(true);
                       setTimeout(() => setCopiedCommand(false), 2000);
                     }}

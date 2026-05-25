@@ -5,6 +5,7 @@ import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 import { DocsView } from './components/DocsView';
+import { LATEST_RUNNER_BLOB_ID } from './constants';
 
 const App: React.FC = () => {
   const account = useCurrentAccount();
@@ -848,7 +849,7 @@ const App: React.FC = () => {
                           <div className="h-3"></div>
                           <div className="text-slate-500"># 2. Boot the decentralized runtime engine directly from Walrus</div>
                           <div className="text-white font-semibold">npx sui-functions-node --core \</div>
-                          <div className="text-white font-semibold pl-6">OWhic3rdiAIoOzAZe9GgZve4GE_ZjrRRLMthRhf3bGo</div>
+                          <div className="text-white font-semibold pl-6">{LATEST_RUNNER_BLOB_ID}</div>
                         </div>
                       </div>
                     </div>
