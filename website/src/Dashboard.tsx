@@ -323,69 +323,234 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
       
       {/* Operator-1: Overview */}
       {(!activeMenu || activeMenu === 'operator-1') && (
-        <>
-          <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            <div className="w-20 h-20 bg-brand-cyan/10 border border-brand-cyan/20 rounded-full flex items-center justify-center mb-6 shadow-inner">
-              <Server size={40} className="text-brand-cyan" />
+        <div className="flex flex-col gap-6 w-full animate-in fade-in duration-300">
+          
+          {/* Header */}
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-3xl font-bold text-white font-outfit">Node Operator Workspace</h2>
+            <button className="bg-transparent border border-[#212E40] hover:bg-[#212E40]/50 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
+              <Download size={14} /> Export Data
+            </button>
+          </div>
+
+          {/* Top Metric Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+            {/* Card 1: Cluster Health */}
+            <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
+              <div className="flex justify-between items-start mb-4">
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Cluster Health</h4>
+                <Activity size={14} className="text-emerald-400" />
+              </div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">100.00%</div>
+              <div className="text-emerald-400 text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Operator nodes operational</div>
+              <div className="flex gap-2">
+                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <div className="h-1.5 flex-1 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+              </div>
             </div>
-            <h2 className="text-3xl font-bold text-white font-outfit mb-3">Node Operator Hub</h2>
-            <p className="text-slate-400 max-w-md mx-auto text-sm mb-8 leading-relaxed">
-              Stake your SUI to join the decentralized compute network. Process workloads for Web3 applications and earn yield automatically with zero downtime guarantees.
-            </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-8">
-              <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner relative overflow-hidden group hover:border-brand-sui/50 transition-colors">
-                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity"><Activity size={24} className="text-brand-sui"/></div>
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Current Network APY</h4>
-                <div className="text-4xl font-extrabold text-brand-sui font-outfit">18.4%</div>
+            {/* Card 2: Avg Latency */}
+            <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
+              <div className="flex justify-between items-start mb-4">
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Avg Latency (P99)</h4>
+                <Cpu size={14} className="text-brand-sui" />
               </div>
-              <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner relative overflow-hidden group hover:border-brand-cyan/50 transition-colors">
-                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity"><Wallet size={24} className="text-brand-cyan"/></div>
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Your Staked SUI</h4>
-                <div className="text-4xl font-extrabold text-white font-outfit">{isStaked ? '0.50' : '0.00'}</div>
-              </div>
-              <div className="bg-[#141624] border border-[#14304A] rounded-xl p-6 text-center shadow-inner relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
-                <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition-opacity"><ArrowUpRight size={24} className="text-emerald-500"/></div>
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Yield Earned</h4>
-                <div className="text-4xl font-extrabold text-emerald-400 font-outfit">0.00</div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">5010 ms</div>
+              <div className="text-brand-sui text-xs font-mono mb-6 flex items-center gap-1"><ArrowUpRight size={12}/> Live round-trip runner lag</div>
+              <div className="flex gap-1 h-3 items-end">
+                <div className="w-full bg-[#1A3150] rounded-t-sm h-full relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-sui/40 to-brand-sui/10 rounded-t-sm"></div></div>
+                <div className="w-full bg-[#1A3150] rounded-t-sm h-2/3 relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-sui/40 to-brand-sui/10 rounded-t-sm"></div></div>
+                <div className="w-full bg-[#1A3150] rounded-t-sm h-1/2 relative"><div className="absolute inset-0 bg-gradient-to-t from-brand-sui/40 to-brand-sui/10 rounded-t-sm"></div></div>
               </div>
             </div>
 
-            {/* Fake Chart Area */}
-            <div className="w-full bg-[#141624] border border-[#14304A] rounded-xl p-6 relative overflow-hidden h-64 flex flex-col justify-between group">
-              <div className="flex justify-between items-center z-10 relative">
-                <div className="text-left">
-                  <h4 className="text-white font-bold text-lg font-outfit">Yield Performance</h4>
-                  <p className="text-slate-400 text-xs">Last 30 days workload execution</p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="bg-[#041829] border border-[#14304A] text-xs text-brand-sui px-3 py-1 rounded-full font-semibold cursor-pointer">1W</span>
-                  <span className="bg-[#0A1C2E] border border-brand-sui/30 text-xs text-white px-3 py-1 rounded-full font-semibold shadow-[0_0_10px_rgba(56,152,255,0.15)] cursor-pointer">1M</span>
-                  <span className="bg-[#041829] border border-[#14304A] text-xs text-slate-400 px-3 py-1 rounded-full font-semibold cursor-pointer">ALL</span>
-                </div>
+            {/* Card 3: Success Rate */}
+            <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
+              <div className="flex justify-between items-start mb-4">
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Success Rate</h4>
+                <CheckCircle size={14} className="text-emerald-400" />
               </div>
-              
-              {/* Fake gradient chart line */}
-              <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-brand-sui/20 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500">
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full opacity-50">
-                  <path d="M0,100 L0,80 Q20,90 40,60 T80,40 T100,20 L100,100 Z" fill="rgba(56,152,255,0.2)" />
-                  <path d="M0,80 Q20,90 40,60 T80,40 T100,20" fill="none" stroke="rgba(56,152,255,0.8)" strokeWidth="1" />
-                </svg>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">100.0%</div>
+              <div className="text-emerald-400 text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Dynamic execution validation</div>
+              <div className="flex justify-between text-xs font-mono">
+                <span className="text-slate-400">OK: <span className="text-white">3</span></span>
+                <span className="text-slate-400">ERR: <span className="text-red-400">0</span></span>
               </div>
+            </div>
 
-              {/* Data points */}
-              <div className="absolute inset-0 flex items-end justify-between px-10 pb-6 opacity-30 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="w-px h-16 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
-                <div className="w-px h-24 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
-                <div className="w-px h-32 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
-                <div className="w-px h-40 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
-                <div className="w-px h-48 bg-[#14304A] relative"><div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-brand-sui shadow-[0_0_8px_rgba(56,152,255,1)]"></div></div>
+            {/* Card 4: Total Invocations */}
+            <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
+              <div className="flex justify-between items-start mb-4">
+                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Total Invocations</h4>
+                <Zap size={14} className="text-brand-sui" />
+              </div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">{isStaked ? '3' : '0'}</div>
+              <div className="text-brand-sui text-xs font-mono mb-6 flex items-center gap-1">▲ On-chain events queried</div>
+              <div className="h-1.5 w-full bg-[#1A3150] rounded-full overflow-hidden relative">
+                <div className="absolute top-0 left-0 h-full w-4/5 bg-brand-cyan shadow-[0_0_10px_rgba(56,152,255,0.8)]"></div>
               </div>
             </div>
           </div>
-        </>
-      )}
 
+          {/* Middle Section: Chart & Alerts */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+            
+            {/* Chart Area */}
+            <div className="md:col-span-2 bg-[#111722] border border-[#212E40] rounded-xl p-6 shadow-lg relative min-h-[300px] flex flex-col">
+              <div className="flex justify-between items-center mb-8">
+                <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Execution Volume (Global)</h4>
+                <div className="flex gap-4 text-[10px] font-bold text-slate-400">
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#304B76]"></div> SUI EVENT BUS</div>
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-brand-sui"></div> WALRUS WORKERS</div>
+                </div>
+              </div>
+              
+              <div className="flex-1 flex items-end justify-between px-4 relative z-10">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">15:33</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">15:48</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">16:03</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">16:18</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">16:33</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">16:48</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">17:03</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  <span className="text-[10px] text-slate-400 font-mono">17:18</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  {isStaked ? (
+                    <div className="w-10 flex flex-col justify-end h-32 gap-[1px]">
+                      <div className="w-full bg-[#1A3150] h-1/2 border border-[#304B76] rounded-t-sm"></div>
+                      <div className="w-full bg-[#142642] h-1/2 border border-[#304B76]"></div>
+                    </div>
+                  ) : (
+                     <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                  )}
+                  <span className="text-[10px] text-slate-400 font-mono">17:33</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Active Alerts */}
+            <div className="bg-[#111722] border border-[#212E40] rounded-xl p-0 shadow-lg flex flex-col">
+              <div className="p-5 flex justify-between items-center border-b border-[#212E40]">
+                <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Active Alerts</h4>
+                <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[9px] font-bold">5 ACTIVE</span>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+                <div className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+                      <Info size={14} className="text-brand-sui" /> VM Isolate Completed
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-500">17:33</span>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+                    Executed 'Hello world' successfully inside V8 sandbox. Output: Function executed successfully
+                  </p>
+                  <button className="text-[9px] font-bold text-slate-300 uppercase tracking-wider hover:text-white">Acknowledge</button>
+                </div>
+
+                <div className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+                      <Info size={14} className="text-brand-sui" /> VM Isolate Completed
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-500">17:30</span>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+                    Executed 'Hello world' successfully inside V8 sandbox. Output: Function executed successfully
+                  </p>
+                  <button className="text-[9px] font-bold text-slate-300 uppercase tracking-wider hover:text-white">Acknowledge</button>
+                </div>
+
+                <div className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+                      <Info size={14} className="text-brand-sui" /> VM Isolate Completed
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-500">17:24</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Data Table */}
+          <div className="w-full bg-[#111722] border border-[#212E40] rounded-xl shadow-lg">
+            <div className="p-5 flex justify-between items-center border-b border-[#212E40]">
+              <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Top Performing Functions</h4>
+              <button className="text-xs text-brand-sui font-bold hover:text-brand-cyan transition-colors">View Performance Suite</button>
+            </div>
+            
+            <div className="w-full overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#212E40]">
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Function Name</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Invocations</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Success Rate</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Latency</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Trigger</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Status</th>
+                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-[#212E40]/50 hover:bg-[#141A26] transition-colors group">
+                    <td className="px-6 py-4 text-sm font-mono text-white">Hello world</td>
+                    <td className="px-6 py-4 text-sm font-mono text-slate-400">{isStaked ? '3' : '0'}</td>
+                    <td className="px-6 py-4 text-sm font-mono text-emerald-400">100.0%</td>
+                    <td className="px-6 py-4 text-sm font-mono text-slate-400">5010 ms</td>
+                    <td className="px-6 py-4 text-sm font-mono text-slate-500">Manual</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max">
+                        <CheckCircle size={10} /> VERIFIED
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button className="bg-transparent border border-[#304B76] text-[#304B76] group-hover:text-brand-sui group-hover:border-brand-sui px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-colors">
+                        Edit Trigger
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      )}
+      
       {/* Operator-2: Node Logs */}
       {activeMenu === 'operator-2' && (
         <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 h-[calc(100vh-140px)] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
