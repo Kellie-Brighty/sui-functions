@@ -2251,6 +2251,21 @@ const Dashboard: React.FC = () => {
                   >
                     <Plus size={14} /> Create Project
                   </button>
+                ) : persona === 'operator' ? (
+                  <>
+                    <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-4 relative group shrink-0">
+                      <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Node Operator Hub</div>
+                      <div className="flex items-center gap-2 mt-2 bg-[#05060a] border border-[#14304A] rounded-xl p-2">
+                        <div className="w-8 h-8 rounded-lg bg-brand-sui/10 flex items-center justify-center">
+                          <Server size={16} className="text-brand-sui" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-white">Sui Validator</span>
+                          <span className="text-[9px] text-brand-sui font-mono">Operational</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <div className="relative">
@@ -2325,6 +2340,19 @@ const Dashboard: React.FC = () => {
 
               {/* Navigation list */}
               <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#14304A] scrollbar-track-transparent">
+                {persona === 'operator' ? (
+                  <nav className="flex flex-col gap-1.5">
+                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]">
+                      <LayoutDashboard size={16} /> Overview
+                    </button>
+                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                      <Terminal size={16} /> Node Logs
+                    </button>
+                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                      <Activity size={16} /> Performance
+                    </button>
+                  </nav>
+                ) : (
                 <nav className="flex flex-col gap-1.5">
                   <button 
                     onClick={() => { setActiveMenu('1'); setIsMobileMenuOpen(false); }}
@@ -2399,12 +2427,24 @@ const Dashboard: React.FC = () => {
                     Billing & Vault
                   </button>
                 </nav>
+                )}
               </div>
             </div>
 
             {/* Sidebar Footer Operations */}
             <div className="flex flex-col gap-4 border-t border-[#14304A]/60 pt-4 shrink-0 mt-4">
+              {persona === 'operator' ? (
+                <>
+                  <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer">
+                    <Plus size={16} /> Register Validator Node
+                  </button>
 
+                  <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
+                    <BookOpen size={16} /> Operator Documentation
+                  </button>
+                </>
+              ) : (
+                <>
               <button 
                 onClick={() => {
                   if (!activeProject) {
@@ -2455,6 +2495,8 @@ const Dashboard: React.FC = () => {
                   <Shield size={14} className={activeMenu === '8' ? 'text-red-500' : 'text-slate-300 group-hover:text-red-400'} /> Admin Panel
                 </button>
               )}
+              </>
+              )}
 
               {/* Wallet Connector Details */}
               <div className="bg-[#0A1C2E] border border-[#14304A] rounded-xl p-3 flex flex-col gap-2">
@@ -2490,8 +2532,10 @@ const Dashboard: React.FC = () => {
         <aside className="w-[260px] bg-[#05060a] border-r border-[#14304A]/60 hidden lg:flex flex-col justify-between p-4 sticky top-16 h-[calc(100vh-64px)] z-30">
           
           <div className="flex flex-col flex-1 min-h-0 gap-6">
-            {/* Active Workspace Block (Fixed at Top) */}
-            <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-4 relative group shrink-0">
+            {persona === 'developer' ? (
+              <>
+                {/* Active Workspace Block (Fixed at Top) */}
+                <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-4 relative group shrink-0">
               <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Sovereign Compute</div>
               
               {isLoadingProjects ? (
@@ -2649,6 +2693,37 @@ const Dashboard: React.FC = () => {
                 </button>
               </nav>
             </div>
+              </>
+            ) : (
+              <>
+                <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-4 relative group shrink-0">
+                  <div className="text-[10px] font-bold uppercase text-slate-300 tracking-wider mb-2">Node Operator Hub</div>
+                  <div className="flex items-center gap-2 mt-2 bg-[#05060a] border border-[#14304A] rounded-xl p-2">
+                    <div className="w-8 h-8 rounded-lg bg-brand-sui/10 flex items-center justify-center">
+                      <Server size={16} className="text-brand-sui" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-white">Sui Validator</span>
+                      <span className="text-[9px] text-brand-sui font-mono">Operational</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto min-h-0 pr-1 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-[#14304A] scrollbar-track-transparent">
+                  <nav className="flex flex-col gap-1.5">
+                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]">
+                      <LayoutDashboard size={16} /> Overview
+                    </button>
+                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                      <Terminal size={16} /> Node Logs
+                    </button>
+                    <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 text-slate-200 hover:text-white hover:bg-white/5 border border-transparent">
+                      <Activity size={16} /> Performance
+                    </button>
+                  </nav>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Sidebar Footer Operations (Fixed at Bottom) */}
@@ -2656,9 +2731,11 @@ const Dashboard: React.FC = () => {
             
 
             
-            {/* Deploy New Function Trigger */}
-            <button 
-              onClick={() => {
+            {persona === 'developer' ? (
+              <>
+                {/* Deploy New Function Trigger */}
+                <button 
+                  onClick={() => {
                 if (!activeProject) {
                   alert("Create or select a workspace first!");
                   return;
@@ -2700,6 +2777,18 @@ const Dashboard: React.FC = () => {
               >
                 <Shield size={14} className={activeMenu === '8' ? 'text-red-500' : 'text-slate-300 group-hover:text-red-400'} /> Admin Panel
               </button>
+            )}
+              </>
+            ) : (
+              <>
+                <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-sui to-[#6FB7B7] text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] hover:shadow-[0_4px_20px_rgba(56,152,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer">
+                  <Plus size={16} /> Register Validator Node
+                </button>
+
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 bg-[#041829]/60 hover:bg-white/5 border border-[#14304A] text-slate-300 hover:text-white">
+                  <BookOpen size={16} /> Operator Documentation
+                </button>
+              </>
             )}
 
             {/* Wallet Connector Details */}
