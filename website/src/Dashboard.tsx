@@ -37,7 +37,8 @@ import {
   BookOpen,
   Wallet,
   Server,
-  ShieldCheck
+  ShieldCheck,
+  Lock
 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
@@ -167,8 +168,37 @@ const SEARCH_ITEMS: SearchItem[] = [
     keywords: ["docs", "documentation", "guide", "api", "reference", "manual", "help"]
   }
 ];
+function formatTimeWithAgo(timestampMs: number | string) {
+  if (!timestampMs) return '--:--';
+  const ts = Number(timestampMs);
+  const date = new Date(ts);
+  
+  const timeString = date.toLocaleTimeString([], { 
+    hour: 'numeric', 
+    minute: '2-digit', 
+    hour12: true 
+  });
+  
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  
+  let agoString = '';
+  if (mins < 1) agoString = 'just now';
+  else if (mins < 60) agoString = `${mins} min${mins === 1 ? '' : 's'} ago`;
+  else {
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) agoString = `${hours} hr${hours === 1 ? '' : 's'} ago`;
+    else {
+      const days = Math.floor(hours / 24);
+      agoString = `${days} day${days === 1 ? '' : 's'} ago`;
+    }
+  }
+  
+  return `${timeString} (${agoString})`;
+}
 
-const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any, showToast: (type: 'success' | 'error' | 'info' | 'warning', title: string, message: string, hash?: string) => void, activeMenu?: string }) => {
+
+const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: { account: any, showToast: (type: 'success' | 'error' | 'info' | 'warning', title: string, message: string, hash?: string) => void, activeMenu?: string, setActiveMenu?: (menu: string) => void }) => {
   const [isStaked, setIsStaked] = React.useState(false);
   const [runnerAddress, setRunnerAddress] = React.useState("");
   const [isLinked, setIsLinked] = React.useState(false);
@@ -216,6 +246,35 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
     if (!allExecutionEvents?.data || !runnerAddress) return [];
     return allExecutionEvents.data.filter((ev: any) => ev.parsedJson?.runner === runnerAddress);
   }, [allExecutionEvents, runnerAddress]);
+
+  const chartData = React.useMemo(() => {
+    const now = new Date();
+    const intervals: { label: string, startTime: number, endTime: number, count: number }[] = [];
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(now.getTime() - i * 15 * 60 * 1000);
+      intervals.push({
+        label: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        startTime: d.getTime(),
+        endTime: d.getTime() + 15 * 60 * 1000,
+        count: 0
+      });
+    }
+
+    operatorExecutionEvents.forEach((ev: any) => {
+      const ts = Number(ev.timestampMs);
+      const interval = intervals.find(i => ts >= i.startTime && ts < i.endTime);
+      if (interval) {
+        interval.count += 1;
+      }
+    });
+
+    const maxCount = Math.max(...intervals.map(i => i.count), 1);
+
+    return intervals.map(i => ({
+      ...i,
+      heightPercentage: Math.max(8, (i.count / maxCount) * 100)
+    }));
+  }, [operatorExecutionEvents]);
 
   const workloadsProcessed = operatorExecutionEvents.length;
   // 85% of base compute fee (0.007 * 0.85 = 0.00595 SUI per workload roughly)
@@ -351,12 +410,60 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
           {/* Header */}
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-3xl font-bold text-white font-outfit">Node Operator Workspace</h2>
-            <button className="bg-transparent border border-[#212E40] hover:bg-[#212E40]/50 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
-              <Download size={14} /> Export Data
-            </button>
           </div>
 
-          {/* Top Metric Cards */}
+          {!isStaked ? (
+            <div className="bg-[#111722] border border-[#212E40] rounded-2xl p-10 md:p-16 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden mt-4">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-brand-sui/10 blur-[80px] rounded-full"></div>
+               <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-cyan/10 blur-[80px] rounded-full"></div>
+               
+               <div className="w-20 h-20 bg-[#0A1C2E] border-2 border-brand-sui/30 rounded-2xl flex items-center justify-center mb-6 relative z-10 shadow-[0_0_30px_rgba(56,152,255,0.2)]">
+                  <Cpu size={40} className="text-brand-sui" />
+               </div>
+               
+               <h3 className="text-3xl md:text-4xl font-bold text-white font-outfit mb-4 relative z-10">Become a Network Operator</h3>
+               <p className="text-slate-400 max-w-2xl text-sm md:text-base leading-relaxed mb-8 relative z-10">
+                 Join the decentralized compute network. By staking SUI and running a local node, you provide the execution layer for serverless functions and earn yield directly from protocol fees.
+               </p>
+               
+               <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md relative z-10">
+                 <button 
+                    onClick={handleStakeSui}
+                    disabled={isStaking}
+                    className="flex-1 bg-brand-sui hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(56,152,255,0.4)] hover:shadow-[0_0_25px_rgba(56,152,255,0.6)] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                 >
+                   {isStaking ? <Activity className="animate-spin" size={18} /> : <Wallet size={18} />} 
+                   {isStaking ? "Staking 0.5 SUI..." : "Stake SUI to Start"}
+                 </button>
+                 <button 
+                    onClick={() => setActiveMenu && setActiveMenu('6')}
+                    className="flex-1 bg-transparent border border-[#304B76] hover:border-brand-sui text-slate-300 hover:text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+                 >
+                   <BookOpen size={18} /> Read the Docs
+                 </button>
+               </div>
+               
+               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16 w-full relative z-10 text-left">
+                 <div className="bg-[#05060a]/50 border border-[#212E40] p-5 rounded-xl">
+                   <Lock size={20} className="text-brand-sui mb-3" />
+                   <h5 className="text-white font-bold text-sm mb-2">Permissionless</h5>
+                   <p className="text-slate-500 text-xs">Anyone can join. Just stake SUI and run the lightweight node software.</p>
+                 </div>
+                 <div className="bg-[#05060a]/50 border border-[#212E40] p-5 rounded-xl">
+                   <Sparkles size={20} className="text-brand-cyan mb-3" />
+                   <h5 className="text-white font-bold text-sm mb-2">Earn Yield</h5>
+                   <p className="text-slate-500 text-xs">Receive 85% of the gas fees for every workload your node successfully executes.</p>
+                 </div>
+                 <div className="bg-[#05060a]/50 border border-[#212E40] p-5 rounded-xl">
+                   <Server size={20} className="text-[#6FB7B7] mb-3" />
+                   <h5 className="text-white font-bold text-sm mb-2">V8 Sandboxed</h5>
+                   <p className="text-slate-500 text-xs">Secure isolated environment. Code execution cannot access your host machine.</p>
+                 </div>
+               </div>
+            </div>
+          ) : (
+            <>
+              {/* Top Metric Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
             {/* Card 1: Network APY */}
             <div className="bg-[#111722] border border-[#212E40] rounded-xl p-5 shadow-lg relative">
@@ -457,50 +564,28 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                 </div>
               </div>
               
-              <div className="flex-1 flex items-end justify-between px-4 relative z-10">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">15:33</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">15:48</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">16:03</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">16:18</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">16:33</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">16:48</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">17:03</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  <span className="text-[10px] text-slate-400 font-mono">17:18</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  {isStaked ? (
-                    <div className="w-10 flex flex-col justify-end h-32 gap-[1px]">
-                      <div className="w-full bg-[#1A3150] h-1/2 border border-[#304B76] rounded-t-sm"></div>
-                      <div className="w-full bg-[#142642] h-1/2 border border-[#304B76]"></div>
-                    </div>
-                  ) : (
-                     <div className="w-10 h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
-                  )}
-                  <span className="text-[10px] text-slate-400 font-mono">17:33</span>
-                </div>
+              <div className="flex-1 flex items-end justify-between px-4 relative z-10 pt-10">
+                {chartData.map((data, idx) => (
+                  <div key={idx} className="flex flex-col items-center gap-2 h-full justify-end w-10 relative group">
+                    {data.count > 0 && (
+                      <div className="absolute -top-8 bg-[#142642] border border-[#304B76] px-2 py-1 rounded text-[10px] text-white font-mono opacity-0 group-hover:opacity-100 transition-opacity z-20 whitespace-nowrap">
+                        {data.count} Executions
+                      </div>
+                    )}
+                    {data.count > 0 ? (
+                      <div 
+                        className="w-full flex flex-col justify-end gap-[1px]" 
+                        style={{ height: `${data.heightPercentage}%` }}
+                      >
+                        <div className="w-full bg-[#1A3150] h-1/2 border border-[#304B76] rounded-t-sm transition-all duration-500"></div>
+                        <div className="w-full bg-[#142642] h-1/2 border border-[#304B76] transition-all duration-500"></div>
+                      </div>
+                    ) : (
+                      <div className="w-full h-1 bg-brand-sui shadow-[0_0_12px_rgba(56,152,255,0.8)] rounded-t-sm"></div>
+                    )}
+                    <span className="text-[10px] text-slate-400 font-mono mt-1">{data.label}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -511,9 +596,9 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                 <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[9px] font-bold">5 ACTIVE</span>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-4 max-h-[300px] flex flex-col gap-3 custom-scrollbar">
                 {operatorExecutionEvents.slice(0, 5).map((ev: any, idx: number) => {
-                  const timestamp = ev.timestampMs ? new Date(Number(ev.timestampMs)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--';
+                  const timestamp = formatTimeWithAgo(ev.timestampMs);
                   return (
                     <div key={idx} className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
                       <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
@@ -544,7 +629,6 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
           <div className="w-full bg-[#111722] border border-[#212E40] rounded-xl shadow-lg">
             <div className="p-5 flex justify-between items-center border-b border-[#212E40]">
               <h4 className="text-slate-300 text-xs font-bold uppercase tracking-wider">Recent Validated Workloads</h4>
-              <button className="text-xs text-brand-sui font-bold hover:text-brand-cyan transition-colors">View All Logs</button>
             </div>
             
             <div className="w-full overflow-x-auto">
@@ -581,47 +665,12 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
               </table>
             </div>
           </div>
+            </>
+          )}
 
         </div>
       )}
       
-      {/* Operator-2: Node Logs */}
-      {activeMenu === 'operator-2' && (
-        <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 h-[calc(100vh-140px)] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-          <h3 className="text-white font-bold font-outfit text-lg mb-4 flex items-center gap-2 shrink-0">
-            <Terminal size={18} className="text-brand-sui animate-pulse" /> Live Workload Feed
-          </h3>
-          <div className="bg-[#05060a] border border-[#141624] rounded-xl p-6 md:p-8 text-left text-slate-300 text-sm font-mono flex-1 overflow-y-auto relative shadow-inner">
-            <div className="absolute top-4 right-4 flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-              <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-            </div>
-            
-            <div className="mt-4 flex flex-col gap-3">
-              <div className="flex gap-4">
-                <span className="text-slate-600">[{new Date().toLocaleTimeString()}]</span>
-                <span className="text-emerald-400">INFO</span>
-                <span>Node initialized. Connected to Sui Network.</span>
-              </div>
-              <div className="flex gap-4">
-                <span className="text-slate-600">[{new Date().toLocaleTimeString()}]</span>
-                <span className="text-brand-sui">SYNC</span>
-                <span>{isStaked ? (isLinked ? "Node linked and active! Listening for workloads..." : "Awaiting runner address linkage...") : "Awaiting node registration..."}</span>
-              </div>
-              {isLinked && (
-                <>
-                  <div className="flex gap-4 opacity-50 mt-4">
-                    <span className="text-slate-600">[{new Date().toLocaleTimeString()}]</span>
-                    <span className="text-slate-400">WAIT</span>
-                    <span className="animate-pulse">Polling mempool for assigned tasks...</span>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Operator-3: Performance */}
       {activeMenu === 'operator-3' && (
@@ -2138,7 +2187,7 @@ const Dashboard: React.FC = () => {
     // Scan recent triggers
     projectInvocations.slice(-2).forEach((trig, idx) => {
       const funcName = (trig.parsedJson as any).function_name;
-      const timeString = new Date(Number(trig.timestampMs)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const timeString = formatTimeWithAgo(trig.timestampMs);
       alertsList.push({
         id: `trig-${idx}`,
         title: `Keeper Execution Dispatched`,
@@ -2152,7 +2201,7 @@ const Dashboard: React.FC = () => {
     projectCompletions.slice(-3).forEach((comp, idx) => {
       const funcName = (comp.parsedJson as any).function_name;
       const resultStr = (comp.parsedJson as any).result_data;
-      const timeString = new Date(Number(comp.timestampMs)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const timeString = formatTimeWithAgo(comp.timestampMs);
       
       let isError = false;
       let displayResult = resultStr;
@@ -2665,9 +2714,7 @@ const Dashboard: React.FC = () => {
                     <button onClick={() => setActiveMenu('operator-1')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-1' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <LayoutDashboard size={16} /> Overview
                     </button>
-                    <button onClick={() => setActiveMenu('operator-2')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-2' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
-                      <Terminal size={16} /> Node Logs
-                    </button>
+
 
                     <button onClick={() => setActiveMenu('operator-4')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-4' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Wallet size={16} /> Runner Vault
@@ -3031,9 +3078,7 @@ const Dashboard: React.FC = () => {
                     <button onClick={() => setActiveMenu('operator-1')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-1' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <LayoutDashboard size={16} /> Overview
                     </button>
-                    <button onClick={() => setActiveMenu('operator-2')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-2' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
-                      <Terminal size={16} /> Node Logs
-                    </button>
+
 
                     <button onClick={() => setActiveMenu('operator-4')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${activeMenu === 'operator-4' ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'}`}>
                       <Wallet size={16} /> Runner Vault
@@ -3155,7 +3200,7 @@ const Dashboard: React.FC = () => {
           </div>
           
           {persona === 'operator' ? (
-            <OperatorDashboardUI account={account} showToast={showToast} activeMenu={activeMenu} />
+            <OperatorDashboardUI account={account} showToast={showToast} activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
           ) : (
             <>
               {/* Global Unconfigured Runner Alert */}
