@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCurrentAccount, ConnectModal } from '@mysten/dapp-kit';
-import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users, Loader2, Wallet, Layers, ShieldCheck } from 'lucide-react';
+import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users, Loader2, Wallet, Layers, ShieldCheck, Hexagon } from 'lucide-react';
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 import { DocsView } from './components/DocsView';
@@ -784,47 +784,84 @@ const App: React.FC = () => {
                   transition={{ duration: 0.6 }}
                   className="mb-32 relative"
                 >
-                  <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/30 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.1)]">
-                      <Wallet size={10} /> Economics
-                    </div>
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 font-outfit">
+                  <div className="flex flex-col items-center text-center mb-16 gap-4">
+                    <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                      ECONOMICS
+                    </span>
+                    <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight font-outfit leading-tight">
                       Decentralized Compute Billing
                     </h2>
-                    <p className="text-slate-200 text-sm max-w-2xl mx-auto leading-relaxed font-medium">
+                    <p className="text-slate-400 text-[13px] max-w-xl mx-auto leading-relaxed">
                       Sponsor your agentic workflows with on-chain project vaults. Let your users interact with your dApps gas-free while you manage compute economics centrally.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    <div className="bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-8 hover:border-brand-sui/30 transition-all duration-300">
-                      <div className="w-12 h-12 rounded-2xl bg-brand-sui-glow border border-brand-sui/20 flex items-center justify-center text-brand-sui mb-6">
-                        <Wallet size={24} />
+                    {/* Card 1 */}
+                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full">
+                      <div>
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
+                            <Wallet size={16} />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2">
+                            TOTAL VAULTS
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-white font-outfit mb-3">Project Vaults</h3>
+                        <p className="text-slate-500 text-xs leading-relaxed font-normal mb-8">
+                          Each workspace gets its own smart contract vault. Deposit SUI upfront to sponsor compute for all your registered functions.
+                        </p>
                       </div>
-                      <h3 className="text-xl font-bold text-white font-outfit mb-3">Project Vaults</h3>
-                      <p className="text-slate-300 text-sm leading-relaxed font-medium">
-                        Each workspace gets its own smart contract vault. Deposit SUI upfront to sponsor compute for all your registered functions.
-                      </p>
+                      <div className="flex justify-between items-center pt-4 border-t border-[#14304A] mt-auto">
+                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-slate-500">ON-CHAIN SMART</span>
+                        <Hexagon size={12} className="text-slate-600" />
+                      </div>
                     </div>
 
-                    <div className="bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-8 hover:border-brand-sui/30 transition-all duration-300">
-                      <div className="w-12 h-12 rounded-2xl bg-brand-sui-glow border border-brand-sui/20 flex items-center justify-center text-brand-sui mb-6">
-                        <Zap size={24} />
+                    {/* Card 2 */}
+                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full">
+                      <div>
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
+                            <Zap size={16} />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2">
+                            POOL BALANCE
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-white font-outfit mb-3">Pay-Per-Execution</h3>
+                        <p className="text-slate-500 text-xs leading-relaxed font-normal mb-8">
+                          Flat fee of 0.007 SUI per successful execution. You only pay for what you use, and funds are automatically deducted from your vault.
+                        </p>
                       </div>
-                      <h3 className="text-xl font-bold text-white font-outfit mb-3">Pay-Per-Execution</h3>
-                      <p className="text-slate-300 text-sm leading-relaxed font-medium">
-                        Flat fee of 0.007 SUI per successful execution. You only pay for what you use, and funds are automatically deducted from your vault.
-                      </p>
+                      <div className="flex justify-between items-center pt-4 border-t border-[#14304A] mt-auto">
+                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-slate-500">PROTOCOL TREASURY</span>
+                        <Hexagon size={12} className="text-slate-600" />
+                      </div>
                     </div>
 
-                    <div className="bg-[#041829]/70 backdrop-blur-md border border-[#14304A] rounded-2xl p-8 hover:border-brand-sui/30 transition-all duration-300">
-                      <div className="w-12 h-12 rounded-2xl bg-brand-sui-glow border border-brand-sui/20 flex items-center justify-center text-brand-sui mb-6">
-                        <Server size={24} />
+                    {/* Card 3 */}
+                    <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 hover:border-[#3898FF]/30 transition-all duration-300 flex flex-col justify-between h-full">
+                      <div>
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-[#00FFAA]">
+                            <Server size={16} />
+                          </div>
+                          <span className="text-[8px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-2">
+                            NODE OPERATORS
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-white font-outfit mb-3">Runner Incentives</h3>
+                        <p className="text-slate-500 text-xs leading-relaxed font-normal mb-8">
+                          85% of your compute fee goes directly to the decentralized node runners executing your code. Run your own node to save costs!
+                        </p>
                       </div>
-                      <h3 className="text-xl font-bold text-white font-outfit mb-3">Runner Incentives</h3>
-                      <p className="text-slate-300 text-sm leading-relaxed font-medium">
-                        85% of your compute fee goes directly to the decentralized node runners executing your code. Run your own node to save costs!
-                      </p>
+                      <div className="flex justify-between items-center pt-4 border-t border-[#14304A] mt-auto">
+                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-slate-500">CAPITAL EFFICIENT</span>
+                        <Hexagon size={12} className="text-slate-600" />
+                      </div>
                     </div>
                   </div>
                 </motion.section>
