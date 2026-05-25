@@ -392,10 +392,10 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                 <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Total Yield Earned</h4>
                 <Sparkles size={14} className="text-emerald-400" />
               </div>
-              <div className="text-4xl font-bold text-white font-outfit mb-2">0.00</div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">{yieldEarned}</div>
               <div className="text-emerald-400 text-xs font-mono mb-6 flex items-center gap-1"><Check size={12}/> Generated from fees</div>
               <div className="flex justify-between text-xs font-mono">
-                <span className="text-slate-400">Total: <span className="text-white">0.00 SUI</span></span>
+                <span className="text-slate-400">Total: <span className="text-white">{yieldEarned} SUI</span></span>
               </div>
             </div>
 
@@ -405,7 +405,7 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                 <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Workloads Processed</h4>
                 <Zap size={14} className="text-[#6FB7B7]" />
               </div>
-              <div className="text-4xl font-bold text-white font-outfit mb-2">{isStaked ? '3' : '0'}</div>
+              <div className="text-4xl font-bold text-white font-outfit mb-2">{workloadsProcessed}</div>
               <div className="text-[#6FB7B7] text-xs font-mono mb-6 flex items-center gap-1">▲ Workloads Executed since stake</div>
               <div className="h-1.5 w-full bg-[#1A3150] rounded-full overflow-hidden relative">
                 <div className="absolute top-0 left-0 h-full w-4/5 bg-[#6FB7B7] shadow-[0_0_10px_rgba(111,183,183,0.8)]"></div>
@@ -511,44 +511,30 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                 <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[9px] font-bold">5 ACTIVE</span>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-                <div className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
-                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-                      <Info size={14} className="text-brand-sui" /> Container Executed
+              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar">
+                {operatorExecutionEvents.slice(0, 5).map((ev: any, idx: number) => {
+                  const timestamp = ev.timestampMs ? new Date(Number(ev.timestampMs)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--';
+                  return (
+                    <div key={idx} className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
+                      <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+                          <Info size={14} className="text-brand-sui" /> Container Executed
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-500">{timestamp}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+                        Processed decentralized workload. State transition verified and proof published for Function <span className="text-brand-sui">{ev.parsedJson?.function_name}</span>.
+                      </p>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-500">17:33</span>
+                  );
+                })}
+                {operatorExecutionEvents.length === 0 && (
+                  <div className="text-center py-8">
+                    <Terminal size={24} className="text-[#2A3B52] mx-auto mb-2" />
+                    <p className="text-xs text-slate-500">No recent activity on-chain.</p>
                   </div>
-                  <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-                    Processed decentralized workload. State transition verified and proof published.
-                  </p>
-                  <button className="text-[9px] font-bold text-slate-300 uppercase tracking-wider hover:text-white">Acknowledge</button>
-                </div>
-
-                <div className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
-                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-                      <Info size={14} className="text-brand-sui" /> Container Executed
-                    </div>
-                    <span className="text-[10px] font-mono text-slate-500">17:30</span>
-                  </div>
-                  <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-                    Processed decentralized workload. State transition verified and proof published.
-                  </p>
-                  <button className="text-[9px] font-bold text-slate-300 uppercase tracking-wider hover:text-white">Acknowledge</button>
-                </div>
-
-                <div className="bg-[#141A26] border border-[#2A3B52] rounded-lg p-4 relative group hover:border-brand-sui/50 transition-colors">
-                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-brand-sui rounded-l-lg opacity-50 group-hover:opacity-100"></div>
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-                      <Info size={14} className="text-brand-sui" /> Container Executed
-                    </div>
-                    <span className="text-[10px] font-mono text-slate-500">17:24</span>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -568,30 +554,29 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Workload ID</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Gas Consumed</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Success Rate</th>
-                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Latency</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Network</th>
                     <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4">Status</th>
-                    <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-6 py-4 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-[#212E40]/50 hover:bg-[#141A26] transition-colors group">
-                    <td className="px-6 py-4 text-sm font-mono text-white">wrk_9f2a...</td>
-                    <td className="px-6 py-4 text-sm font-mono text-slate-400">{isStaked ? '3' : '0'}</td>
-                    <td className="px-6 py-4 text-sm font-mono text-emerald-400">100.0%</td>
-                    <td className="px-6 py-4 text-sm font-mono text-slate-400">5010 ms</td>
-                    <td className="px-6 py-4 text-sm font-mono text-slate-500">Sui Mainnet</td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max">
-                        <CheckCircle size={10} /> VERIFIED
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="bg-transparent border border-[#304B76] text-[#304B76] group-hover:text-brand-sui group-hover:border-brand-sui px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-colors">
-                        Edit Trigger
-                      </button>
-                    </td>
-                  </tr>
+                  {operatorExecutionEvents.slice(0, 3).map((ev: any, idx: number) => (
+                    <tr key={idx} className="border-b border-[#212E40]/50 hover:bg-[#141A26] transition-colors group">
+                      <td className="px-6 py-4 text-sm font-mono text-white">{ev.parsedJson?.function_name || 'unknown'}</td>
+                      <td className="px-6 py-4 text-sm font-mono text-slate-400">0.007 SUI</td>
+                      <td className="px-6 py-4 text-sm font-mono text-emerald-400">100.0%</td>
+                      <td className="px-6 py-4 text-sm font-mono text-slate-500">Sui Testnet</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max">
+                          <CheckCircle size={10} /> VERIFIED
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {operatorExecutionEvents.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-8 text-center text-slate-500 text-xs">No recent workloads</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -777,6 +762,12 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu }: { account: any,
         </div>
       )}
 
+      {/* Docs Portal rendering for Operator Dashboard */}
+      {activeMenu === '6' && (
+        <div id="docs-portal" className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 md:p-8 animate-in fade-in duration-300 flex flex-col gap-6">
+          <DocsView isDashboardView={true} />
+        </div>
+      )}
     </div>
   );
 };
