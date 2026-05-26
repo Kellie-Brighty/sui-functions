@@ -1,42 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ConnectButton } from '@mysten/dapp-kit';
 import { Menu, X } from 'lucide-react';
 import { Button } from './Button';
 
 interface HeaderProps {
-  onDemoClick?: () => void;
-  onBenefitsClick?: () => void;
+  onSectionClick?: (sectionId: string) => void;
   onConnectClick?: () => void;
   viewMode?: 'landing' | 'docs';
   onDocsClick?: () => void;
   onHomeClick?: () => void;
 }
 
+const navLinks = [
+  { id: 'features', label: 'Features' },
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'nodes', label: 'Nodes' },
+  { id: 'evolution', label: 'Evolution' },
+];
+
 export const Header: React.FC<HeaderProps> = ({ 
-  onDemoClick, 
-  onBenefitsClick, 
+  onSectionClick,
   onConnectClick,
   viewMode = 'landing',
   onDocsClick,
   onHomeClick
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('');
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, target: 'home' | 'docs', callback?: () => void) => {
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+      
+      if (viewMode === 'docs') {
+        setActiveSection('docs');
+        return;
+      }
+
+      const sections = ['features', 'architecture', 'nodes', 'evolution'];
+      const scrollPos = window.scrollY + 140; // Offset for header + safety
+      
+      let currentActive = '';
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            currentActive = sectionId;
+            break;
+          }
+        }
+      }
+      
+      if (window.scrollY < 200) {
+        currentActive = '';
+      }
+      setActiveSection(currentActive);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [viewMode]);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, target: 'home' | 'docs') => {
     e.preventDefault();
     if (target === 'home') {
       onHomeClick?.();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (target === 'docs') {
       onDocsClick?.();
-    }
-    if (callback) {
-      // Give a tiny timeout if switching viewMode to allow target section to mount before scrolling
-      setTimeout(() => callback(), 50);
     }
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-brand-dark/80 backdrop-blur-xl border-b border-brand-card-border/50 px-6 lg:px-16 py-4">
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
+      scrolled 
+        ? 'bg-brand-dark/95 backdrop-blur-xl border-brand-card-border/80 shadow-[0_4px_30px_rgba(0,0,0,0.5)] py-3' 
+        : 'bg-brand-dark/40 backdrop-blur-md border-transparent py-5'
+    } px-6 lg:px-16`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo Section */}
         <a 
@@ -56,12 +100,37 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </a>
 
+        {/* Navigation Links (Desktop) */}
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                onSectionClick?.(link.id);
+              }}
+              className={`text-xs font-mono uppercase tracking-wider font-bold transition-all duration-200 ${
+                activeSection === link.id
+                  ? 'text-[#00FFAA] scale-105 drop-shadow-[0_0_8px_rgba(0,255,170,0.5)]'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+
         {/* Action Buttons (Desktop) */}
         <div className="hidden md:flex items-center gap-4">
           <a 
             href="#docs" 
             onClick={(e) => handleNavClick(e, 'docs')}
-            className={`text-sm font-bold transition-all duration-200 px-4 py-2 rounded-lg ${viewMode === 'docs' ? 'text-brand-sui bg-brand-sui/10 border border-brand-sui/20' : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'}`}
+            className={`text-sm font-bold transition-all duration-200 px-4 py-2 rounded-lg ${
+              viewMode === 'docs' 
+                ? 'text-[#00FFAA] bg-[#0B2027] border border-[#14304A]' 
+                : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
+            }`}
           >
             Docs
           </a>
@@ -72,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({
               size="md"
               className="!px-5 !py-2.5 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(56,152,255,0.3)] hover:shadow-[0_0_30px_rgba(56,152,255,0.5)] transition-shadow"
             >
-              <span>Deploy Now</span>
+              <span>Get Started</span>
             </Button>
           </div>
         </div>
@@ -88,23 +157,39 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-[73px] left-0 w-full bg-brand-dark/95 border-b border-brand-card-border/80 px-6 py-6 flex flex-col gap-5 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
+        <div className="md:hidden absolute top-[100%] left-0 w-full bg-brand-dark/95 border-b border-brand-card-border/80 px-6 py-6 flex flex-col gap-4 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                onSectionClick?.(link.id);
+              }}
+              className={`text-sm font-semibold py-1 transition-colors ${
+                activeSection === link.id ? 'text-[#00FFAA]' : 'text-slate-200 hover:text-white'
+              }`}
+            >
+              {link.label}
+            </a>
+          ))}
           <a 
             href="#docs" 
             onClick={(e) => { setMobileMenuOpen(false); handleNavClick(e, 'docs'); }}
-            className={`text-lg font-semibold py-1 ${viewMode === 'docs' ? 'text-brand-sui' : 'text-slate-200 hover:text-brand-sui'}`}
+            className={`text-sm font-semibold py-1 ${viewMode === 'docs' ? 'text-[#00FFAA]' : 'text-slate-200 hover:text-brand-sui'}`}
           >
             Docs
           </a>
           <hr className="border-brand-card-border/60 my-1" />
-          <div className="pt-2">
+          <div className="pt-1">
             <Button 
               onClick={() => { setMobileMenuOpen(false); onConnectClick?.(); }}
               variant="primary" 
               size="md"
               className="!w-full !justify-center !px-5 !py-3 flex items-center gap-2 shadow-[0_0_20px_rgba(56,152,255,0.2)]"
             >
-              <span>Deploy Now</span>
+              <span>Get Started</span>
             </Button>
           </div>
         </div>

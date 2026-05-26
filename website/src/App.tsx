@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCurrentAccount, ConnectModal } from '@mysten/dapp-kit';
-import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users, Loader2, Wallet, Layers, ShieldCheck, Hexagon } from 'lucide-react';
+import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle, ArrowRight, Terminal, Users, Loader2, Wallet, Layers, ShieldCheck, Hexagon, ArrowUp } from 'lucide-react';
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 import { DocsView } from './components/DocsView';
@@ -70,17 +70,40 @@ const App: React.FC = () => {
     setLogIndex(0);
   };
 
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // If wallet is connected, show the complete SUI Dashboard
   if (account) {
     return <Dashboard />;
   }
 
-  const scrollToDemo = () => {
-    document.getElementById('docs')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToBenefits = () => {
-    document.getElementById('network')?.scrollIntoView({ behavior: 'smooth' });
+  const handleSectionScroll = (sectionId: string) => {
+    if (viewMode !== 'landing') {
+      setViewMode('landing');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
   };
 
   return (
@@ -110,8 +133,7 @@ const App: React.FC = () => {
       <div className="relative z-10">
         {/* Navbar Header */}
         <Header
-          onDemoClick={scrollToDemo}
-          onBenefitsClick={scrollToBenefits}
+          onSectionClick={handleSectionScroll}
           onConnectClick={() => setShowConnectModal(true)}
           viewMode={viewMode}
           onDocsClick={() => setViewMode('docs')}
@@ -173,7 +195,7 @@ const App: React.FC = () => {
                         size="md"
                         className="w-full sm:w-auto"
                       >
-                        Start Deploying
+                        Deploy your code
                       </Button>
                     </motion.div>
                   </div>
@@ -320,7 +342,7 @@ const App: React.FC = () => {
                 </motion.section>
 
                 {/* FEATURES SECTION (SPLIT-GRID INTERACTIVE ROW LAYOUT) */}
-                <section id="network" className="mb-32">
+                <section id="features" className="scroll-mt-24 mb-32">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
 
                     {/* Left Column: Context & Sticky Title */}
@@ -407,12 +429,12 @@ const App: React.FC = () => {
 
                 {/* THREE PILLARS ARCHITECTURE SECTION */}
                 <motion.section
-                  id="docs"
+                  id="architecture"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.6 }}
-                  className="flex flex-col mb-32 py-12"
+                  className="scroll-mt-24 flex flex-col mb-32 py-12"
                 >
                   {/* Section Header */}
                   <div className="flex flex-col items-center text-center mb-16 gap-4">
@@ -780,7 +802,7 @@ const App: React.FC = () => {
                 </motion.section>
 
                 {/* DEPIN COMPUTE MINER (COMING SOON) */}
-                <section className="mb-32 relative">
+                <section id="nodes" className="scroll-mt-24 mb-32 relative">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     {/* Left: Content */}
                     <div className="lg:col-span-6 text-left relative z-10">
@@ -1193,7 +1215,7 @@ const App: React.FC = () => {
 
                 {/* ROADMAP SECTION */}
                 {false && (
-                <section id="roadmap" className="mb-32 relative">
+                <section id="roadmap" className="scroll-mt-24 mb-32 relative">
                   <div className="text-center mb-16">
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-sui/30 bg-brand-sui-glow text-brand-sui text-[10px] font-extrabold uppercase tracking-wider mb-6 shadow-[0_0_15px_rgba(56,152,255,0.1)]">
                       <Clock size={10} /> Development Roadmap
@@ -1483,11 +1505,12 @@ const App: React.FC = () => {
 
                 {/* EVOLUTION OF OFF-CHAIN COMPUTE */}
                 <motion.section
+                  id="evolution"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.6 }}
-                  className="mb-32 relative"
+                  className="scroll-mt-24 mb-32 relative"
                 >
                   <div className="flex flex-col items-center text-center mb-16 gap-4">
                     <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2">
@@ -1721,6 +1744,23 @@ const App: React.FC = () => {
         open={showConnectModal}
         onOpenChange={setShowConnectModal}
       />
+
+      {/* Back to top FAB */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 20 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 z-40 w-12 h-12 rounded-full bg-[#050608]/90 border border-[#00FFAA]/30 flex items-center justify-center text-[#00FFAA] backdrop-blur-md shadow-[0_0_20px_rgba(0,255,170,0.15)] hover:shadow-[0_0_30px_rgba(0,255,170,0.4)] hover:bg-[#00FFAA] hover:text-black transition-all duration-300 group"
+            whileHover={{ y: -4, scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ArrowUp size={20} className="group-hover:animate-bounce" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
