@@ -1481,6 +1481,196 @@ const App: React.FC = () => {
                 </section>
                 )}
 
+                {/* EVOLUTION OF OFF-CHAIN COMPUTE */}
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6 }}
+                  className="mb-32 relative"
+                >
+                  <div className="flex flex-col items-center text-center mb-16 gap-4">
+                    <span className="px-3 py-1.5 rounded-full bg-[#0B2027] border border-[#14304A] text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] inline-flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-[#00FFAA] rounded-full"></span>
+                      THE EVOLUTION
+                    </span>
+                    <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight font-outfit leading-tight">
+                      Beyond Verification.<br />
+                      <span className="text-[#00FFAA]">Into a Compute Economy.</span>
+                    </h2>
+                    <p className="text-slate-400 text-[13px] max-w-2xl mx-auto leading-relaxed">
+                      Nautilus pioneered verifiable off-chain compute with TEEs. Sui-Functions extends that vision into a fully decentralized, incentivized execution network — where anyone can participate, earn, and build.
+                    </p>
+                  </div>
+
+                  {/* Evolution Timeline */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-16">
+                    {/* Left: Nautilus (Foundation) */}
+                    <div className="lg:col-span-5 text-left">
+                      <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 md:p-8 h-full relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-slate-600 to-slate-700"></div>
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#14304A] flex items-center justify-center text-slate-400">
+                            <Shield size={16} />
+                          </div>
+                          <div>
+                            <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-slate-500 block">The Foundation</span>
+                            <h4 className="text-lg font-bold text-slate-300 font-outfit">Nautilus TEEs</h4>
+                          </div>
+                        </div>
+                        <p className="text-slate-500 text-xs leading-relaxed mb-6 font-normal">
+                          Groundbreaking framework that introduced cryptographic attestations for off-chain compute on Sui — proving code ran correctly inside secure hardware enclaves.
+                        </p>
+                        <div className="flex flex-col gap-3 font-mono text-[10px]">
+                          <div className="flex items-center gap-3 text-slate-400">
+                            <CheckCircle2 size={12} className="text-slate-500 flex-shrink-0" />
+                            <span>TEE-based verification (AWS Nitro / Intel SGX)</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-400">
+                            <CheckCircle2 size={12} className="text-slate-500 flex-shrink-0" />
+                            <span>Cryptographic attestation proofs</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-400">
+                            <CheckCircle2 size={12} className="text-slate-500 flex-shrink-0" />
+                            <span>Move smart contract verification</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Center: Arrow */}
+                    <div className="lg:col-span-2 flex items-center justify-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="hidden lg:block w-px h-12 bg-gradient-to-b from-transparent to-[#14304A]"></div>
+                        <div className="w-14 h-14 rounded-full bg-[#090C15] border-2 border-[#00FFAA]/30 flex items-center justify-center shadow-[0_0_30px_rgba(0,255,170,0.1)]">
+                          <ArrowRight size={20} className="text-[#00FFAA]" />
+                        </div>
+                        <span className="text-[9px] font-mono font-bold text-[#00FFAA] uppercase tracking-widest">Evolves Into</span>
+                        <div className="hidden lg:block w-px h-12 bg-gradient-to-b from-[#14304A] to-transparent"></div>
+                      </div>
+                    </div>
+
+                    {/* Right: Sui-Functions (Evolution) */}
+                    <div className="lg:col-span-5 text-left">
+                      <div className="bg-[#050608] border border-[#00FFAA]/20 rounded-2xl p-6 md:p-8 h-full relative overflow-hidden shadow-[0_0_40px_rgba(0,255,170,0.03)]">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00FFAA] to-[#3898FF]"></div>
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 rounded-xl bg-[#090C15] border border-[#00FFAA]/20 flex items-center justify-center text-[#00FFAA]">
+                            <Zap size={16} />
+                          </div>
+                          <div>
+                            <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-[#00FFAA] block">The Evolution</span>
+                            <h4 className="text-lg font-bold text-white font-outfit">Sui-Functions</h4>
+                          </div>
+                        </div>
+                        <p className="text-slate-400 text-xs leading-relaxed mb-6 font-normal">
+                          Takes verified off-chain compute and wraps it in a fully decentralized economic layer — with staking, billing, operator incentives, and a one-command developer experience.
+                        </p>
+                        <div className="flex flex-col gap-3 font-mono text-[10px]">
+                          <div className="flex items-center gap-3 text-slate-300">
+                            <CheckCircle2 size={12} className="text-[#00FFAA] flex-shrink-0" />
+                            <span>Everything in Nautilus, plus...</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-300">
+                            <CheckCircle2 size={12} className="text-[#00FFAA] flex-shrink-0" />
+                            <span>Decentralized node operator marketplace</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-300">
+                            <CheckCircle2 size={12} className="text-[#00FFAA] flex-shrink-0" />
+                            <span>On-chain billing vaults & pay-per-execution</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-300">
+                            <CheckCircle2 size={12} className="text-[#00FFAA] flex-shrink-0" />
+                            <span>Immutable code registry on Walrus</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-300">
+                            <CheckCircle2 size={12} className="text-[#00FFAA] flex-shrink-0" />
+                            <span>One-command node setup (npx)</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Feature Comparison Table */}
+                  <div className="bg-[#050608] border border-[#14304A] rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+                    {/* Table Header */}
+                    <div className="grid grid-cols-3 border-b border-[#14304A]">
+                      <div className="p-4 md:p-6 text-left">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500">Capability</span>
+                      </div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A]">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500">Nautilus</span>
+                      </div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02]">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00FFAA]">Sui-Functions</span>
+                      </div>
+                    </div>
+
+                    {/* Row: Execution Verification */}
+                    <div className="grid grid-cols-3 border-b border-[#14304A]">
+                      <div className="p-4 md:p-6 text-left text-xs text-slate-300 font-medium">Execution Verification</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] text-xs text-slate-400">TEE Attestation</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02] text-xs text-white font-medium">V8 Sandbox + Staking</div>
+                    </div>
+
+                    {/* Row: Node Setup */}
+                    <div className="grid grid-cols-3 border-b border-[#14304A]">
+                      <div className="p-4 md:p-6 text-left text-xs text-slate-300 font-medium">Node Operator Setup</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] text-xs text-slate-400">AWS Nitro + Docker Config</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02] text-xs text-white font-medium">Single CLI Command</div>
+                    </div>
+
+                    {/* Row: Hardware Requirements */}
+                    <div className="grid grid-cols-3 border-b border-[#14304A]">
+                      <div className="p-4 md:p-6 text-left text-xs text-slate-300 font-medium">Hardware Requirements</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] text-xs text-slate-400">Specialized TEE CPU</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02] text-xs text-white font-medium">Any Consumer Hardware</div>
+                    </div>
+
+                    {/* Row: Compute Economy */}
+                    <div className="grid grid-cols-3 border-b border-[#14304A]">
+                      <div className="p-4 md:p-6 text-left text-xs text-slate-300 font-medium">Compute Economy</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A]">
+                        <span className="text-slate-600 text-[10px] font-mono">—</span>
+                      </div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02] text-xs text-[#00FFAA] font-medium">Stake & Earn SUI</div>
+                    </div>
+
+                    {/* Row: On-Chain Billing */}
+                    <div className="grid grid-cols-3 border-b border-[#14304A]">
+                      <div className="p-4 md:p-6 text-left text-xs text-slate-300 font-medium">On-Chain Billing</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A]">
+                        <span className="text-slate-600 text-[10px] font-mono">—</span>
+                      </div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02] text-xs text-[#00FFAA] font-medium">Smart Contract Vaults</div>
+                    </div>
+
+                    {/* Row: Developer Dashboard */}
+                    <div className="grid grid-cols-3 border-b border-[#14304A]">
+                      <div className="p-4 md:p-6 text-left text-xs text-slate-300 font-medium">Developer Dashboard</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A]">
+                        <span className="text-slate-600 text-[10px] font-mono">—</span>
+                      </div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02] text-xs text-[#00FFAA] font-medium">Full Visual Workspace</div>
+                    </div>
+
+                    {/* Row: Code Registry */}
+                    <div className="grid grid-cols-3">
+                      <div className="p-4 md:p-6 text-left text-xs text-slate-300 font-medium">Immutable Code Registry</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] text-xs text-slate-400">Self-Managed</div>
+                      <div className="p-4 md:p-6 text-center border-l border-[#14304A] bg-[#00FFAA]/[0.02] text-xs text-[#00FFAA] font-medium">Walrus Content-Addressed</div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Note */}
+                  <div className="mt-8 text-center">
+                    <p className="text-slate-500 text-[11px] font-mono leading-relaxed max-w-2xl mx-auto">
+                      Nautilus laid the groundwork for trustworthy off-chain compute on Sui. Sui-Functions builds the decentralized economic layer on top — making verifiable compute accessible, incentivized, and permissionless for the entire network.
+                    </p>
+                  </div>
+                </motion.section>
+
                 {/* CALL TO ACTION */}
                 <section className="mb-24">
                   <div className="relative py-24 text-center overflow-hidden">
