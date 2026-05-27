@@ -22,6 +22,7 @@ import { Transaction } from '@mysten/sui/transactions';
 const SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443';
 const PACKAGE_ID = '0x24efc151bdf08afcdbe857e34b5bbc5cebf03feef2b076fa4904af481e2e6bb1';
 const PROJECT_ID = '0xca8b4b24c4e8302c9b08c11e769638664653226d1bde4e75beb595c99e96b182';
+const REGISTRY_ID = '0xeb24efabffbc663e1e59c9e1420a0424a4142a12db78138ce1e05ceb51f83c9f';
 
 interface Product {
   id: string;
@@ -303,7 +304,9 @@ function App() {
         arguments: [
           tx.object(PROJECT_ID),
           tx.pure.string("SUI USD Oracle"),
-          tx.pure.string("{}")
+          tx.pure.string("{}"),
+          tx.object(REGISTRY_ID),
+          tx.object("0x6")
         ]
       });
       
@@ -360,7 +363,9 @@ function App() {
         arguments: [
           tx.object(PROJECT_ID),
           tx.pure.string("Coupon Validator"),
-          tx.pure.string(JSON.stringify({ coupon: couponCode }))
+          tx.pure.string(JSON.stringify({ coupon: couponCode })),
+          tx.object(REGISTRY_ID),
+          tx.object("0x6")
         ]
       });
 
