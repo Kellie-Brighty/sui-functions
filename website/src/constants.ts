@@ -6,4 +6,4 @@ export const PUBLIC_POOL_REGISTRY_ID = '0xeb24efabffbc663e1e59c9e1420a0424a4142a
 // Admin Capability Type
 export const ADMIN_CAP_TYPE = `${PACKAGE_ID}::trigger::AdminCap`;
 
-export const LATEST_RUNNER_BLOB_ID = 'aDZYfyrqm7ewkaqRJ6bkjZEWwxwFEDYj18z2vkYbNM0';
+export const LATEST_RUNNER_BLOB_ID = '6rwRLRsUqCl5W1GoFuPsn1SMbbflIZHFOduSxLMdftc';

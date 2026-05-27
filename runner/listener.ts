@@ -750,20 +750,13 @@ export async function startSuiListener(packageId: string) {
     });
 }
 
-// If this script is run directly
-const isMain = !process.argv[1] || 
-               process.argv[1].endsWith('listener.ts') || 
-               process.argv[1].endsWith('listener.js') || 
-               process.argv[1].includes('engine_') || 
-               process.env.pm_id !== undefined;
-if (isMain) {
-    const packageId = process.env.PACKAGE_ID || FALLBACK_PACKAGE_ID;
-    if (packageId === "0x0") {
-        console.warn("\x1b[33m[Warning] PACKAGE_ID is not set.\x1b[0m");
-    }
-    
-    startSuiListener(packageId);
-    
-    // Also start the dynamic automation engine
-    startDynamicAutomationEngine().catch(e => console.error(`\x1b[31m[Automation Engine Error]\x1b[0m`, e));
+// Start the execution listener and dynamic automation engine
+const packageId = process.env.PACKAGE_ID || FALLBACK_PACKAGE_ID;
+if (packageId === "0x0") {
+    console.warn("\x1b[33m[Warning] PACKAGE_ID is not set.\x1b[0m");
 }
+
+startSuiListener(packageId);
+
+// Also start the dynamic automation engine
+startDynamicAutomationEngine().catch(e => console.error(`\x1b[31m[Automation Engine Error]\x1b[0m`, e));
