@@ -259,6 +259,35 @@ async function triggerFunctionExecution(projectId: string, functionName: string,
     }
 }
 
+async function getPublicPoolActiveNodes(): Promise<string[]> {
+    const registryId = process.env.REGISTRY_ID || FALLBACK_REGISTRY_ID;
+    try {
+        const registryObj = await client.getObject({
+            id: registryId,
+            options: { showContent: true }
+        });
+        const fields = (registryObj.data?.content as any)?.fields;
+        return fields?.active_nodes || [];
+    } catch (e: any) {
+        console.warn(`[Automation Engine] Failed to fetch public pool registry:`, e.message);
+        return [];
+    }
+}
+
+function getDesignatedRunnerForProject(projectId: string, activeNodes: string[]): string | null {
+    if (activeNodes.length === 0) return null;
+    const sortedNodes = [...activeNodes].sort();
+    const timeSlot = Math.floor(Date.now() / (1000 * 60 * 10)); // 10-minute slots
+    const hashInput = `${projectId}-${timeSlot}`;
+    let hash = 0;
+    for (let i = 0; i < hashInput.length; i++) {
+        hash = (hash << 5) - hash + hashInput.charCodeAt(i);
+        hash |= 0;
+    }
+    const index = Math.abs(hash) % sortedNodes.length;
+    return sortedNodes[index];
+}
+
 export async function startDynamicAutomationEngine() {
     const packageId = process.env.PACKAGE_ID || FALLBACK_PACKAGE_ID;
     if (packageId === "0x0") {
@@ -312,14 +341,30 @@ export async function startDynamicAutomationEngine() {
             for (const projectId of activeIds) {
                 // Verify if this runner is authorized for this project
                 let isAuthorized = false;
+                let executionMode = 0;
                 try {
                     isAuthorized = await isRunnerAuthorized(projectId);
+                    const cached = projectRunnerCache.get(projectId);
+                    if (cached) {
+                        executionMode = cached.executionMode;
+                    }
                 } catch (err: any) {
                     // Fail silently or log check warning
                 }
 
                 if (!isAuthorized) {
                     continue;
+                }
+
+                // If it is in Public Compute Pool mode (0), only the designated runner should trigger automated checks
+                if (executionMode === 0) {
+                    const activeNodes = await getPublicPoolActiveNodes();
+                    if (activeNodes.length > 0) {
+                        const designatedRunner = getDesignatedRunnerForProject(projectId, activeNodes);
+                        if (designatedRunner && designatedRunner !== runnerAddress) {
+                            continue;
+                        }
+                    }
                 }
 
                 const functions = await fetchProjectFunctions(projectId);
@@ -420,7 +465,11 @@ export async function startDynamicAutomationEngine() {
                             } else {
                                 const diff = Math.abs(livePrice - lastPrice);
                                 const drift = diff / lastPrice;
-                                console.log(`[Automation Engine] Price check for "${name}" (Project: ${projectId}): Live=$${livePrice.toFixed(4)}, Last=$${lastPrice.toFixed(4)}, Drift=${(drift * 100).toFixed(3)}%`);
+                                
+                                // Only log if the drift is non-trivial (greater than 0.005%)
+                                if (drift > 0.00005) {
+                                    console.log(`[Automation Engine] Price check for "${name}" (Project: ${projectId}): Live=$${livePrice.toFixed(4)}, Last=$${lastPrice.toFixed(4)}, Drift=${(drift * 100).toFixed(3)}%`);
+                                }
 
                                 if (drift >= drift_threshold) {
                                     console.log(`[Automation Engine] Drift threshold exceeded for "${name}" (Project: ${projectId}): ${(drift * 100).toFixed(3)}% >= ${(drift_threshold * 100).toFixed(3)}%`);
