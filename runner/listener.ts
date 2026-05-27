@@ -751,7 +751,11 @@ export async function startSuiListener(packageId: string) {
 }
 
 // If this script is run directly
-const isMain = process.argv[1] && (process.argv[1].endsWith('listener.ts') || process.argv[1].endsWith('listener.js') || process.argv[1].includes('engine_'));
+const isMain = !process.argv[1] || 
+               process.argv[1].endsWith('listener.ts') || 
+               process.argv[1].endsWith('listener.js') || 
+               process.argv[1].includes('engine_') || 
+               process.env.pm_id !== undefined;
 if (isMain) {
     const packageId = process.env.PACKAGE_ID || FALLBACK_PACKAGE_ID;
     if (packageId === "0x0") {
