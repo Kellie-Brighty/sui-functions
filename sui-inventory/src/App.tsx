@@ -20,9 +20,9 @@ import { ConnectButton, useCurrentAccount, useSuiClient, useSignAndExecuteTransa
 import { Transaction } from '@mysten/sui/transactions';
 // Consts
 const SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443';
-const PACKAGE_ID = '0x24efc151bdf08afcdbe857e34b5bbc5cebf03feef2b076fa4904af481e2e6bb1';
+const PACKAGE_ID = '0x41442ae1e170a68f3486ce0fd4fb03a2a48f4c69ee61cd5e8a563311aaaa3a95';
 const PROJECT_ID = '0xca8b4b24c4e8302c9b08c11e769638664653226d1bde4e75beb595c99e96b182';
-const REGISTRY_ID = '0xeb24efabffbc663e1e59c9e1420a0424a4142a12db78138ce1e05ceb51f83c9f';
+const REGISTRY_ID = '0x48fc4208313f2fe1fce5df5a36af0cac209ca40db9855f7bb712cf2e95060ec1';
 
 interface Product {
   id: string;

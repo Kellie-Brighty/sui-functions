@@ -1,7 +1,7 @@
 export const NETWORK = 'testnet';
-export const PACKAGE_ID = '0x24efc151bdf08afcdbe857e34b5bbc5cebf03feef2b076fa4904af481e2e6bb1';
-export const PROTOCOL_TREASURY_ID = '0x24d4f1ab704659bcc694e8667bec4af44725db6d262ab8742bb2df237189e3fb';
-export const PUBLIC_POOL_REGISTRY_ID = '0xeb24efabffbc663e1e59c9e1420a0424a4142a12db78138ce1e05ceb51f83c9f';
+export const PACKAGE_ID = '0x41442ae1e170a68f3486ce0fd4fb03a2a48f4c69ee61cd5e8a563311aaaa3a95';
+export const PROTOCOL_TREASURY_ID = '0x18bcfff30cc1dcdad91f4b3d3be4286251f339242e884989e52ff3017f15294f';
+export const PUBLIC_POOL_REGISTRY_ID = '0x48fc4208313f2fe1fce5df5a36af0cac209ca40db9855f7bb712cf2e95060ec1';
 
 // Admin Capability Type
 export const ADMIN_CAP_TYPE = `${PACKAGE_ID}::trigger::AdminCap`;
