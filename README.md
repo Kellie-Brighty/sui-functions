@@ -25,7 +25,7 @@
 
 ## 💡 What is Sui-Functions?
 
-Sui-Functions is an experimental protocol architecture that demonstrates the next frontier of decentralized compute and sovereign data storage. By marrying the security of the **Sui Blockchain** with the high-performance decentralized storage of the **Walrus Protocol**, Sui-Functions provides the essential agentic compute layer, allowing autonomous agents to execute, react, and store state without centralized cloud middleware.
+Sui-Functions is a decentralized, zero-trust compute and verifiable memory platform for AI agents. By combining the transaction speed of the **Sui Blockchain** with the decentralized, content-addressed storage of the **Walrus Protocol**, Sui-Functions provides a stateful, sovereign foundation. It allows autonomous agents to execute logic, manage persistent memory, and coordinate workflows without centralized Web2 cloud middleware.
 
 ---
 
@@ -42,7 +42,7 @@ graph TD
         B[Move Registry Contract]
         C[Call Event Triggered]
     end
-    subgraph Walrus Storage [Pillar 2: Logic Registry]
+    subgraph Walrus Storage [Pillar 2: Logic & Memory Registry]
         D[Immutable V8 Javascript Blob]
     end
     subgraph Runner Daemon [Pillar 3: Isolated Worker]
@@ -60,8 +60,8 @@ graph TD
 
 1. **Pillar 1: The Trigger Event Bus (Sui Ledger)**
    * Move smart contracts coordinate the function registries, project ownership, dynamic trigger options, and execution receipts securely on-chain.
-2. **Pillar 2: The Logic Registry (Walrus Storage)**
-   * We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution.
+2. **Pillar 2: The Logic & Memory Registry (Walrus & MemWal)**
+   * We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution. Additionally, Walrus and MemWal serve as the persistent memory layer, allowing agents to store, share, and retrieve state variables across sessions securely.
 3. **Pillar 3: The Isolated Workers (Secure Sandboxes)**
    * Lightweight daemon workers listen to Sui contract events, download the function blobs directly from Walrus nodes, and run them inside secure Google V8 sandbox execution environments (`isolated-vm`) with strict CPU and heap limits.
 
@@ -71,6 +71,7 @@ graph TD
 
 * **🛡️ Sandboxed V8 execution**: Enforces strict `128MB` memory heap limits, filesystem-blocking shims, and `5000ms` CPU timeouts to block exploit vectors.
 * **🔒 Sovereign Upgrade Governance**: Project updates can be held by multi-sig wallets or DAO smart contracts. No single compromised API key can modify running code.
+* **🧠 Verifiable Memory & State Integration**: Integrates directly with Walrus and MemWal to store agent execution memory, eliminating the stateless limitation of traditional serverless networks.
 * **🤖 Autonomous DeFi Agent Showcase**: The repository comes with a showcase of an autonomous DeFi agent utilizing on-chain triggers to audit live inventory valuations and evaluate market deviations within secure V8 sandboxes.
 * **💻 Interactive Developer Dashboard**: A rich web app built with React, TypeScript, and Ant Design that allows developers to manage projects, register/upgrade scripts, and trace execution logs.
 

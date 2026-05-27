@@ -171,7 +171,7 @@ const App: React.FC = () => {
                       transition={{ duration: 0.6, delay: 0.2 }}
                       className="text-base text-slate-400 leading-relaxed mb-10 max-w-lg font-normal"
                     >
-                      Sui-Functions is a production-ready, globally distributed compute layer built entirely on the Sui Network and Walrus Protocol. Replacing fragile Web2 middleware with a massive network of independent Node Operators.
+                      Sui-Functions is a decentralized, zero-trust compute and verifiable memory platform for AI agents. Built on Sui and Walrus to replace fragile cloud middleware with a stateful, permissionless execution economy.
                     </motion.p>
 
                     {/* Buttons */}
@@ -318,14 +318,14 @@ const App: React.FC = () => {
                             <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608]">
                               <img src="/walrus.png" alt="Walrus Protocol Logo" className="w-5 h-5 object-contain opacity-90" />
                             </div>
-                            <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Logic Registry</span>
+                            <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Logic & Memory Registry</span>
                           </div>
                           
                           <h3 className="text-xl font-bold text-[#E2E8F0] font-outfit mb-3">
-                            Walrus Protocol
+                            Walrus & MemWal
                           </h3>
                           <p className="text-slate-400 text-[13px] leading-relaxed font-normal mb-10">
-                            We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution via cryptographic Blob IDs.
+                            We utilize Walrus and MemWal as our logic and persistent memory layer, establishing content-addressed, immutable script distribution and verifiable cross-session state.
                           </p>
                         </div>
 
@@ -415,10 +415,10 @@ const App: React.FC = () => {
                         {/* Description */}
                         <div>
                           <h3 className="text-lg font-bold text-[#E2E8F0] mb-2 font-outfit">
-                            Walrus Logic Registry
+                            Walrus Logic & Memory
                           </h3>
                           <p className="text-slate-500 text-[13px] leading-relaxed font-normal">
-                            Upload agentic logic and edge code directly to the Walrus Storage Network as permanent, immutable, content-addressed, and cryptographically secure storage blobs.
+                            Store both dynamic execution logic and persistent memory states on Walrus and MemWal, creating truly stateful and sovereign agents that maintain context across sessions.
                           </p>
                         </div>
                       </div>
