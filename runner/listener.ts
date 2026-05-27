@@ -180,6 +180,7 @@ interface DBFunction {
     status: number;
     triggerType: number;
     triggerConfig: string;
+    lastExecutionTime: number;
 }
 
 const lastCronRunTimes = new Map<string, number>();
@@ -218,7 +219,8 @@ async function fetchProjectFunctions(projectId: string): Promise<DBFunction[]> {
                     version: Number(fieldsVal.version),
                     status: fieldsVal.status !== undefined ? Number(fieldsVal.status) : 1,
                     triggerType: fieldsVal.trigger_type !== undefined ? Number(fieldsVal.trigger_type) : 0,
-                    triggerConfig: fieldsVal.trigger_config as string || "{}"
+                    triggerConfig: fieldsVal.trigger_config as string || "{}",
+                    lastExecutionTime: fieldsVal.last_execution_time !== undefined ? Number(fieldsVal.last_execution_time) : 0
                 });
             }
         }
@@ -257,35 +259,6 @@ async function triggerFunctionExecution(projectId: string, functionName: string,
     } catch (e: any) {
         console.error(`[Automation Engine] Failed to trigger function "${functionName}":`, e.message);
     }
-}
-
-async function getPublicPoolActiveNodes(): Promise<string[]> {
-    const registryId = process.env.REGISTRY_ID || FALLBACK_REGISTRY_ID;
-    try {
-        const registryObj = await client.getObject({
-            id: registryId,
-            options: { showContent: true }
-        });
-        const fields = (registryObj.data?.content as any)?.fields;
-        return fields?.active_nodes || [];
-    } catch (e: any) {
-        console.warn(`[Automation Engine] Failed to fetch public pool registry:`, e.message);
-        return [];
-    }
-}
-
-function getDesignatedRunnerForProject(projectId: string, activeNodes: string[]): string | null {
-    if (activeNodes.length === 0) return null;
-    const sortedNodes = [...activeNodes].sort();
-    const timeSlot = Math.floor(Date.now() / (1000 * 60 * 10)); // 10-minute slots
-    const hashInput = `${projectId}-${timeSlot}`;
-    let hash = 0;
-    for (let i = 0; i < hashInput.length; i++) {
-        hash = (hash << 5) - hash + hashInput.charCodeAt(i);
-        hash |= 0;
-    }
-    const index = Math.abs(hash) % sortedNodes.length;
-    return sortedNodes[index];
 }
 
 export async function startDynamicAutomationEngine() {
@@ -341,30 +314,14 @@ export async function startDynamicAutomationEngine() {
             for (const projectId of activeIds) {
                 // Verify if this runner is authorized for this project
                 let isAuthorized = false;
-                let executionMode = 0;
                 try {
                     isAuthorized = await isRunnerAuthorized(projectId);
-                    const cached = projectRunnerCache.get(projectId);
-                    if (cached) {
-                        executionMode = cached.executionMode;
-                    }
                 } catch (err: any) {
                     // Fail silently or log check warning
                 }
 
                 if (!isAuthorized) {
                     continue;
-                }
-
-                // If it is in Public Compute Pool mode (0), only the designated runner should trigger automated checks
-                if (executionMode === 0) {
-                    const activeNodes = await getPublicPoolActiveNodes();
-                    if (activeNodes.length > 0) {
-                        const designatedRunner = getDesignatedRunnerForProject(projectId, activeNodes);
-                        if (designatedRunner && designatedRunner !== runnerAddress) {
-                            continue;
-                        }
-                    }
                 }
 
                 const functions = await fetchProjectFunctions(projectId);
@@ -386,7 +343,12 @@ export async function startDynamicAutomationEngine() {
                 }
 
                 for (const fn of automatedFunctions) {
-                    const { name, triggerType, triggerConfig } = fn;
+                    const { name, triggerType, triggerConfig, lastExecutionTime } = fn;
+
+                    // Off-chain pre-check: if triggered recently on-chain (within 15 seconds), skip to avoid duplicate fee/revert
+                    if (Date.now() - lastExecutionTime < 15000) {
+                        continue;
+                    }
                     const trackerKey = `${projectId}::${name}`;
                     const now = Date.now();
 

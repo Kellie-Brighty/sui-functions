@@ -32,6 +32,13 @@ module.exports = {
         REGISTRY_ID: "0xeb24efabffbc663e1e59c9e1420a0424a4142a12db78138ce1e05ceb51f83c9f",
         OPERATOR_KEY_PATH: "/root/.sui-functions/node3.json"
       }
+    },
+    {
+      name: "log-truncator",
+      script: "dist/log_truncator.js",
+      interpreter: "/usr/bin/node",
+      out_file: "/dev/null",
+      error_file: "/dev/null"
     }
   ]
 };

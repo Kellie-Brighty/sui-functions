@@ -17,6 +17,7 @@ module sui_functions::trigger {
     const EFunctionNotVerified: u64 = 3;
     const EInsufficientFunds: u64 = 4;
     const EInsufficientStake: u64 = 5;
+    const ETooFrequent: u64 = 6;
 
     /// Status constants
     const STATUS_PENDING: u8 = 0;
@@ -73,7 +74,8 @@ module sui_functions::trigger {
         owner: address,
         status: u8,
         trigger_type: u8,
-        trigger_config: String
+        trigger_config: String,
+        last_execution_time: u64
     }
 
     /// Represents a staked Node Operator in the network
@@ -384,7 +386,8 @@ module sui_functions::trigger {
             owner: sender,
             status,
             trigger_type,
-            trigger_config
+            trigger_config,
+            last_execution_time: 0
         };
         table::add(&mut project.functions, name, metadata);
 
@@ -457,10 +460,20 @@ module sui_functions::trigger {
         ctx: &mut TxContext
     ) {
         assert!(table::contains(&project.functions, name), EFunctionNotFound);
-        let metadata = table::borrow(&project.functions, name);
         
-        // Assert that the function is verified by the platform auditor before running
-        assert!(metadata.status == STATUS_VERIFIED, EFunctionNotVerified);
+        let walrus_blob_id;
+        {
+            let metadata = table::borrow_mut(&mut project.functions, name);
+            assert!(metadata.status == STATUS_VERIFIED, EFunctionNotVerified);
+
+            // Enforce 15 seconds cooldown to prevent duplicate triggers
+            let current_time = clock::timestamp_ms(clock);
+            let cooldown_period = 15000;
+            assert!(current_time >= metadata.last_execution_time + cooldown_period, ETooFrequent);
+            metadata.last_execution_time = current_time;
+
+            walrus_blob_id = metadata.walrus_blob_id;
+        };
 
         let assigned_runner = if (project.execution_mode == 1) {
             project.runner_address
@@ -479,7 +492,7 @@ module sui_functions::trigger {
         event::emit(ExecutionTriggered {
             project_id: object::id(project),
             function_name: name,
-            walrus_blob_id: metadata.walrus_blob_id,
+            walrus_blob_id,
             caller: tx_context::sender(ctx),
             input_data,
             execution_mode: project.execution_mode,
@@ -522,6 +535,7 @@ module sui_functions::trigger {
         metadata.walrus_blob_id = new_walrus_blob_id;
         metadata.version = metadata.version + 1;
         metadata.status = status;
+        metadata.last_execution_time = 0;
 
         let assigned_runner = if (project.execution_mode == 1) {
             project.runner_address
