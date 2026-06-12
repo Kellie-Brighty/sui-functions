@@ -6,8 +6,8 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('UNHANDLED REJECTION:', reason);
 });
 import { SuiJsonRpcClient, getJsonRpcFullnodeUrl } from '@mysten/sui/jsonRpc';
-import { fetchFunctionCode } from './aggregator';
-import { executeInSandbox } from './vm_manager';
+import { fetchFunctionCode } from './aggregator.js';
+import { executeInSandbox } from './vm_manager.js';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { Transaction } from '@mysten/sui/transactions';
 import fs from 'fs';
