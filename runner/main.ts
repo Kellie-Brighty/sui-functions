@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
-import { fetchFunctionCode } from './aggregator.js';
-import { executeInSandbox } from './vm_manager.js';
+import { fetchFunctionCode } from './aggregator';
+import { executeInSandbox } from './vm_manager';
 
 dotenv.config();
 
