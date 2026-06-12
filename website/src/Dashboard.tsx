@@ -206,6 +206,7 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
   const [copiedCommand, setCopiedCommand] = React.useState(false);
   const [fundAmount, setFundAmount] = React.useState("");
   const [isFundingRunner, setIsFundingRunner] = React.useState(false);
+  const [isEditingAddress, setIsEditingAddress] = React.useState(false);
   
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
@@ -287,14 +288,18 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
       const content = operatorObjects.data[0].data?.content as any;
       if (content && content.fields && content.fields.runner_address !== '0x0000000000000000000000000000000000000000000000000000000000000000') {
          setIsLinked(true);
-         setRunnerAddress(content.fields.runner_address);
+         if (!isEditingAddress) {
+           setRunnerAddress(content.fields.runner_address);
+         }
       }
     } else {
       setIsStaked(false);
       setIsLinked(false);
-      setRunnerAddress("");
+      if (!isEditingAddress) {
+        setRunnerAddress("");
+      }
     }
-  }, [operatorObjects]);
+  }, [operatorObjects, isEditingAddress]);
 
   const handleStakeSui = () => {
     if (!account) return showToast('warning', 'Wallet Required', 'Please connect wallet first');
@@ -358,6 +363,7 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
           onSuccess: (result) => {
             console.log("Link Successful!", result);
             setIsLinked(true);
+            setIsEditingAddress(false);
             showToast('success', 'Runner Linked', 'Your runner address has been successfully linked to your node.');
           },
           onError: (error) => {
@@ -755,16 +761,51 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
                       placeholder="0x..." 
                       value={runnerAddress}
                       onChange={(e) => setRunnerAddress(e.target.value)}
-                      disabled={isLinked}
-                      className="flex-1 bg-[#0A1C2E] border border-[#14304A] rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-brand-sui disabled:opacity-50 transition-colors shadow-inner"
+                      disabled={isLinked && !isEditingAddress}
+                      className="flex-1 bg-[#0A1C2E] border border-[#14304A] rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-brand-sui disabled:opacity-50 transition-colors shadow-inner font-mono"
                     />
-                    <button 
-                      onClick={handleLinkRunner}
-                      disabled={isLinked || !runnerAddress}
-                      className="bg-brand-sui hover:bg-brand-sui/80 disabled:opacity-50 text-white px-8 py-3.5 rounded-xl text-sm font-bold transition-all shadow-[0_4px_15px_rgba(56,152,255,0.2)] md:w-auto w-full whitespace-nowrap"
-                    >
-                      {isLinked ? 'Linked ✓' : 'Authorize Node'}
-                    </button>
+                    {isLinked && !isEditingAddress ? (
+                      <>
+                        <button 
+                          disabled={true}
+                          className="bg-brand-sui/20 border border-brand-sui/30 text-brand-sui px-8 py-3.5 rounded-xl text-sm font-bold transition-all md:w-auto w-full whitespace-nowrap cursor-not-allowed"
+                        >
+                          Linked ✓
+                        </button>
+                        <button 
+                          onClick={() => setIsEditingAddress(true)}
+                          className="bg-transparent border border-[#304B76] hover:border-brand-sui hover:text-white text-slate-300 px-6 py-3.5 rounded-xl text-sm font-bold transition-all md:w-auto w-full whitespace-nowrap"
+                        >
+                          Change Address
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={handleLinkRunner}
+                          disabled={!runnerAddress}
+                          className="bg-brand-sui hover:bg-brand-sui/80 disabled:opacity-50 text-white px-8 py-3.5 rounded-xl text-sm font-bold transition-all shadow-[0_4px_15px_rgba(56,152,255,0.2)] md:w-auto w-full whitespace-nowrap"
+                        >
+                          {isEditingAddress ? 'Update Link' : 'Authorize Node'}
+                        </button>
+                        {isEditingAddress && (
+                          <button 
+                            onClick={() => {
+                              setIsEditingAddress(false);
+                              const content = operatorObjects?.data?.[0]?.data?.content as any;
+                              if (content && content.fields && content.fields.runner_address !== '0x0000000000000000000000000000000000000000000000000000000000000000') {
+                                setRunnerAddress(content.fields.runner_address);
+                              } else {
+                                setRunnerAddress("");
+                              }
+                            }}
+                            className="bg-transparent border border-red-500/30 hover:border-red-500 hover:text-white text-slate-300 px-6 py-3.5 rounded-xl text-sm font-bold transition-all md:w-auto w-full whitespace-nowrap"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -894,11 +935,11 @@ const Dashboard: React.FC = () => {
   const [uploadPercentage, setUploadPercentage] = useState(0);
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
-  const [activeMenu, setActiveMenu] = useState('1'); // 1 = Overview, 2 = Functions, 3 = Logs, 4 = Compute, 5 = Storage
+  const [activeMenu, setActiveMenu] = useState('operator-1'); // 1 = Overview, 2 = Functions, 3 = Logs, 4 = Compute, 5 = Storage
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [triggerFunctionName, setTriggerFunctionName] = useState("");
   const [triggerInputJson, setTriggerInputJson] = useState("{}");
-  const [persona, setPersona] = useState<'developer' | 'operator'>('developer');
+  const [persona, setPersona] = useState<'developer' | 'operator'>('operator');
   
   const handleUpdateComputeFee = async () => {
     if (!adminCapId || !newComputeFee) return;
@@ -2485,16 +2526,6 @@ const Dashboard: React.FC = () => {
             {/* Persona Toggle */}
             <div className="hidden lg:flex bg-[#0A1C2E] p-1 rounded-[14px] border border-[#14304A] items-center shadow-[0_0_15px_rgba(0,0,0,0.3)] mx-4 shrink-0">
               <button
-                onClick={() => { setPersona('developer'); setActiveMenu('1'); }}
-                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
-                  persona === 'developer'
-                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[inset_0_0_10px_rgba(56,152,255,0.1)]'
-                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
-                }`}
-              >
-                <Code size={14} /> Developer Workspace
-              </button>
-              <button
                 onClick={() => { setPersona('operator'); setActiveMenu('operator-1'); }}
                 className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'operator'
@@ -2503,6 +2534,16 @@ const Dashboard: React.FC = () => {
                 }`}
               >
                 <HardDrive size={14} /> Node Operator Yield
+              </button>
+              <button
+                onClick={() => { setPersona('developer'); setActiveMenu('1'); }}
+                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'developer'
+                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[inset_0_0_10px_rgba(56,152,255,0.1)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <Code size={14} /> Developer Workspace
               </button>
             </div>
 
@@ -3177,16 +3218,6 @@ const Dashboard: React.FC = () => {
           <div className="flex lg:hidden justify-center mb-2">
             <div className="bg-[#0A1C2E] p-1.5 rounded-2xl border border-[#14304A] flex items-center gap-2 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
               <button
-                onClick={() => { setPersona('developer'); setActiveMenu('1'); }}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
-                  persona === 'developer'
-                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[0_0_15px_rgba(56,152,255,0.15)]'
-                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
-                }`}
-              >
-                <Code size={14} /> Developer Workspace
-              </button>
-              <button
                 onClick={() => { setPersona('operator'); setActiveMenu('operator-1'); }}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
                   persona === 'operator'
@@ -3195,6 +3226,16 @@ const Dashboard: React.FC = () => {
                 }`}
               >
                 <HardDrive size={14} /> Node Operator Yield
+              </button>
+              <button
+                onClick={() => { setPersona('developer'); setActiveMenu('1'); }}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${
+                  persona === 'developer'
+                    ? 'bg-gradient-to-r from-brand-sui/20 to-[#6FB7B7]/10 text-brand-sui border border-brand-sui/30 shadow-[0_0_15px_rgba(56,152,255,0.15)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent bg-transparent hover:bg-white/5 cursor-pointer'
+                }`}
+              >
+                <Code size={14} /> Developer Workspace
               </button>
             </div>
           </div>
