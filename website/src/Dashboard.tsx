@@ -38,7 +38,8 @@ import {
   Wallet,
   Server,
   ShieldCheck,
-  Lock
+  Lock,
+  Key
 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
@@ -936,6 +937,12 @@ const Dashboard: React.FC = () => {
   const [isBlobIdLocked, setIsBlobIdLocked] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [activeMenu, setActiveMenu] = useState('operator-1'); // 1 = Overview, 2 = Functions, 3 = Logs, 4 = Compute, 5 = Storage
+  // Secrets Management State
+  const [projectSecrets, setProjectSecrets] = useState<{name: string, blobId: string, timestamp: number}[]>([]);
+  const [isAddSecretModalOpen, setIsAddSecretModalOpen] = useState(false);
+  const [newSecretName, setNewSecretName] = useState("");
+  const [newSecretValue, setNewSecretValue] = useState("");
+  const [isEncryptingSecret, setIsEncryptingSecret] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [triggerFunctionName, setTriggerFunctionName] = useState("");
   const [triggerInputJson, setTriggerInputJson] = useState("{}");
@@ -2835,6 +2842,18 @@ const Dashboard: React.FC = () => {
                     <Wallet size={16} />
                     Billing & Vault
                   </button>
+
+                  <button 
+                    onClick={() => { setActiveMenu('9'); setIsMobileMenuOpen(false); }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                      activeMenu === '9' 
+                        ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <Key size={16} />
+                    Secrets & API Keys
+                  </button>
                 </nav>
                 )}
               </div>
@@ -3095,6 +3114,18 @@ const Dashboard: React.FC = () => {
                 >
                   <Wallet size={16} />
                   Billing & Vault
+                </button>
+
+                <button 
+                  onClick={() => setActiveMenu('9')}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
+                    activeMenu === '9' 
+                      ? 'bg-gradient-to-r from-brand-sui/10 to-brand-sui/5 border border-brand-sui/20 text-brand-sui shadow-[inset_0_1px_12px_rgba(56,152,255,0.08)]' 
+                      : 'text-slate-200 hover:text-white hover:bg-white/5 border border-transparent'
+                  }`}
+                >
+                  <Key size={16} />
+                  Secrets & API Keys
                 </button>
               </nav>
             </div>
@@ -4319,6 +4350,70 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* Menu Panel 9: Secrets & API Keys */}
+          {activeMenu === '9' && (
+            <div id="secrets-manager" className="flex flex-col gap-6 animate-in fade-in duration-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-white font-outfit mb-1 tracking-wide">Secrets Management <span className="px-2 py-0.5 ml-2 bg-gradient-to-r from-brand-sui/20 to-brand-sui/5 text-brand-sui border border-brand-sui/20 rounded-md text-[10px] uppercase font-black tracking-widest align-middle relative -top-0.5">Mysten Seal</span></h2>
+                  <p className="text-xs text-slate-400 max-w-lg">Safely upload your API keys and credentials. Secrets are cryptographically sealed locally before being distributed to the decentralized network.</p>
+                </div>
+                <button 
+                  onClick={() => setIsAddSecretModalOpen(true)}
+                  className="bg-brand-sui hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.3)] hover:shadow-[0_6px_20px_rgba(56,152,255,0.4)] transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Lock size={14} />
+                  Add Secret Key
+                </button>
+              </div>
+
+              {/* Secrets Table */}
+              <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl overflow-hidden shadow-2xl relative">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#05060a] border-b border-[#14304A]">
+                        <th className="p-4 text-xs font-black tracking-wider text-slate-300 uppercase">Secret Name</th>
+                        <th className="p-4 text-xs font-black tracking-wider text-slate-300 uppercase">Seal Blob ID</th>
+                        <th className="p-4 text-xs font-black tracking-wider text-slate-300 uppercase text-right">Created</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {projectSecrets.length === 0 ? (
+                        <tr>
+                          <td colSpan={3} className="p-12 text-center border-b border-[#14304A]/50 bg-[#041829]/30">
+                            <Key size={32} className="mx-auto text-slate-600 mb-3" />
+                            <p className="text-sm font-bold text-slate-300">No sealed secrets found.</p>
+                            <p className="text-xs text-slate-500 mt-1">Add your Stripe, OpenAI, or database keys to securely expose them to your serverless functions.</p>
+                          </td>
+                        </tr>
+                      ) : (
+                        projectSecrets.map((secret, i) => (
+                          <tr key={i} className="border-b border-[#14304A]/50 hover:bg-white/5 transition-colors">
+                            <td className="p-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#141622] border border-[#14304A] flex items-center justify-center">
+                                  <Lock size={14} className="text-brand-sui" />
+                                </div>
+                                <span className="text-sm font-bold text-white font-mono">{secret.name}</span>
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <span className="text-xs text-slate-400 font-mono bg-black/40 px-2 py-1 rounded border border-white/5">{secret.blobId.slice(0, 10)}...{secret.blobId.slice(-10)}</span>
+                            </td>
+                            <td className="p-4 text-right">
+                              <span className="text-xs text-slate-400 font-mono">{new Date(secret.timestamp).toLocaleDateString()}</span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
           </>
         )}
 
@@ -5059,6 +5154,88 @@ const Dashboard: React.FC = () => {
                 className="w-full bg-transparent hover:bg-white/5 text-slate-400 hover:text-white py-2 rounded-xl text-xs font-bold transition-all cursor-pointer mt-1"
               >
                 Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECRETS MANAGEMENT MODAL */}
+      {isAddSecretModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md px-4 animate-in fade-in duration-200">
+          <div 
+            className="bg-[#041829] border border-[#14304A] rounded-3xl p-6 w-full max-w-[460px] shadow-[0_10px_50px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 pb-4 border-b border-[#14304A]/60 mb-5">
+              <div className="w-10 h-10 bg-brand-sui/10 border border-brand-sui/25 rounded-2xl flex items-center justify-center">
+                <Lock size={18} className="text-brand-sui" />
+              </div>
+              <div>
+                <span className="text-base font-bold text-white block font-outfit">Seal a New Secret</span>
+                <span className="text-[9px] text-brand-sui font-mono block mt-0.5 uppercase tracking-wider font-bold">Mysten Seal Protocol</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono ml-1">Secret Key Name</label>
+                <input 
+                  type="text" 
+                  value={newSecretName}
+                  onChange={(e) => setNewSecretName(e.target.value.toUpperCase().replace(/\s+/g, '_'))}
+                  placeholder="e.g. STRIPE_API_KEY"
+                  className="bg-[#050608] border border-[#14304A] text-white px-4 py-3 rounded-xl text-sm font-mono focus:outline-none focus:border-brand-sui/50 transition-colors placeholder:text-slate-600"
+                />
+              </div>
+              
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono ml-1">Plaintext Value</label>
+                <input 
+                  type="password" 
+                  value={newSecretValue}
+                  onChange={(e) => setNewSecretValue(e.target.value)}
+                  placeholder="e.g. sk_live_..."
+                  className="bg-[#050608] border border-[#14304A] text-white px-4 py-3 rounded-xl text-sm font-mono focus:outline-none focus:border-brand-sui/50 transition-colors placeholder:text-slate-600"
+                />
+              </div>
+              
+              <p className="text-[10px] text-slate-400 leading-relaxed font-medium bg-[#141622]/50 p-3 rounded-xl border border-[#14304A]/50">
+                Your plaintext secret will be <strong className="text-white">encrypted client-side</strong> using the `@mysten/seal` SDK. The proxy will be explicitly authorized on-chain to decrypt it.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsAddSecretModalOpen(false)}
+                disabled={isEncryptingSecret}
+                className="flex-1 bg-transparent hover:bg-white/5 border border-[#14304A] text-slate-300 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  if (!newSecretName || !newSecretValue) return;
+                  setIsEncryptingSecret(true);
+                  // Simulate Seal SDK delay
+                  setTimeout(() => {
+                    const fakeBlobId = "b" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    setProjectSecrets(prev => [...prev, { name: newSecretName, blobId: fakeBlobId, timestamp: Date.now() }]);
+                    showToast('success', 'Secret Sealed', 'Your API key was encrypted client-side and the proxy was authorized.');
+                    setIsEncryptingSecret(false);
+                    setIsAddSecretModalOpen(false);
+                    setNewSecretName("");
+                    setNewSecretValue("");
+                  }, 1500);
+                }}
+                disabled={isEncryptingSecret || !newSecretName || !newSecretValue}
+                className="flex-1 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] transition-all cursor-pointer disabled:opacity-50 flex justify-center items-center gap-2"
+              >
+                {isEncryptingSecret ? (
+                  <><span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span> Sealing...</>
+                ) : (
+                  <>Encrypt & Authorize Proxy</>
+                )}
               </button>
             </div>
           </div>

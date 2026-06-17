@@ -66,6 +66,36 @@ export async function executeInSandbox(code: string, inputData: string = '{}'): 
         return multiplyCiphertextByScalar(n, g, cipher, scalar);
     }));
 
+    // 4. Inject SuiProxy secure fetch shim
+    await jail.set('proxyFetchShim', new ivm.Reference(async function(url: string, optionsJson: string) {
+        try {
+            const parsedOptions = JSON.parse(optionsJson || '{}');
+            const projectId = "sui-func-test-project"; // Mock project ID for testing
+            
+            const proxyPayload = {
+                targetUrl: url,
+                method: parsedOptions.method || 'GET',
+                headers: parsedOptions.headers || {},
+                body: parsedOptions.body,
+                projectId: projectId
+            };
+
+            const response = await fetch('http://localhost:3000/proxy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(proxyPayload)
+            });
+
+            const text = await response.text();
+            return {
+                status: response.status,
+                text: text
+            };
+        } catch (e: any) {
+            return { status: 500, text: JSON.stringify({ error: e.message }) };
+        }
+    }));
+
     // Prepend shims for console.log, async fetch, TextEncoder and TextDecoder
     const shimmedCode = `
         globalThis.console = {
@@ -81,6 +111,17 @@ export async function executeInSandbox(code: string, inputData: string = '{}'): 
         globalThis.SuiFHE = {
             add: (pubKey, cipherA, cipherB) => fheAddShim.applySync(undefined, [pubKey.n, pubKey.g, cipherA, cipherB], { arguments: { copy: true } }),
             multiplyByScalar: (pubKey, cipher, scalar) => fheMultiplyScalarShim.applySync(undefined, [pubKey.n, pubKey.g, cipher, scalar], { arguments: { copy: true } })
+        };
+        globalThis.SuiProxy = {
+            fetch: async (url, options = {}) => {
+                const optionsJson = JSON.stringify(options);
+                const res = await proxyFetchShim.apply(undefined, [url, optionsJson], { result: { promise: true, copy: true } });
+                return {
+                    status: res.status,
+                    text: async () => res.text,
+                    json: async () => JSON.parse(res.text)
+                };
+            }
         };
         globalThis.TextEncoder = class TextEncoder {
             encode(str) {
