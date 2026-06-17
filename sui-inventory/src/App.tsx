@@ -13,15 +13,19 @@ import {
   ShieldCheck,
   CheckCircle2,
   Info,
-  Tag
+  Tag,
+  Calculator,
+  Lock
 } from 'lucide-react';
+import { SuiFunctions } from '../../sdk/src/index';
 import './App.css';
 import { ConnectButton, useCurrentAccount, useSuiClient, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-// Consts
+import * as paillierBigint from 'paillier-bigint';
 const SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443';
 const PACKAGE_ID = '0x41442ae1e170a68f3486ce0fd4fb03a2a48f4c69ee61cd5e8a563311aaaa3a95';
 const PROJECT_ID = '0xb914f9c03cb07493241a14188791a5d2f2864fee900b8af4f14f7ef585db9a8c';
+const SECURE_MATH_PROJECT_ID = '0x497349a23a846f2ee33101b0ca629e38104292f483a8220e6abf0a7111f244d7';
 const REGISTRY_ID = '0x48fc4208313f2fe1fce5df5a36af0cac209ca40db9855f7bb712cf2e95060ec1';
 
 interface Product {
@@ -136,6 +140,13 @@ function App() {
   const [couponApplied, setCouponApplied] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState(0); // e.g. 0.5 = 50%
   const [couponStatus, setCouponStatus] = useState<string>('');
+  
+  // --- Sui-Functions Secure Math State ---
+  const [valA, setValA] = useState<string>('50');
+  const [valB, setValB] = useState<string>('75');
+  const [isMathExecuting, setIsMathExecuting] = useState(false);
+  const [mathStatus, setMathStatus] = useState<string>('');
+  const [fheResult, setFheResult] = useState<string | null>(null);
   
   const [isVmRunning, setIsVmRunning] = useState(false);
   const [vmLogs, setVmLogs] = useState<string[]>([]);
@@ -357,13 +368,19 @@ function App() {
     setCouponStatus('Initializing secure on-chain validation request...');
 
     try {
+      // 1. Compute SHA-256 hash of the coupon code locally
+      const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(couponCode));
+      const couponHash = Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
       const tx = new Transaction();
       tx.moveCall({
         target: `${PACKAGE_ID}::trigger::call_function`,
         arguments: [
           tx.object(PROJECT_ID),
           tx.pure.string("Coupon Validator"),
-          tx.pure.string(JSON.stringify({ coupon: couponCode })),
+          tx.pure.string(JSON.stringify({ couponHash })),
           tx.object(REGISTRY_ID),
           tx.object("0x6")
         ]
@@ -484,6 +501,151 @@ function App() {
         title: 'Sui Call Failed',
         message: errMsg
       });
+    }
+  };
+
+  const handleSecureMath = async () => {
+    if (!valA || !valB) return;
+    if (!account) {
+      setNotification({
+        isOpen: true,
+        type: 'info',
+        title: 'Wallet Connection Required',
+        message: 'Please connect your Sui wallet in order to execute live on-chain FHE math.'
+      });
+      return;
+    }
+
+    setIsMathExecuting(true);
+    setFheResult(null);
+    setMathStatus('Initializing FHE Keys & Encrypting Inputs locally...');
+
+    try {
+      const { publicKey, privateKey } = await paillierBigint.generateRandomKeys(512);
+      const pubKeyStr = JSON.stringify({ n: publicKey.n.toString(), g: publicKey.g.toString() });
+      
+      const payloadObj = {
+        valA: parseInt(valA, 10),
+        valB: parseInt(valB, 10),
+        secretApiKey: 'sui_inventory_auth_key'
+      };
+      
+      const blindedPayload: any = await SuiFunctions.encryptPayload(payloadObj, pubKeyStr);
+      blindedPayload.pubKey = { n: publicKey.n.toString(), g: publicKey.g.toString() };
+
+      setMathStatus('Submitting encrypted payload to blockchain...');
+      
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${PACKAGE_ID}::trigger::call_function`,
+        arguments: [
+          tx.object(SECURE_MATH_PROJECT_ID),
+          tx.pure.string("secure_math"),
+          tx.pure.string(JSON.stringify(blindedPayload)),
+          tx.object(REGISTRY_ID),
+          tx.object("0x6")
+        ]
+      });
+
+      const result = await signAndExecuteTransaction({
+        transaction: tx,
+      });
+
+      const digest = result.digest;
+      setMathStatus(`Tx submitted: ${digest.slice(0, 8)}... Awaiting decentralized Node Operator...`);
+
+      // Polling
+      let pollCount = 0;
+      const maxPolls = 15;
+      
+      const pollInterval = setInterval(async () => {
+        pollCount++;
+        if (pollCount > maxPolls) {
+          clearInterval(pollInterval);
+          setIsMathExecuting(false);
+          setMathStatus('');
+          setNotification({ isOpen: true, type: 'error', title: 'Execution Timeout', message: 'Live execution timed out. Ensure sui-functions-node is running.' });
+          return;
+        }
+
+        try {
+          const response = await fetch(SUI_TESTNET_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 1,
+              method: 'suix_queryEvents',
+              params: [ { MoveModule: { package: PACKAGE_ID, module: 'trigger' } }, null, 10, true ]
+            })
+          });
+
+          const rpcResult = await response.json();
+          if (rpcResult.result && rpcResult.result.data) {
+            const completedEvent = rpcResult.result.data.find((event: any) => {
+              if (event.type.includes('ExecutionCompleted') &&
+                  event.parsedJson.function_name === 'secure_math' &&
+                  event.parsedJson.project_id === SECURE_MATH_PROJECT_ID) {
+                
+                try {
+                  const parsedResult = JSON.parse(event.parsedJson.result_data);
+                  if (parsedResult && parsedResult.encryptedSum) {
+                    const decryptedSum = privateKey.decrypt(BigInt(parsedResult.encryptedSum)).toString();
+                    // Since Paillier modulus is 512 bits (~154 digits), decrypting an old event's 
+                    // ciphertext with our NEW private key will yield a massive garbage number.
+                    // If it's less than 50 digits, it's definitely our real result!
+                    if (decryptedSum.length < 50) {
+                      return true;
+                    }
+                  }
+                } catch (e) {}
+              }
+              return false;
+            });
+
+            if (completedEvent) {
+              clearInterval(pollInterval);
+              setIsMathExecuting(false);
+              setMathStatus('');
+
+              try {
+                const parsedResult = JSON.parse(completedEvent.parsedJson.result_data);
+                if (parsedResult && parsedResult.encryptedSum) {
+                  const decryptedSum = privateKey.decrypt(BigInt(parsedResult.encryptedSum));
+                  
+                  setFheResult(decryptedSum.toString());
+                  setNotification({
+                    isOpen: true,
+                    type: 'success',
+                    title: 'FHE Math Success!',
+                    message: `The Node Operator performed homomorphic addition completely blind! Decrypted Result: ${decryptedSum.toString()}`
+                  });
+                } else if (parsedResult && parsedResult.error) {
+                  setNotification({ isOpen: true, type: 'error', title: 'Execution Error', message: parsedResult.error });
+                } else {
+                  setNotification({ isOpen: true, type: 'error', title: 'Execution Error', message: 'No valid result found in event.' });
+                }
+              } catch (parseErr) {
+                console.error(parseErr);
+              }
+            }
+          }
+        } catch (fetchErr) {
+          console.warn("Polling failed...", fetchErr);
+        }
+      }, 2000);
+
+    } catch (e: any) {
+      console.error("Secure Math transaction failed:", e);
+      setIsMathExecuting(false);
+      setMathStatus('');
+      
+      let errMsg = e.message || String(e);
+      if (errMsg.includes('EFunctionNotFound') || errMsg.includes('FunctionNotFound')) {
+        errMsg = "EFunctionNotFound: 'Secure Math' function has not been registered in your Sui-Functions project workspace yet! Go to your suifunctions dashboard, upload and deploy secure_math.js, and confirm registration.";
+      }
+      
+      setNotification({ isOpen: true, type: 'error', title: 'Sui Call Failed', message: errMsg });
     }
   };
 
@@ -930,6 +1092,104 @@ function App() {
                   {couponApplied && (
                     <div style={{ fontSize: '11px', color: 'var(--accent-emerald)', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       ✨ Applied {(couponDiscount * 100).toFixed(0)}% discount to your invoice!
+                    </div>
+                  )}
+                </div>
+
+                {/* On-Chain Sandbox Secure Math FHE Test */}
+                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Lock size={12} style={{ color: 'var(--accent-sui)' }} />
+                      FHE Secure Math
+                    </span>
+                    {fheResult && (
+                      <span style={{ fontSize: '10px', background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-sui)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                        Result: {fheResult}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      type="number"
+                      placeholder="Val A"
+                      value={valA}
+                      onChange={(e) => setValA(e.target.value)}
+                      disabled={isMathExecuting}
+                      style={{
+                        flex: 1,
+                        background: 'rgba(0, 0, 0, 0.2)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        fontSize: '12px',
+                        color: 'white',
+                        outline: 'none',
+                        width: '60px'
+                      }}
+                    />
+                    <div style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>+</div>
+                    <input 
+                      type="number"
+                      placeholder="Val B"
+                      value={valB}
+                      onChange={(e) => setValB(e.target.value)}
+                      disabled={isMathExecuting}
+                      style={{
+                        flex: 1,
+                        background: 'rgba(0, 0, 0, 0.2)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        fontSize: '12px',
+                        color: 'white',
+                        outline: 'none',
+                        width: '60px'
+                      }}
+                    />
+                    <button
+                      onClick={handleSecureMath}
+                      disabled={isMathExecuting || !valA || !valB}
+                      style={{
+                        background: 'rgba(59, 130, 246, 0.1)',
+                        border: '1px solid rgba(59, 130, 246, 0.3)',
+                        borderRadius: '6px',
+                        padding: '6px 12px',
+                        fontSize: '12px',
+                        color: 'var(--accent-sui)',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Calculator size={14} />
+                      {isMathExecuting ? 'Computing...' : 'Calculate'}
+                    </button>
+                  </div>
+                  {isMathExecuting && mathStatus && (
+                    <div style={{
+                      fontSize: '11px',
+                      color: 'var(--accent-sui)',
+                      marginTop: '8px',
+                      fontFamily: 'var(--mono)',
+                      padding: '8px',
+                      background: 'rgba(69, 140, 245, 0.05)',
+                      borderRadius: '6px',
+                      border: '1px solid rgba(69, 140, 245, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <div className="pulse-dot" style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: 'var(--accent-sui)',
+                        boxShadow: '0 0 0 0 rgba(69, 140, 245, 0.7)',
+                      }}></div>
+                      <span>{mathStatus}</span>
                     </div>
                   )}
                 </div>

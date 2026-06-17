@@ -1,0 +1,19 @@
+{
+  "name": "sui-functions-sdk",
+  "version": "1.0.0",
+  "description": "Sui Functions SDK for local encryption",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "ts-node tests/encrypt.test.ts"
+  },
+  "dependencies": {
+    "paillier-bigint": "^3.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.0"
+  }
+}

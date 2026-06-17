@@ -151,6 +151,17 @@ const App: React.FC = () => {
                 <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
                   <div className="lg:col-span-7 flex flex-col items-start text-left">
 
+                    {/* FHE Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6 }}
+                      className="mb-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold font-mono uppercase tracking-wider"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      New: Native Paillier FHE Support
+                    </motion.div>
+
                     {/* Title */}
                     <motion.h1
                       initial={{ opacity: 0, y: 20 }}
@@ -387,6 +398,8 @@ const App: React.FC = () => {
                         </div>
                       </div>
 
+
+
                       {/* Feature Item 2 */}
                       <div className="flex gap-6 p-6 md:p-8 bg-[#050608] border border-[#14304A] rounded-xl text-left shadow-[4px_4px_0_0_#14304A]">
                         {/* Icon Container */}
@@ -426,6 +439,89 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </section>
+
+                {/* MASSIVE FHE BANNER */}
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6 }}
+                  className="mb-32"
+                >
+                  <div className="bg-[#040D09] border border-emerald-500/30 rounded-3xl p-8 md:p-14 text-left relative overflow-hidden shadow-[0_20px_60px_-15px_rgba(16,185,129,0.2)]">
+                    {/* Glow Effects */}
+                    <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+                    
+                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                      <div>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold font-mono uppercase tracking-wider mb-6">
+                          <ShieldCheck size={14} />
+                          Two-Tiered Confidentiality
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6 font-outfit leading-tight">
+                          Unstoppable Compute with <br />
+                          <span className="text-emerald-400">Three Pillars of Privacy.</span>
+                        </h2>
+                        <div className="space-y-4 mb-8">
+                          <div className="flex gap-3">
+                            <span className="text-emerald-400 mt-0.5 font-mono font-bold">1.</span>
+                            <div>
+                              <strong className="text-white block mb-1 text-sm">Private Additive Aggregation</strong>
+                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Use Native Paillier FHE to sum numerical values (like votes or balances) securely. The node operators calculate the math directly on your encrypted payloads without ever seeing the underlying amounts.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <span className="text-emerald-400 mt-0.5 font-mono font-bold">2.</span>
+                            <div>
+                              <strong className="text-white block mb-1 text-sm">Zero-Knowledge Equality</strong>
+                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Validate text strings (like discount codes or passwords) securely inside the sandbox using irreversible cryptographic hashing (SHA-256).</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <span className="text-emerald-400 mt-0.5 font-mono font-bold">3.</span>
+                            <div>
+                              <strong className="text-white block mb-1 text-sm">Trusted Web2 Proxy</strong>
+                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Route external API requests (Stripe, OpenAI) through our managed proxy. This keeps your sensitive plaintext API keys entirely out of the decentralized node memory.</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <Button
+                          onClick={() => { setViewMode('docs'); setTimeout(() => handleSectionScroll('zero-knowledge-fhe'), 100); }}
+                          variant="primary"
+                          size="md"
+                          className="!bg-emerald-500 hover:!bg-emerald-400 !text-slate-900 border-none shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                        >
+                          View @sui-functions/sdk Docs
+                        </Button>
+                      </div>
+                      
+                      {/* Code Block Visual */}
+                      <div className="bg-[#050608] border border-[#14304A] rounded-2xl p-6 font-mono text-xs overflow-hidden shadow-2xl">
+                        <div className="flex items-center gap-2 mb-4 border-b border-[#14304A] pb-4">
+                          <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                          <div className="w-3 h-3 rounded-full bg-amber-500/50" />
+                          <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
+                          <span className="ml-2 text-[#8A95A5] text-[10px] uppercase tracking-widest font-bold">Client-Side SDK Encryption</span>
+                        </div>
+                        <div className="text-[#ABB2BF] leading-loose">
+                          <div><span className="text-[#C678DD]">import</span> {'{'} SuiFunctions {'}'} <span className="text-[#C678DD]">from</span> <span className="text-[#98C379]">'@sui-functions/sdk'</span>;</div>
+                          <br />
+                          <div><span className="text-[#8A95A5] italic">// 1. Generate local keypair</span></div>
+                          <div><span className="text-[#C678DD]">const</span> keys = <span className="text-[#C678DD]">await</span> SuiFunctions.generatePaillierKeys();</div>
+                          <br />
+                          <div><span className="text-[#8A95A5] italic">// 2. Encrypt your secret inputs</span></div>
+                          <div><span className="text-[#C678DD]">const</span> secretA = SuiFunctions.encryptPayload(<span className="text-[#D19A66]">100</span>, keys.publicKey);</div>
+                          <div><span className="text-[#C678DD]">const</span> secretB = SuiFunctions.encryptPayload(<span className="text-[#D19A66]">75</span>, keys.publicKey);</div>
+                          <br />
+                          <div><span className="text-[#8A95A5] italic">// 3. Send securely to the public network</span></div>
+                          <div>triggerExecution(secretA, secretB, keys.publicKey);</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.section>
 
                 {/* THREE PILLARS ARCHITECTURE SECTION */}
                 <motion.section

@@ -3678,9 +3678,14 @@ const Dashboard: React.FC = () => {
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">My Registered Functions</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-xl md:text-2xl font-bold text-white font-outfit">My Registered Functions</h2>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-mono font-bold uppercase tracking-wider border border-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.15)] flex items-center gap-1.5">
+                      <ShieldCheck size={10} /> Enterprise Security Active
+                    </span>
+                  </div>
                   <p className="text-xs text-slate-300 mt-1">
-                    Function entities deployed securely inside Walrus and registered on the Sui Ledger dynamic registry table.
+                    Function entities deployed securely inside Walrus and protected by Two-Tiered Confidentiality.
                   </p>
                 </div>
                 
@@ -3837,6 +3842,34 @@ const Dashboard: React.FC = () => {
                   ))}
                 </div>
               )}
+
+              {/* SDK Snippet Block */}
+              {myFunctions.length > 0 && (
+                <div className="mt-8 bg-[#041829] border border-emerald-500/20 rounded-xl p-6 shadow-[0_4px_20px_rgba(16,185,129,0.05)]">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck size={16} className="text-emerald-400" />
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider font-outfit">Integrate Securely</h3>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">sui-functions-sdk</span>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+                    Use the SDK to encrypt your parameters locally. Your execution environments are protected by an active Intrusion Detection System that prevents and penalizes memory-dumping attacks.
+                  </p>
+                  <div className="bg-[#010204] border border-[#14304A] p-4 rounded-lg overflow-x-auto">
+                    <pre className="text-[11px] font-mono text-slate-300 leading-relaxed">
+                      <span className="text-pink-400">import</span> {'{ SuiFunctions }'} <span className="text-pink-400">from</span> <span className="text-amber-300">'sui-functions-sdk'</span>;{'\n\n'}
+                      <span className="text-slate-500">// 1. Encrypt your secrets locally before sending them to the blockchain</span>{'\n'}
+                      <span className="text-pink-400">const</span> securePayload = <span className="text-cyan-400">await</span> SuiFunctions.<span className="text-blue-400">encryptPayload</span>({'{'}{'\n'}
+                      {'    '}agent_balance: <span className="text-purple-400">100</span>,{'\n'}
+                      {'    '}openai_api_key: <span className="text-amber-300">"sk-proj-123..."</span>{'\n'}
+                      {'}'}, nodePublicKey);{'\n\n'}
+                      <span className="text-slate-500">// 2. Trigger the execution securely</span>{'\n'}
+                      <span className="text-cyan-400">await</span> <span className="text-blue-400">dispatchSuiEvent</span>(<span className="text-amber-300">"walrus_blob_id"</span>, securePayload);
+                    </pre>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -3893,8 +3926,15 @@ const Dashboard: React.FC = () => {
 
               {/* Quick Trigger Sandbox controller */}
               <div id="logs-controller" className="xl:col-span-1">
-                <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 flex flex-col">
-                  <h3 className="text-sm font-bold text-white font-outfit uppercase tracking-wider mb-2">Live Execution Controller</h3>
+                <div className="bg-[#0A1C2E] border border-[#14304A] rounded-2xl p-6 flex flex-col relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full" />
+                  
+                  <div className="flex items-center justify-between mb-2 relative z-10">
+                    <h3 className="text-sm font-bold text-white font-outfit uppercase tracking-wider">Live Execution Controller</h3>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[8px] font-mono font-bold uppercase tracking-wider border border-emerald-500/20 flex items-center gap-1">
+                      <ShieldCheck size={8} /> Secure
+                    </span>
+                  </div>
                   <p className="text-xs text-slate-300 leading-relaxed mb-6">
                     Dispatch a live trigger transaction to your Sui smart contract. The Sui-Functions operator runner fleet will intercept the event, download your script from Walrus, and execute it within a secure V8 isolation sandbox.
                   </p>
@@ -4717,6 +4757,15 @@ const Dashboard: React.FC = () => {
                   </label>
                 </div>
               )}
+
+              {/* FHE SECURITY REMINDER */}
+              <div className="bg-emerald-950/20 border border-emerald-900/30 p-4 rounded-xl flex items-start gap-3">
+                <span className="text-emerald-500 font-bold text-xs shrink-0 mt-0.5">🔒</span>
+                <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
+                  <strong className="text-white block mb-1">Security Reminder: Data Privacy</strong>
+                  If your script processes sensitive numerical data (like coupon values or financial thresholds), ensure you are using the <code className="text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded">@sui-functions/sdk</code> to encrypt payloads before triggering them. The <code className="text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded">globalThis.SuiFHE</code> sandbox engine natively supports homomorphic math on blinded data.
+                </div>
+              </div>
 
                <div>
                 <div className="flex items-center justify-between mb-2">

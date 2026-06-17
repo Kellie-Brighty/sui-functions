@@ -22,7 +22,8 @@ import {
   ExternalLink,
   ChevronRight,
   ChevronLeft,
-  ShieldCheck
+  ShieldCheck,
+  Server
 } from 'lucide-react';
 
 interface DocsSection {
@@ -587,6 +588,164 @@ if (completedEvent) {
                 &nbsp;&nbsp;<span className="text-[#C678DD]">const</span> payload = <span className="text-[#E5C07B]">JSON</span>.parse(completed.parsedJson.result_data);<br />
                 &nbsp;&nbsp;<span className="text-[#E5C07B]">console</span>.log(payload); <span className="text-[#5C6370]">// {"{ valid: true, discount: 0.5 }"}</span><br />
                 {'}'}
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'privacy-pillars',
+      title: 'The Three Pillars of Privacy',
+      category: 'Developer Guide',
+      icon: ShieldCheck,
+      keywords: ['fhe', 'encryption', 'paillier', 'homomorphic', 'security', 'privacy', 'hashing', 'proxy'],
+      layman: (
+        <div className="space-y-6 animate-fade-in-up">
+          <p className="text-slate-300 leading-relaxed">
+            Sui-Functions secures your decentralized compute using three distinct cryptographic strategies, depending on the type of data you are processing:
+          </p>
+
+          <div className="space-y-4">
+            <div className="p-5 bg-emerald-950/20 border border-emerald-900/30 rounded-xl">
+              <h4 className="font-bold text-white mb-2 flex items-center gap-2">
+                <Lock className="text-emerald-500" size={20} />
+                1. Numbers: Private Additive Aggregation (FHE)
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                <strong>Use Case:</strong> Encrypted Voting or Balance Aggregation.<br/>
+                If you need to sum numbers together, you can use Paillier FHE. You encrypt the numbers on your client. The Node Operator runs the math directly on the encrypted numbers without ever seeing the actual values.
+              </p>
+            </div>
+
+            <div className="p-5 bg-emerald-950/20 border border-emerald-900/30 rounded-xl">
+              <h4 className="font-bold text-white mb-2 flex items-center gap-2">
+                <Activity className="text-emerald-500" size={20} />
+                2. Strings: Zero-Knowledge Equality (Hashing)
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                <strong>Use Case:</strong> Validating Discount Codes or Passwords.<br/>
+                If you need to check if a user's text input matches a secret string, use cryptographic hashing (SHA-256). The user sends the hash of their input, and the Node Operator compares it to a stored hash. The Operator never sees the plaintext string.
+              </p>
+            </div>
+
+            <div className="p-5 bg-emerald-950/20 border border-emerald-900/30 rounded-xl">
+              <h4 className="font-bold text-white mb-2 flex items-center gap-2">
+                <Server className="text-emerald-500" size={20} />
+                3. Web2 APIs: Trusted Proxy
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                <strong>Use Case:</strong> Charging Stripe or calling OpenAI.<br/>
+                Since external Web2 APIs require plaintext API keys, you cannot send the keys to the untrusted Node Operators. Instead, operators route the HTTP request through the managed <code className="text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded">sui-functions-proxy</code>, which securely injects your API keys and makes the external call.
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+      developer: (
+        <div className="space-y-6 animate-fade-in-up">
+          <p className="text-slate-300 leading-relaxed">
+            Here is how you implement the three pillars of privacy in your applications:
+          </p>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-white">1. Client-Side Encryption</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              In your frontend or client application, generate a keypair and encrypt the sensitive integers before dispatching the payload to the network.
+            </p>
+
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden shadow-card-glow">
+              <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
+                <span>client_trigger.ts</span>
+              </div>
+              <div className="p-4 font-mono text-xs text-[#ABB2BF] bg-[#07080D] overflow-x-auto leading-relaxed">
+                <span className="text-[#8A95A5] italic">// npm install @sui-functions/sdk</span><br/>
+                <span className="text-[#C678DD]">import</span> {'{'} SuiFunctions {'}'} <span className="text-[#C678DD]">from</span> <span className="text-[#98C379]">'@sui-functions/sdk'</span>;<br /><br />
+                
+                <span className="text-[#8A95A5] italic">// Generate a new Paillier keypair for this session</span><br/>
+                <span className="text-[#C678DD]">const</span> keys = <span className="text-[#C678DD]">await</span> SuiFunctions.generatePaillierKeys();<br /><br />
+
+                <span className="text-[#8A95A5] italic">// Encrypt values (e.g. 100 and 75)</span><br/>
+                <span className="text-[#C678DD]">const</span> encA = SuiFunctions.encryptPayload(<span className="text-[#D19A66]">100</span>, keys.publicKey);<br />
+                <span className="text-[#C678DD]">const</span> encB = SuiFunctions.encryptPayload(<span className="text-[#D19A66]">75</span>, keys.publicKey);<br /><br />
+
+                <span className="text-[#8A95A5] italic">// Dispatch to Sui Event Bus</span><br/>
+                <span className="text-[#E5C07B]">dispatchTrigger</span>({'{'} a: encA, b: encB, pubKey: keys.publicKey {'}'});
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-white">2. Secure Sandbox Math</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Inside your Walrus script, use <code className="text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded">globalThis.SuiFHE</code> to perform homomorphic operations on the ciphertext. The Node Operator has no visibility into the plaintext values.
+            </p>
+
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden shadow-card-glow">
+              <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
+                <span>secure_math.js (on Walrus)</span>
+              </div>
+              <div className="p-4 font-mono text-xs text-[#ABB2BF] bg-[#07080D] overflow-x-auto leading-relaxed">
+                <span className="text-[#C678DD]">const</span> {'{'} a, b, pubKey {'}'} = globalThis.input;<br /><br />
+                
+                <span className="text-[#8A95A5] italic">// Perform math on encrypted data (a + b)</span><br/>
+                <span className="text-[#C678DD]">const</span> encryptedSum = globalThis.SuiFHE.add(a, b, pubKey);<br /><br />
+
+                <span className="text-[#8A95A5] italic">// Return the encrypted result</span><br/>
+                <span className="text-[#C678DD]">return</span> {'{'} encryptedSum {'}'};
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-white">2. Strings: Zero-Knowledge Equality (Hashing)</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              If your Walrus script needs to check a secret string, do not put the plaintext string in the script. Instead, hash the string client-side before dispatching.
+            </p>
+
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden shadow-card-glow">
+              <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
+                <span>client_hash.ts</span>
+              </div>
+              <div className="p-4 font-mono text-xs text-[#ABB2BF] bg-[#07080D] overflow-x-auto leading-relaxed">
+                <span className="text-[#8A95A5] italic">// 1. Hash string locally</span><br/>
+                <span className="text-[#C678DD]">const</span> input = <span className="text-[#98C379]">"SUMMER50"</span>;<br/>
+                <span className="text-[#C678DD]">const</span> hashBuffer = <span className="text-[#C678DD]">await</span> <span className="text-[#E5C07B]">crypto.subtle.digest</span>(<span className="text-[#98C379]">'SHA-256'</span>, <span className="text-[#C678DD]">new</span> <span className="text-[#E5C07B]">TextEncoder</span>().encode(input));<br />
+                <span className="text-[#C678DD]">const</span> inputHash = <span className="text-[#E5C07B]">Array</span>.from(<span className="text-[#C678DD]">new</span> <span className="text-[#E5C07B]">Uint8Array</span>(hashBuffer)).map(b =&gt; b.toString(<span className="text-[#D19A66]">16</span>).padStart(<span className="text-[#D19A66]">2</span>, <span className="text-[#98C379]">'0'</span>)).join(<span className="text-[#98C379]">''</span>);<br /><br />
+                <span className="text-[#8A95A5] italic">// 2. Dispatch the hash, not the string</span><br/>
+                <span className="text-[#E5C07B]">dispatchTrigger</span>({'{'} couponHash: inputHash {'}'});
+              </div>
+            </div>
+            
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden shadow-card-glow">
+              <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
+                <span>walrus_script.js</span>
+              </div>
+              <div className="p-4 font-mono text-xs text-[#ABB2BF] bg-[#07080D] overflow-x-auto leading-relaxed">
+                <span className="text-[#C678DD]">const</span> EXPECTED_HASH = <span className="text-[#98C379]">"4a625db4..."</span>; <span className="text-[#8A95A5] italic">// Hardcoded expected hash</span><br/>
+                <span className="text-[#C678DD]">const</span> isValid = globalThis.input.couponHash === EXPECTED_HASH;<br/>
+                <span className="text-[#C678DD]">return</span> {'{'} isValid {'}'};
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-white">3. Web2 APIs: Trusted Proxy</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              When communicating with Web2 APIs, the Node Operator points their HTTP request to your <code className="text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded">sui-functions-proxy</code> instance. The Node Operator never sees the API keys.
+            </p>
+
+            <div className="bg-[#0A1C2E] border border-brand-card-border rounded-xl overflow-hidden shadow-card-glow">
+              <div className="bg-[#0b0c14] px-4 py-2 border-b border-brand-card-border/60 flex justify-between items-center text-xs font-mono text-slate-300">
+                <span>walrus_script.js</span>
+              </div>
+              <div className="p-4 font-mono text-xs text-[#ABB2BF] bg-[#07080D] overflow-x-auto leading-relaxed">
+                <span className="text-[#8A95A5] italic">// Node Operator makes request to Proxy</span><br/>
+                <span className="text-[#C678DD]">const</span> response = <span className="text-[#C678DD]">await</span> <span className="text-[#E5C07B]">fetch</span>(<span className="text-[#98C379]">'https://proxy.yourdomain.com/stripe/charge'</span>, {'{'}<br/>
+                &nbsp;&nbsp;method: <span className="text-[#98C379]">'POST'</span>,<br/>
+                &nbsp;&nbsp;body: <span className="text-[#E5C07B]">JSON</span>.stringify({'{'} amount: <span className="text-[#D19A66]">5000</span>, token: globalThis.input.token {'}'})<br/>
+                {'});'}<br/>
+                <span className="text-[#8A95A5] italic">// Proxy injects the secret Stripe API key behind the scenes!</span>
               </div>
             </div>
           </div>
