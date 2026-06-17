@@ -80,7 +80,8 @@ export async function executeInSandbox(code: string, inputData: string = '{}'): 
                 projectId: projectId
             };
 
-            const response = await fetch('http://localhost:3000/proxy', {
+            const proxyPort = process.env.PROXY_PORT || 3000;
+            const response = await fetch(`http://localhost:${proxyPort}/proxy`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(proxyPayload)
