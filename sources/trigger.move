@@ -46,7 +46,8 @@ module sui_functions::trigger {
         execution_nonce: u64,
         executions: Table<u64, ExecutionRecord>,
         verification_nonce: u64,
-        verifications: Table<u64, ExecutionRecord>
+        verifications: Table<u64, ExecutionRecord>,
+        secrets: Table<String, String>
     }
 
     public struct PublicPoolRegistry has key {
@@ -197,7 +198,8 @@ module sui_functions::trigger {
             execution_nonce: 0,
             executions: table::new(ctx),
             verification_nonce: 0,
-            verifications: table::new(ctx)
+            verifications: table::new(ctx),
+            secrets: table::new(ctx)
         };
 
         event::emit(ProjectCreated {
@@ -626,12 +628,13 @@ module sui_functions::trigger {
         let sender = tx_context::sender(ctx);
         assert!(project.owner == sender, ENotOwner);
 
-        let Project { id, owner, name: _, description: _, runner_address: _, execution_mode: _, functions, vault, execution_nonce: _, executions, verification_nonce: _, verifications } = project;
+        let Project { id, owner, name: _, description: _, runner_address: _, execution_mode: _, functions, vault, execution_nonce: _, executions, verification_nonce: _, verifications, secrets } = project;
         let project_id = object::uid_to_inner(&id);
         
         table::drop(functions);
         table::drop(executions);
         table::drop(verifications);
+        table::drop(secrets);
         object::delete(id);
 
         // Refund any remaining balance to the owner
@@ -738,10 +741,11 @@ module sui_functions::trigger {
         project: Project,
         ctx: &mut TxContext
     ) {
-        let Project { id, owner, name: _, description: _, runner_address: _, execution_mode: _, functions, vault, execution_nonce: _, executions, verification_nonce: _, verifications } = project;
+        let Project { id, owner, name: _, description: _, runner_address: _, execution_mode: _, functions, vault, execution_nonce: _, executions, verification_nonce: _, verifications, secrets } = project;
         table::drop(functions);
         table::drop(executions);
         table::drop(verifications);
+        table::drop(secrets);
         
         if (balance::value(&vault) > 0) {
             let vault_coin = coin::from_balance(vault, ctx);
@@ -750,5 +754,34 @@ module sui_functions::trigger {
             balance::destroy_zero(vault);
         };
         object::delete(id);
+    }
+
+    /// Add an encrypted secret to the project
+    public entry fun add_secret(
+        project: &mut Project,
+        key: String,
+        sealed_value: String,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(project.owner == sender, ENotOwner);
+        if (table::contains(&project.secrets, key)) {
+            let secret_ref = table::borrow_mut(&mut project.secrets, key);
+            *secret_ref = sealed_value;
+        } else {
+            table::add(&mut project.secrets, key, sealed_value);
+        };
+    }
+
+    /// Remove a secret from the project
+    public entry fun remove_secret(
+        project: &mut Project,
+        key: String,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(project.owner == sender, ENotOwner);
+        assert!(table::contains(&project.secrets, key), 999);
+        let _ = table::remove(&mut project.secrets, key);
     }
 }

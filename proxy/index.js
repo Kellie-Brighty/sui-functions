@@ -7,8 +7,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Mock Seal Decryptor for demonstration
+async function unsealSecret(ciphertext) {
+  // In a real production Mysten Seal integration, this calls the Seal Key Servers
+  // using the proxy's server-side authentication to decrypt the ciphertext.
+  // For demonstration, we assume the ciphertext is base64 encoded plaintext prefixed with "sealed_"
+  if (ciphertext.startsWith('sealed_')) {
+    return Buffer.from(ciphertext.replace('sealed_', ''), 'base64').toString('utf8');
+  }
+  return ciphertext; // fallback
+}
+
 // Utility to swap out ${SECRET.XYZ} placeholders with actual decrypted keys
-function injectSecrets(inputStr) {
+async function injectSecrets(inputStr, sealedSecrets = {}) {
   if (!inputStr) return inputStr;
   let result = inputStr;
   
@@ -20,9 +31,18 @@ function injectSecrets(inputStr) {
     const fullMatch = match[0];
     const secretKey = match[1];
     
-    // In production, we use @mysten/seal here to decrypt the Blob ID on Walrus.
-    // For local testing, we fallback to our explicit trusted .env file
-    const secretValue = process.env[secretKey];
+    // 1. Try to find the secret in the dynamically provided sealedSecrets from the Node Operator
+    let secretValue = sealedSecrets[secretKey];
+    
+    // 2. If it's a sealed secret, decrypt it using the Mysten Seal Protocol
+    if (secretValue) {
+      secretValue = await unsealSecret(secretValue);
+    }
+    
+    // 3. Fallback to local .env file
+    if (!secretValue) {
+      secretValue = process.env[secretKey];
+    }
     
     if (secretValue) {
       result = result.replace(fullMatch, secretValue);
@@ -38,6 +58,17 @@ app.post('/proxy', async (req, res) => {
   try {
     const { targetUrl, method = 'GET', headers = {}, body, projectId } = req.body;
     
+    // Extract the sealed secrets passed securely from the Node Operator
+    const sealedSecretsRaw = req.headers['x-sui-sealed-secrets'];
+    let sealedSecrets = {};
+    if (sealedSecretsRaw) {
+      try {
+        sealedSecrets = JSON.parse(sealedSecretsRaw);
+      } catch (e) {
+        console.warn('[PROXY] Failed to parse x-sui-sealed-secrets header');
+      }
+    }
+    
     if (!targetUrl) {
       return res.status(400).json({ error: 'targetUrl is required' });
     }
@@ -46,13 +77,13 @@ app.post('/proxy', async (req, res) => {
     console.log(`[PROXY] Target: ${method} ${targetUrl}`);
 
     // 1. Inject secrets into URL (e.g. API keys in query params)
-    const secureUrl = injectSecrets(targetUrl);
+    const secureUrl = await injectSecrets(targetUrl, sealedSecrets);
     
     // 2. Inject secrets into Headers (e.g. Bearer tokens)
     const secureHeaders = {};
     for (const [key, value] of Object.entries(headers)) {
       if (typeof value === 'string') {
-        secureHeaders[key] = injectSecrets(value);
+        secureHeaders[key] = await injectSecrets(value, sealedSecrets);
       } else {
         secureHeaders[key] = value;
       }
@@ -61,9 +92,9 @@ app.post('/proxy', async (req, res) => {
     // 3. Inject secrets into Body
     let secureBody = body;
     if (typeof body === 'string') {
-      secureBody = injectSecrets(body);
+      secureBody = await injectSecrets(body, sealedSecrets);
     } else if (body && typeof body === 'object') {
-      secureBody = JSON.parse(injectSecrets(JSON.stringify(body)));
+      secureBody = JSON.parse(await injectSecrets(JSON.stringify(body), sealedSecrets));
     }
 
     // 4. Dispatch the true TLS request

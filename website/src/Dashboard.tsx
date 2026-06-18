@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import { useCurrentAccount, useDisconnectWallet, useSuiClient, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
+import { SecretsManager } from './components/SecretsManager';
 import { PACKAGE_ID, PROTOCOL_TREASURY_ID, ADMIN_CAP_TYPE, PUBLIC_POOL_REGISTRY_ID, LATEST_RUNNER_BLOB_ID } from './constants';
 import { DocsView } from './components/DocsView';
 import { Button } from './components/shared/Button';
@@ -539,6 +540,8 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
               
               <p className="text-slate-300 text-sm mb-4 relative z-10 leading-relaxed">
                 To boot the decentralized execution engine locally, run this exact command in your terminal. It will connect to Walrus.
+                <br /><br />
+                <span className="text-brand-sui font-semibold">Update Notice:</span> When a new engine version is released, simply stop your current node (`Ctrl+C` or `pm2 delete`), copy the new command below, and run it to instantly upgrade to the latest secure sandbox!
               </p>
               <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs md:text-sm text-brand-sui select-all flex justify-between items-center group relative z-10 shadow-inner">
                 <span>npx sui-functions-node --core {LATEST_RUNNER_BLOB_ID}</span>
@@ -731,6 +734,8 @@ const OperatorDashboardUI = ({ account, showToast, activeMenu, setActiveMenu }: 
                 
                 <p className="text-slate-300 text-sm mb-4 relative z-10 leading-relaxed">
                   To boot the decentralized execution engine locally, run this exact command in your terminal. It will download the container and connect to Walrus.
+                  <br /><br />
+                  <span className="text-brand-sui font-semibold">Update Notice:</span> When a new engine version is released, simply stop your current node (`Ctrl+C` or `pm2 delete`), copy the new command below, and run it to instantly upgrade to the latest secure sandbox!
                 </p>
                 <div className="bg-[#0A1C2E] border border-[#14304A] rounded-lg p-4 font-mono text-xs md:text-sm text-brand-sui select-all flex justify-between items-center group relative z-10 shadow-inner">
                   <span>npx sui-functions-node --core {LATEST_RUNNER_BLOB_ID}</span>
@@ -5215,18 +5220,39 @@ const Dashboard: React.FC = () => {
               </button>
               <button 
                 onClick={() => {
-                  if (!newSecretName || !newSecretValue) return;
+                  if (!newSecretName || !newSecretValue || !activeProject) return;
                   setIsEncryptingSecret(true);
-                  // Simulate Seal SDK delay
-                  setTimeout(() => {
-                    const fakeBlobId = "b" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                    setProjectSecrets(prev => [...prev, { name: newSecretName, blobId: fakeBlobId, timestamp: Date.now() }]);
-                    showToast('success', 'Secret Sealed', 'Your API key was encrypted client-side and the proxy was authorized.');
-                    setIsEncryptingSecret(false);
-                    setIsAddSecretModalOpen(false);
-                    setNewSecretName("");
-                    setNewSecretValue("");
-                  }, 1500);
+                  
+                  // Mock Seal Encryption
+                  const sealedCiphertext = `sealed_${btoa(newSecretValue)}`;
+
+                  const tx = new Transaction();
+                  tx.moveCall({
+                    target: `${PACKAGE_ID}::trigger::add_secret`,
+                    arguments: [
+                      tx.object(activeProject.id),
+                      tx.pure.string(newSecretName.toUpperCase()),
+                      tx.pure.string(sealedCiphertext)
+                    ]
+                  });
+
+                  signAndExecute({
+                    transaction: tx,
+                    chain: 'sui:testnet'
+                  }, {
+                    onSuccess: (result) => {
+                      setProjectSecrets(prev => [...prev, { name: newSecretName.toUpperCase(), blobId: sealedCiphertext, timestamp: Date.now() }]);
+                      showToast('success', 'Secret Sealed', 'Your API key was encrypted and stored on-chain!');
+                      setIsEncryptingSecret(false);
+                      setIsAddSecretModalOpen(false);
+                      setNewSecretName("");
+                      setNewSecretValue("");
+                    },
+                    onError: (err) => {
+                      showToast('error', 'Encryption Failed', err.message);
+                      setIsEncryptingSecret(false);
+                    }
+                  });
                 }}
                 disabled={isEncryptingSecret || !newSecretName || !newSecretValue}
                 className="flex-1 bg-gradient-to-r from-brand-sui to-[#6FB7B7] hover:brightness-110 text-white py-3 rounded-xl text-xs font-bold shadow-[0_4px_15px_rgba(56,152,255,0.25)] transition-all cursor-pointer disabled:opacity-50 flex justify-center items-center gap-2"

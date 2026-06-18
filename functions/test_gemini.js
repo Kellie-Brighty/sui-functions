@@ -1,14 +1,15 @@
 // scripts/test_gemini.js
-const input = globalThis.input || { prompt: "Explain the concept of Fully Homomorphic Encryption in one short sentence." };
+const input = globalThis.input || {};
+const userPrompt = input.prompt || "Explain the concept of Fully Homomorphic Encryption in one short sentence.";
 
-console.log("Asking Gemini: " + input.prompt);
+console.log("Asking Gemini: " + userPrompt);
 
 const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=\${SECRET.GEMINI_API_KEY}`;
 
 const payload = {
   contents: [{
     parts: [{
-      text: input.prompt
+      text: userPrompt
     }]
   }]
 };
