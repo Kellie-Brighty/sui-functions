@@ -364,7 +364,7 @@ const App: React.FC = () => {
                         <div>
                           <div className="flex items-start justify-between mb-8">
                             <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608] overflow-hidden">
-                              <img src="/seal.svg" alt="Seal Logo" className="w-6 h-6 object-contain opacity-90 drop-shadow-[0_0_10px_rgba(56,152,255,0.4)]" />
+                              <img src="/seal.png" alt="Seal Logo" className="w-6 h-6 object-contain opacity-90 drop-shadow-[0_0_10px_rgba(56,152,255,0.4)]" />
                             </div>
                             <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-[#3898FF] uppercase tracking-widest bg-[#3898FF]/10">Proxy Layer</span>
                           </div>
