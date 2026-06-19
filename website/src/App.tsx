@@ -11,8 +11,32 @@ import { LATEST_RUNNER_BLOB_ID } from './constants';
 const App: React.FC = () => {
   const account = useCurrentAccount();
   const [showConnectModal, setShowConnectModal] = useState(false);
-  const [viewMode, setViewMode] = useState<'landing' | 'docs' | 'blueprint'>('landing');
+  const [viewMode, setViewMode] = useState<'landing' | 'docs' | 'blueprint'>(() => {
+    const path = window.location.pathname;
+    if (path === '/docs') return 'docs';
+    if (path === '/blueprint') return 'blueprint';
+    return 'landing';
+  });
   const [activePillar, setActivePillar] = useState<'trigger' | 'logic' | 'worker'>('trigger');
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/docs') setViewMode('docs');
+      else if (path === '/blueprint') setViewMode('blueprint');
+      else setViewMode('landing');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateTo = (mode: 'landing' | 'docs' | 'blueprint') => {
+    setViewMode(mode);
+    const path = mode === 'landing' ? '/' : `/${mode}`;
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
+  };
 
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationLogs, setSimulationLogs] = useState<string[]>([]);
@@ -92,7 +116,7 @@ const App: React.FC = () => {
 
   const handleSectionScroll = (sectionId: string) => {
     if (viewMode !== 'landing') {
-      setViewMode('landing');
+      navigateTo('landing');
       setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -153,9 +177,9 @@ const App: React.FC = () => {
           onSectionClick={handleSectionScroll}
           onConnectClick={() => setShowConnectModal(true)}
           viewMode={viewMode}
-          onDocsClick={() => setViewMode('docs')}
-          onBlueprintClick={() => setViewMode('blueprint')}
-          onHomeClick={() => setViewMode('landing')}
+          onDocsClick={() => navigateTo('docs')}
+          onBlueprintClick={() => navigateTo('blueprint')}
+          onHomeClick={() => navigateTo('landing')}
         />
 
         {/* Main Container */}
@@ -163,9 +187,9 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto">
 
             {viewMode === 'docs' ? (
-              <DocsView onBackToLanding={() => setViewMode('landing')} />
+              <DocsView onBackToLanding={() => navigateTo('landing')} />
             ) : viewMode === 'blueprint' ? (
-              <BlueprintView onBackToLanding={() => setViewMode('landing')} />
+              <BlueprintView onBackToLanding={() => navigateTo('landing')} />
             ) : (
               <>
                 <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
@@ -521,7 +545,7 @@ const App: React.FC = () => {
                         </div>
                         
                         <Button
-                          onClick={() => { setViewMode('docs'); setTimeout(() => handleSectionScroll('zero-knowledge-fhe'), 100); }}
+                          onClick={() => { navigateTo('docs'); setTimeout(() => handleSectionScroll('zero-knowledge-fhe'), 100); }}
                           variant="primary"
                           size="md"
                           className="!bg-emerald-500 hover:!bg-emerald-400 !text-slate-900 border-none shadow-[0_0_20px_rgba(16,185,129,0.3)]"
