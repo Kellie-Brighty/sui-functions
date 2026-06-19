@@ -84,41 +84,41 @@ export const BlueprintView: React.FC<BlueprintViewProps> = ({ onBackToLanding })
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="prose prose-invert prose-slate max-w-none prose-headings:font-outfit prose-headings:font-bold prose-h2:text-3xl prose-h3:text-2xl prose-a:text-brand-sui prose-code:text-brand-sui prose-pre:bg-brand-card/50 prose-pre:border prose-pre:border-brand-card-border"
+            className="max-w-4xl"
           >
-            <h2>Architecture Overview</h2>
-            <p>
+            <h2 className="text-3xl font-bold font-outfit text-white mt-12 mb-6">Architecture Overview</h2>
+            <p className="text-slate-300 leading-relaxed mb-6">
               Traditional agent hosting relies on centralized servers (e.g., AWS, GCP, DigitalOcean), exposing Web2 API secrets and creating single points of network failure.
             </p>
-            <p>Sui-Functions decouples this compute loop:</p>
-            <ul>
-              <li>The <strong>Codebase</strong> is stored immutably on the <strong>Walrus Protocol</strong> (decentralized storage).</li>
-              <li>The <strong>Execution Triggers</strong> are recorded on the <strong>Sui Blockchain</strong>.</li>
-              <li>The <strong>Compute</strong> runs on-demand inside isolated WebAssembly (Wasm) or Secure Node.js Sandboxes across the decentralized edge network, paying only for the gas burned during the compute window.</li>
+            <p className="text-slate-300 leading-relaxed mb-6">Sui-Functions decouples this compute loop:</p>
+            <ul className="list-disc pl-6 space-y-3 text-slate-300 mb-10">
+              <li>The <strong className="text-white">Codebase</strong> is stored immutably on the <strong className="text-white">Walrus Protocol</strong> (decentralized storage).</li>
+              <li>The <strong className="text-white">Execution Triggers</strong> are recorded on the <strong className="text-white">Sui Blockchain</strong>.</li>
+              <li>The <strong className="text-white">Compute</strong> runs on-demand inside isolated WebAssembly (Wasm) or Secure Node.js Sandboxes across the decentralized edge network, paying only for the gas burned during the compute window.</li>
             </ul>
 
-            <hr className="border-brand-card-border my-12" />
+            <hr className="border-brand-card-border my-16" />
 
-            <h2>Detailed Step-by-Step Implementation Guide</h2>
+            <h2 className="text-3xl font-bold font-outfit text-white mb-8">Detailed Step-by-Step Implementation Guide</h2>
 
-            <h3>Phase 1: Local Development & Sandbox Configuration</h3>
-            <p>
+            <h3 className="text-2xl font-bold font-outfit text-white mt-12 mb-4">Phase 1: Local Development & Sandbox Configuration</h3>
+            <p className="text-slate-300 leading-relaxed mb-8">
               Your autonomous agent is authored in standard JavaScript or TypeScript. However, because it runs inside an isolated, decentralized sandbox, it must adhere to strict zero-trust runtime limitations.
             </p>
 
-            <h4>1. Configure the Local Project Workspace</h4>
-            <p>Create a clean directory structure for your agent logic:</p>
-            <pre><code>{`my-sui-agent/
+            <h4 className="text-lg font-bold text-white mt-8 mb-4">1. Configure the Local Project Workspace</h4>
+            <p className="text-slate-300 leading-relaxed mb-4">Create a clean directory structure for your agent logic:</p>
+            <pre className="bg-[#0b1016] border border-brand-card-border rounded-xl p-6 text-sm font-mono text-brand-sui mb-8 overflow-x-auto"><code>{`my-sui-agent/
 ├── package.json
 ├── src/
 │   └── index.ts       # Main agent logic (your entry point)
 ├── .env.example       # Local variables only
 └── README.md`}</code></pre>
 
-            <h4>2. Restrict Sandbox Operations</h4>
-            <p>Ensure your <code>index.ts</code> script uses standard export structures. The edge worker expects an exported entry function (e.g., main or handler) that receives a dynamic payload:</p>
+            <h4 className="text-lg font-bold text-white mt-8 mb-4">2. Restrict Sandbox Operations</h4>
+            <p className="text-slate-300 leading-relaxed mb-4">Ensure your <code className="bg-[#0b1016] text-brand-sui px-2 py-0.5 rounded border border-brand-card-border">index.ts</code> script uses standard export structures. The edge worker expects an exported entry function (e.g., main or handler) that receives a dynamic payload:</p>
             
-            <pre><code>{`// src/index.ts
+            <pre className="bg-[#0b1016] border border-brand-card-border rounded-xl p-6 text-sm font-mono text-emerald-400 mb-12 overflow-x-auto"><code>{`// src/index.ts
 
 // The edge environment injects payload inputs and secure env secrets dynamically
 export async function handler(payload: ArrayBuffer, env: Record<string, string>) {
@@ -135,59 +135,59 @@ export async function handler(payload: ArrayBuffer, env: Record<string, string>)
   }
 }`}</code></pre>
 
-            <h3>Phase 2: Web3 Authentication & Deployment Preparation</h3>
-            <p>
+            <h3 className="text-2xl font-bold font-outfit text-white mt-16 mb-4">Phase 2: Web3 Authentication & Deployment Preparation</h3>
+            <p className="text-slate-300 leading-relaxed mb-8">
               Unlike traditional platforms where you configure SSH keys or IAM roles, Sui-Functions utilizes native Web3 cryptography to authenticate developers and deploy files.
             </p>
             
-            <h4>1. Connect and Verify Your Wallet</h4>
-            <ul>
+            <h4 className="text-lg font-bold text-white mt-8 mb-4">1. Connect and Verify Your Wallet</h4>
+            <ul className="list-disc pl-6 space-y-2 text-slate-300 mb-6">
               <li>Open the Sui-Functions Developer Console.</li>
               <li>Trigger a secure Web3 wallet connection prompt (e.g., using Surf or Sui Wallet).</li>
               <li>The platform will challenge you to cryptographically sign a lightweight login session payload using your private key:</li>
             </ul>
-            <pre className="text-center font-mono text-sm bg-brand-card border-brand-card-border py-4"><code>Signature = Sign_Ed25519(Wallet Private Key, Session Challenge)</code></pre>
-            <p>This establishes identity without exposing private keys or transmitting passwords.</p>
+            <pre className="text-center font-mono text-sm bg-[#0b1016] border border-brand-card-border rounded-xl py-6 mb-6 text-purple-400 overflow-x-auto"><code>Signature = Sign_Ed25519(Wallet Private Key, Session Challenge)</code></pre>
+            <p className="text-slate-300 leading-relaxed mb-8">This establishes identity without exposing private keys or transmitting passwords.</p>
 
-            <h4>2. Setup the Code Bundle</h4>
-            <p>In your project directory, compile your TypeScript code into a single, self-contained JavaScript file:</p>
-            <pre><code>{`# Bundle typescript files into a single distribution module
+            <h4 className="text-lg font-bold text-white mt-8 mb-4">2. Setup the Code Bundle</h4>
+            <p className="text-slate-300 leading-relaxed mb-4">In your project directory, compile your TypeScript code into a single, self-contained JavaScript file:</p>
+            <pre className="bg-[#0b1016] border border-brand-card-border rounded-xl p-6 text-sm font-mono text-brand-sui mb-12 overflow-x-auto"><code>{`# Bundle typescript files into a single distribution module
 npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/bundle.js`}</code></pre>
 
-            <h3>Phase 3: Zero-Trust Secrets Configuration</h3>
-            <p>
+            <h3 className="text-2xl font-bold font-outfit text-white mt-16 mb-4">Phase 3: Zero-Trust Secrets Configuration</h3>
+            <p className="text-slate-300 leading-relaxed mb-8">
               If your agent interacts with external Web2 services (like OpenAI, Twitter/X, Discord, or Telegram), you must securely configure your keys.
             </p>
             
             <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 my-8 flex gap-4 items-start">
               <Shield className="text-red-400 shrink-0 mt-1" size={24} />
               <div>
-                <h4 className="text-red-400 font-bold m-0 mb-2">CRITICAL SECURITY RULE</h4>
+                <h4 className="text-red-400 font-bold text-lg m-0 mb-2">CRITICAL SECURITY RULE</h4>
                 <p className="text-red-200/80 m-0 text-sm leading-relaxed">
-                  Do not hardcode API keys or upload raw <code>.env</code> files to Walrus. Walrus is public, immutable storage. Anyone would be able to read your keys!
+                  Do not hardcode API keys or upload raw <code className="bg-red-900/30 px-1.5 py-0.5 rounded">.env</code> files to Walrus. Walrus is public, immutable storage. Anyone would be able to read your keys!
                 </p>
               </div>
             </div>
 
-            <h4>1. Encrypt API Keys</h4>
-            <p>Instead of publishing keys, submit them using the dashboard's Secrets Manager:</p>
-            <p>When you enter a key (e.g., <code>OPENAI_API_KEY</code>), the browser encrypts the string locally using the public key of the Sui-Functions Edge Oracle Network:</p>
-            <pre className="text-center font-mono text-sm bg-brand-card border-brand-card-border py-4"><code>Encrypted Key = Encrypt_RSA/ECIES(Oracle Public Key, API Key Value)</code></pre>
-            <p>
+            <h4 className="text-lg font-bold text-white mt-8 mb-4">1. Encrypt API Keys</h4>
+            <p className="text-slate-300 leading-relaxed mb-4">Instead of publishing keys, submit them using the dashboard's Secrets Manager:</p>
+            <p className="text-slate-300 leading-relaxed mb-4">When you enter a key (e.g., <code className="bg-[#0b1016] text-brand-sui px-2 py-0.5 rounded border border-brand-card-border">OPENAI_API_KEY</code>), the browser encrypts the string locally using the public key of the Sui-Functions Edge Oracle Network:</p>
+            <pre className="text-center font-mono text-sm bg-[#0b1016] border border-brand-card-border rounded-xl py-6 mb-6 text-purple-400 overflow-x-auto"><code>Encrypted Key = Encrypt_RSA/ECIES(Oracle Public Key, API Key Value)</code></pre>
+            <p className="text-slate-300 leading-relaxed mb-8">
               Upload only the encrypted payload. Decryption occurs strictly inside the hardware-isolated TEE (Trusted Execution Environment) of the specific edge nodes processing your compute task. Node operators cannot intercept your API keys.
             </p>
 
-            <h4>2. Configure the Seal Proxy Layer (Optional)</h4>
-            <p>If your agent triggers off-chain events and must return those results securely back to a Sui smart contract, enable the Seal Proxy:</p>
-            <ul>
+            <h4 className="text-lg font-bold text-white mt-8 mb-4">2. Configure the Seal Proxy Layer (Optional)</h4>
+            <p className="text-slate-300 leading-relaxed mb-4">If your agent triggers off-chain events and must return those results securely back to a Sui smart contract, enable the Seal Proxy:</p>
+            <ul className="list-disc pl-6 space-y-2 text-slate-300 mb-6">
               <li>When your agent requests external Web2 API data, the Seal Proxy interceptor wraps the response.</li>
               <li>The proxy dynamically signs the returned Web2 payload with its own on-chain identity:</li>
             </ul>
-            <pre className="text-center font-mono text-sm bg-brand-card border-brand-card-border py-4"><code>Payload Signature = Sign_Ed25519(Seal Proxy Private Key, Web2 Response)</code></pre>
-            <p>This lets your Sui Move smart contract instantly verify that the Web2 payload was not modified before processing on-chain.</p>
+            <pre className="text-center font-mono text-sm bg-[#0b1016] border border-brand-card-border rounded-xl py-6 mb-6 text-purple-400 overflow-x-auto"><code>Payload Signature = Sign_Ed25519(Seal Proxy Private Key, Web2 Response)</code></pre>
+            <p className="text-slate-300 leading-relaxed mb-12">This lets your Sui Move smart contract instantly verify that the Web2 payload was not modified before processing on-chain.</p>
 
-            <h3>Phase 4: Immutable Deployment to Walrus & Sui</h3>
-            <p>When you click <strong>Deploy Agent</strong> on the dashboard, a dual-blockchain registration sequence is fired.</p>
+            <h3 className="text-2xl font-bold font-outfit text-white mt-16 mb-4">Phase 4: Immutable Deployment to Walrus & Sui</h3>
+            <p className="text-slate-300 leading-relaxed mb-8">When you click <strong className="text-white">Deploy Agent</strong> on the dashboard, a dual-blockchain registration sequence is fired.</p>
 
             <div className="bg-brand-card border border-brand-card-border rounded-xl p-6 my-8 font-mono text-xs sm:text-sm text-brand-sui whitespace-pre overflow-x-auto text-center">
 {`                  ┌───────────────────────┐
@@ -208,21 +208,21 @@ npx esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/bu
 └───────────────────────┘             └────────────────────────┘`}
             </div>
 
-            <ul>
-              <li><strong>Upload to Walrus:</strong> The bundled <code>bundle.js</code> script is uploaded to Walrus Protocol decentralized storage. Because it is decentralized, your script cannot be taken down, deleted, or edited by any third party.</li>
-              <li><strong>Register on Sui:</strong> A transaction records the metadata (such as the Walrus file address and agent properties) within the <code>sui_functions::registry</code> smart contract.</li>
-              <li><strong>Function ID Generation:</strong> Once confirmed, you are returned an on-chain Function ID object (e.g., <code>0x8d3b...12ac</code>). This ID serves as the global address to invoke your agent.</li>
+            <ul className="list-disc pl-6 space-y-3 text-slate-300 mb-12">
+              <li><strong className="text-white">Upload to Walrus:</strong> The bundled <code className="bg-[#0b1016] text-brand-sui px-2 py-0.5 rounded border border-brand-card-border">bundle.js</code> script is uploaded to Walrus Protocol decentralized storage. Because it is decentralized, your script cannot be taken down, deleted, or edited by any third party.</li>
+              <li><strong className="text-white">Register on Sui:</strong> A transaction records the metadata (such as the Walrus file address and agent properties) within the <code className="bg-[#0b1016] text-brand-sui px-2 py-0.5 rounded border border-brand-card-border">sui_functions::registry</code> smart contract.</li>
+              <li><strong className="text-white">Function ID Generation:</strong> Once confirmed, you are returned an on-chain Function ID object (e.g., <code className="bg-[#0b1016] text-brand-sui px-2 py-0.5 rounded border border-brand-card-border">0x8d3b...12ac</code>). This ID serves as the global address to invoke your agent.</li>
             </ul>
 
-            <h3>Phase 5: Event-Driven On-Chain Triggers</h3>
-            <p>
+            <h3 className="text-2xl font-bold font-outfit text-white mt-16 mb-4">Phase 5: Event-Driven On-Chain Triggers</h3>
+            <p className="text-slate-300 leading-relaxed mb-8">
               Once your agent is deployed, you do not need to keep servers running continuously to monitor it. Any on-chain Sui smart contract can trigger your agent programmatically.
             </p>
 
-            <h4>Smart Contract Integration (Sui Move)</h4>
-            <p>To integrate the trigger inside your own custom Move modules, call the native <code>registry::trigger</code> hook:</p>
+            <h4 className="text-lg font-bold text-white mt-8 mb-4">Smart Contract Integration (Sui Move)</h4>
+            <p className="text-slate-300 leading-relaxed mb-4">To integrate the trigger inside your own custom Move modules, call the native <code className="bg-[#0b1016] text-brand-sui px-2 py-0.5 rounded border border-brand-card-border">registry::trigger</code> hook:</p>
 
-            <pre><code>{`module my_app::arbitrage_module {
+            <pre className="bg-[#0b1016] border border-brand-card-border rounded-xl p-6 text-sm font-mono text-emerald-400 mb-12 overflow-x-auto"><code>{`module my_app::arbitrage_module {
     use sui::tx_context::{Self, TxContext};
     use sui::object::{ID};
     
