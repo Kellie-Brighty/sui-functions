@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  ▶️ <a href="https://youtu.be/1SjmBTgny1Q"><b>Watch showcase on youtube</b></a>
+  ▶️ <a href="https://youtu.be/qPF-x35H8Kg?si=8856CU5Q0en7Y6WE"><b>Watch showcase on youtube</b></a>
 </p>
 
 <p align="center">
@@ -60,8 +60,8 @@ graph TD
 
 1. **Pillar 1: The Trigger Event Bus (Sui Ledger)**
    * Move smart contracts coordinate the function registries, project ownership, dynamic trigger options, and execution receipts securely on-chain.
-2. **Pillar 2: The Logic & Memory Registry (Walrus & MemWal)**
-   * We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution. Additionally, Walrus and MemWal serve as the persistent memory layer, allowing agents to store, share, and retrieve state variables across sessions securely.
+2. **Pillar 2: The Logic & Memory Registry (Walrus Protocol)**
+   * We utilize Walrus as our primary Logic Registry, setting a new standard for content-addressed, immutable code distribution. Additionally, Walrus Protocol serves as the persistent memory layer, allowing agents to store, share, and retrieve state variables across sessions securely.
 3. **Pillar 3: The Isolated Workers (Secure Sandboxes)**
    * Lightweight daemon workers listen to Sui contract events, download the function blobs directly from Walrus nodes, and run them inside secure Google V8 sandbox execution environments (`isolated-vm`) with strict CPU and heap limits.
 
@@ -71,9 +71,11 @@ graph TD
 
 * **🛡️ Sandboxed V8 execution**: Enforces strict `128MB` memory heap limits, filesystem-blocking shims, and `5000ms` CPU timeouts to block exploit vectors.
 * **🔒 Sovereign Upgrade Governance**: Project updates can be held by multi-sig wallets or DAO smart contracts. No single compromised API key can modify running code.
-* **🧠 Verifiable Memory & State Integration**: Integrates directly with Walrus and MemWal to store agent execution memory, eliminating the stateless limitation of traditional serverless networks.
+* **🧠 Verifiable Memory & State Integration**: Integrates directly with Walrus Protocol to store agent execution memory, eliminating the stateless limitation of traditional serverless networks.
+* **🔐 Seal Proxy Interceptor**: A secure proxy layer that signs Web2 API responses using Ed25519 signatures, allowing on-chain Move contracts to verify that off-chain payload data was not tampered with.
 * **🤖 Autonomous DeFi Agent Showcase**: The repository comes with a showcase of an autonomous DeFi agent utilizing on-chain triggers to audit live inventory valuations and evaluate market deviations within secure V8 sandboxes.
 * **💻 Interactive Developer Dashboard**: A rich web app built with React, TypeScript, and Ant Design that allows developers to manage projects, register/upgrade scripts, and trace execution logs.
+* **🗺️ Deployment Blueprint**: A comprehensive integration guide and flowchart mapped directly inside the Developer Dashboard to transition agents from Web2 code into a trustless execution environment.
 
 ---
 
