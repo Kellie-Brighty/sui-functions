@@ -226,7 +226,7 @@ const App: React.FC = () => {
                         size="md"
                         className="w-full sm:w-auto"
                       >
-                        Deploy your code
+                        Deploy your Agent
                       </Button>
                     </motion.div>
                   </div>
