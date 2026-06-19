@@ -4,6 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const { decodeSuiPrivateKey } = require('@mysten/sui/cryptography');
 const { Ed25519Keypair } = require('@mysten/sui/keypairs/ed25519');
+const { toBase64 } = require('@mysten/sui/utils');
 
 let proxyKeypair = null;
 if (process.env.PROXY_PRIVATE_KEY) {
@@ -131,9 +132,9 @@ app.post('/proxy', async (req, res) => {
     
     if (proxyKeypair) {
       const dataBytes = new TextEncoder().encode(responseText);
-      // We sign the raw data bytes
-      const signatureBytes = await proxyKeypair.signPersonalMessage(dataBytes);
-      signatureBase64 = signatureBytes.signature;
+      // We sign the raw data bytes because trigger.move verifies raw bytes
+      const signatureBytes = await proxyKeypair.sign(dataBytes);
+      signatureBase64 = toBase64(signatureBytes);
       proxyPublicKeyBase64 = proxyKeypair.getPublicKey().toBase64();
       console.log(`[PROXY] Generated cryptographic signature for response.`);
     }
