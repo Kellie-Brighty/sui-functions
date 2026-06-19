@@ -8,7 +8,7 @@
     "sui-functions-node": "./bin/start.js"
   },
   "scripts": {
-    "start": "node ./bin/start.js"
+    "start": "node init && node ./bin/start.js"
   },
   "dependencies": {
     "isolated-vm": "^6.1.2",

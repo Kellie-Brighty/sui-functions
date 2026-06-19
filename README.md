@@ -25,7 +25,7 @@
 
 ## 💡 What is Sui-Functions?
 
-Sui-Functions is a decentralized, zero-trust compute and verifiable memory platform for AI agents. By combining the transaction speed of the **Sui Blockchain** with the decentralized, content-addressed storage of the **Walrus Protocol**, Sui-Functions provides a stateful, sovereign foundation. It allows autonomous agents to execute logic, manage persistent memory, and coordinate workflows without centralized Web2 cloud middleware.
+Sui-Functions is a decentralized, zero-trust compute and verifiable memory platform for AI agents. By combining the transaction speed of the **Sui Blockchain**, the decentralized storage of the **Walrus Protocol**, and the cryptographic security of the **Seal Proxy Interceptor**, Sui-Functions provides a stateful, sovereign foundation. It allows autonomous agents to execute logic, securely fetch off-chain Web2 data without tampering, manage persistent memory, and coordinate workflows without centralized Web2 cloud middleware.
 
 ---
 
