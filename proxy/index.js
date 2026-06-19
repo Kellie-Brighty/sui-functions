@@ -2,6 +2,19 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const { decodeSuiPrivateKey } = require('@mysten/sui/cryptography');
+const { Ed25519Keypair } = require('@mysten/sui/keypairs/ed25519');
+
+let proxyKeypair = null;
+if (process.env.PROXY_PRIVATE_KEY) {
+  try {
+    const parsed = decodeSuiPrivateKey(process.env.PROXY_PRIVATE_KEY);
+    proxyKeypair = Ed25519Keypair.fromSecretKey(parsed.secretKey);
+    console.log(`[PROXY] Cryptographic Attestation Enabled. Public Key: ${proxyKeypair.getPublicKey().toSuiAddress()}`);
+  } catch (e) {
+    console.warn(`[PROXY] Failed to load PROXY_PRIVATE_KEY:`, e.message);
+  }
+}
 
 const app = express();
 app.use(cors());
@@ -109,8 +122,29 @@ app.post('/proxy', async (req, res) => {
 
     console.log(`[PROXY] Response received: ${response.status}`);
     
-    // 5. Forward the response back to the decentralized Node Operator
-    res.status(response.status).json(response.data);
+    // 5. Sign the response data if cryptographic attestation is enabled
+    let signatureBase64 = null;
+    let proxyPublicKeyBase64 = null;
+    
+    // Convert response data to string for signing
+    const responseText = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+    
+    if (proxyKeypair) {
+      const dataBytes = new TextEncoder().encode(responseText);
+      // We sign the raw data bytes
+      const signatureBytes = await proxyKeypair.signPersonalMessage(dataBytes);
+      signatureBase64 = signatureBytes.signature;
+      proxyPublicKeyBase64 = proxyKeypair.getPublicKey().toBase64();
+      console.log(`[PROXY] Generated cryptographic signature for response.`);
+    }
+
+    // 6. Forward the response back to the decentralized Node Operator
+    res.status(200).json({
+      status: response.status,
+      text: responseText,
+      signature: signatureBase64,
+      proxyPublicKey: proxyPublicKeyBase64
+    });
     
   } catch (error) {
     console.error(`[PROXY] Internal Error:`, error.message);

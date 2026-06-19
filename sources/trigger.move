@@ -9,6 +9,7 @@ module sui_functions::trigger {
     use sui::sui::SUI;
     use std::string::{String};
     use sui::clock::{Self, Clock};
+    use sui::ed25519;
 
     /// Errors
     const EFunctionNotFound: u64 = 0;
@@ -26,6 +27,9 @@ module sui_functions::trigger {
 
     /// Global almighty platform auditor blob ID (immutable check)
     const GLOBAL_AUDITOR_BLOB_ID: vector<u8> = b"TJgeWW4t-MOv1K2klEsC0eDTDZbmcUu610eHptXD9mA";
+
+    /// Trusted Proxy Public Key for Data Authenticity
+    const PROXY_PUBKEY: vector<u8> = x"e83d1acf01f0ad3647de85ea1383136d6a3c3ad4aaa800124c4918c059abdabd";
 
     public struct ExecutionRecord has store, drop {
         assigned_runner: address,
@@ -670,6 +674,8 @@ module sui_functions::trigger {
         treasury: &mut ProtocolTreasury,
         function_name: String,
         result_data: String,
+        proxy_api_data_list: vector<String>,
+        proxy_signatures_list: vector<vector<u8>>,
         nonce: u64,
         clock: &Clock,
         ctx: &mut TxContext
@@ -687,6 +693,19 @@ module sui_functions::trigger {
             if (runner != record.assigned_runner) {
                 assert!(clock::timestamp_ms(clock) >= record.timestamp_ms + 10_000, ENotAuthorizedRunner);
             };
+        };
+
+        // Cryptographic Data Authenticity Verification
+        let mut i = 0;
+        let len = std::vector::length(&proxy_api_data_list);
+        assert!(len == std::vector::length(&proxy_signatures_list), 400); // EInvalidSignatureLengths
+        
+        while (i < len) {
+            let api_data = std::vector::borrow(&proxy_api_data_list, i);
+            let signature = std::vector::borrow(&proxy_signatures_list, i);
+            let msg = std::string::bytes(api_data);
+            assert!(ed25519::ed25519_verify(signature, &PROXY_PUBKEY, msg), 401); // EInvalidProxySignature
+            i = i + 1;
         };
 
         record.completed = true;
