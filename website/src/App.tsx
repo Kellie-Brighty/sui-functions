@@ -127,6 +127,24 @@ const App: React.FC = () => {
 
         {/* Subtle noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`, backgroundRepeat: 'repeat', backgroundSize: '128px 128px' }} />
+
+        {/* Subtle Edge Data Flow Animation (Left) */}
+        <div className="absolute top-0 bottom-0 left-0 w-32 md:w-64 overflow-hidden pointer-events-none opacity-30" style={{ maskImage: 'linear-gradient(to right, black, transparent)', WebkitMaskImage: 'linear-gradient(to right, black, transparent)' }}>
+          <div className="absolute top-0 bottom-0 left-4 w-[1px] bg-gradient-to-b from-transparent via-brand-sui to-transparent h-[200px]" style={{ animation: 'flowVertical 8s linear infinite' }} />
+          <div className="absolute top-0 bottom-0 left-12 w-[2px] bg-gradient-to-b from-transparent via-brand-sui to-transparent h-[150px]" style={{ animation: 'flowVertical 12s linear infinite 2s' }} />
+          <div className="absolute top-0 bottom-0 left-24 w-[1px] bg-gradient-to-b from-transparent via-brand-sui to-transparent h-[300px]" style={{ animation: 'flowVertical 10s linear infinite 5s' }} />
+          <div className="absolute top-0 bottom-0 left-36 w-[1.5px] bg-gradient-to-b from-transparent via-brand-sui to-transparent h-[250px]" style={{ animation: 'flowVertical 15s linear infinite 1s' }} />
+          <div className="absolute top-0 bottom-0 left-48 w-[1px] bg-gradient-to-b from-transparent via-brand-sui to-transparent h-[180px]" style={{ animation: 'flowVertical 9s linear infinite 7s' }} />
+        </div>
+
+        {/* Subtle Edge Data Flow Animation (Right) */}
+        <div className="absolute top-0 bottom-0 right-0 w-32 md:w-64 overflow-hidden pointer-events-none opacity-30" style={{ maskImage: 'linear-gradient(to left, black, transparent)', WebkitMaskImage: 'linear-gradient(to left, black, transparent)' }}>
+          <div className="absolute top-0 bottom-0 right-4 w-[1.5px] bg-gradient-to-b from-transparent via-emerald-400 to-transparent h-[250px]" style={{ animation: 'flowVerticalReverse 10s linear infinite' }} />
+          <div className="absolute top-0 bottom-0 right-16 w-[1px] bg-gradient-to-b from-transparent via-emerald-400 to-transparent h-[180px]" style={{ animation: 'flowVerticalReverse 14s linear infinite 3s' }} />
+          <div className="absolute top-0 bottom-0 right-28 w-[2px] bg-gradient-to-b from-transparent via-emerald-400 to-transparent h-[220px]" style={{ animation: 'flowVerticalReverse 9s linear infinite 1.5s' }} />
+          <div className="absolute top-0 bottom-0 right-40 w-[1px] bg-gradient-to-b from-transparent via-emerald-400 to-transparent h-[190px]" style={{ animation: 'flowVerticalReverse 12s linear infinite 6s' }} />
+          <div className="absolute top-0 bottom-0 right-52 w-[1px] bg-gradient-to-b from-transparent via-emerald-400 to-transparent h-[300px]" style={{ animation: 'flowVerticalReverse 11s linear infinite 4s' }} />
+        </div>
       </div>
 
       {/* Content layer above background */}
