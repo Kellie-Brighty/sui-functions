@@ -510,20 +510,22 @@ const App: React.FC = () => {
                           <div className="w-3 h-3 rounded-full bg-red-500/50" />
                           <div className="w-3 h-3 rounded-full bg-amber-500/50" />
                           <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
-                          <span className="ml-2 text-[#8A95A5] text-[10px] uppercase tracking-widest font-bold">Client-Side SDK Encryption</span>
+                          <span className="ml-2 text-[#8A95A5] text-[10px] uppercase tracking-widest font-bold">Proxy Attestation & On-Chain Audit</span>
                         </div>
                         <div className="text-[#ABB2BF] leading-loose">
-                          <div><span className="text-[#C678DD]">import</span> {'{'} SuiFunctions {'}'} <span className="text-[#C678DD]">from</span> <span className="text-[#98C379]">'@sui-functions/sdk'</span>;</div>
+                          <div><span className="text-[#8A95A5] italic">// 1. Trusted Proxy fetches API & Signs Data</span></div>
+                          <div><span className="text-[#C678DD]">const</span> response = <span className="text-[#C678DD]">await</span> fetch(<span className="text-[#98C379]">'https://api.openai.com/...'</span>);</div>
+                          <div><span className="text-[#C678DD]">const</span> signature = proxyKeypair.sign(response.bytes);</div>
                           <br />
-                          <div><span className="text-[#8A95A5] italic">// 1. Generate local keypair</span></div>
-                          <div><span className="text-[#C678DD]">const</span> keys = <span className="text-[#C678DD]">await</span> SuiFunctions.generatePaillierKeys();</div>
+                          <div><span className="text-[#8A95A5] italic">// 2. Node Operator Submits Payload</span></div>
+                          <div><span className="text-[#C678DD]">await</span> submit_execution(response.bytes, signature);</div>
                           <br />
-                          <div><span className="text-[#8A95A5] italic">// 2. Encrypt your secret inputs</span></div>
-                          <div><span className="text-[#C678DD]">const</span> secretA = SuiFunctions.encryptPayload(<span className="text-[#D19A66]">100</span>, keys.publicKey);</div>
-                          <div><span className="text-[#C678DD]">const</span> secretB = SuiFunctions.encryptPayload(<span className="text-[#D19A66]">75</span>, keys.publicKey);</div>
-                          <br />
-                          <div><span className="text-[#8A95A5] italic">// 3. Send securely to the public network</span></div>
-                          <div>triggerExecution(secretA, secretB, keys.publicKey);</div>
+                          <div><span className="text-[#8A95A5] italic">// 3. Smart Contract Auditor Validates</span></div>
+                          <div><span className="text-[#C678DD]">public fun</span> <span className="text-[#61AFEF]">submit_result</span>(data: <span className="text-[#E5C07B]">vector</span>&lt;<span className="text-[#E5C07B]">u8</span>&gt;, sig: <span className="text-[#E5C07B]">vector</span>&lt;<span className="text-[#E5C07B]">u8</span>&gt;) {'{'}</div>
+                          <div className="ml-4"><span className="text-[#8A95A5] italic">// Aborts if Node Operator tampered with data</span></div>
+                          <div className="ml-4"><span className="text-[#E5C07B]">assert!</span>(ed25519_verify(sig, PROXY_PUBKEY, data), <span className="text-[#D19A66]">401</span>);</div>
+                          <div className="ml-4">...</div>
+                          <div>{'}'}</div>
                         </div>
                       </div>
                     </div>
