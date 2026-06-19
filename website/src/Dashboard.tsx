@@ -4701,7 +4701,7 @@ const Dashboard: React.FC = () => {
                       <div className="w-5 h-5 rounded-full bg-brand-sui/10 flex items-center justify-center text-brand-sui text-[10px] shrink-0 mt-0.5 font-bold">ℹ</div>
                       <div className="text-[10px] text-slate-300 leading-relaxed font-medium">
                         <strong className="text-white block mb-1">Public Serverless Mode Active</strong>
-                        Your serverless functions execute inside our decentralized, isolated V8 sandboxes. Any staked node operator can pick up and run your workloads for free.
+                        Your serverless functions execute inside our decentralized, isolated V8 sandboxes. Any staked node operator can pick up and run your workloads for a small compute fee.
                       </div>
                     </div>
                   ) : (

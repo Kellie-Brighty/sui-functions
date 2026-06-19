@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Lock, Plus, Trash2, Key, ShieldCheck, Copy } from 'lucide-react';
 import { useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { SUI_FUNCTIONS_PACKAGE_ID } from '../constants';
+import { PACKAGE_ID } from '../constants';
 // MOCK SEAL ENCRYPTION FOR DEMONSTRATION
 // In a real MVR implementation, we would import { seal } from '@mysten/seal'
 // and encrypt with the proxy's public key.
@@ -35,7 +35,7 @@ export const SecretsManager: React.FC<SecretsManagerProps> = ({ activeProject, s
       
       const tx = new Transaction();
       tx.moveCall({
-        target: `${SUI_FUNCTIONS_PACKAGE_ID}::trigger::add_secret`,
+        target: `${PACKAGE_ID}::trigger::add_secret`,
         arguments: [
           tx.object(activeProject.id),
           tx.pure.string(secretKey),
