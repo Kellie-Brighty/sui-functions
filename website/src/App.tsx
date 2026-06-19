@@ -457,39 +457,25 @@ const App: React.FC = () => {
                       <div>
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-bold font-mono uppercase tracking-wider mb-6">
                           <ShieldCheck size={14} />
-                          Two-Tiered Confidentiality
+                          Zero-Trust Execution
                         </div>
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6 font-outfit leading-tight">
                           Unstoppable Compute with <br />
-                          <span className="text-emerald-400">Four Pillars of Zero-Trust.</span>
+                          <span className="text-emerald-400">Two Pillars of Zero-Trust.</span>
                         </h2>
                         <div className="space-y-4 mb-8">
                           <div className="flex gap-3">
                             <span className="text-emerald-400 mt-0.5 font-mono font-bold">1.</span>
                             <div>
-                              <strong className="text-white block mb-1 text-sm">Private Additive Aggregation</strong>
-                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Use Native Paillier FHE to sum numerical values (like votes or balances) securely. The node operators calculate the math directly on your encrypted payloads without ever seeing the underlying amounts.</p>
+                              <strong className="text-white block mb-1 text-sm">Trusted Web2 Proxy</strong>
+                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Route external API requests (Stripe, OpenAI) through our managed proxy. This keeps your sensitive plaintext API keys entirely out of the decentralized node memory, and guarantees data integrity by signing the exact API responses.</p>
                             </div>
                           </div>
                           <div className="flex gap-3">
                             <span className="text-emerald-400 mt-0.5 font-mono font-bold">2.</span>
                             <div>
-                              <strong className="text-white block mb-1 text-sm">Zero-Knowledge Equality</strong>
-                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Validate text strings (like discount codes or passwords) securely inside the sandbox using irreversible cryptographic hashing (SHA-256).</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-3">
-                            <span className="text-emerald-400 mt-0.5 font-mono font-bold">3.</span>
-                            <div>
-                              <strong className="text-white block mb-1 text-sm">Trusted Web2 Proxy</strong>
-                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Route external API requests (Stripe, OpenAI) through our managed proxy. This keeps your sensitive plaintext API keys entirely out of the decentralized node memory.</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-3">
-                            <span className="text-emerald-400 mt-0.5 font-mono font-bold">4.</span>
-                            <div>
-                              <strong className="text-white block mb-1 text-sm">Cryptographic Data Attestations</strong>
-                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">The Proxy Server cryptographically signs all API responses (Ed25519). Smart contracts verify these signatures on-chain, making it mathematically impossible for Node Operators to forge or tamper with Web2 data.</p>
+                              <strong className="text-white block mb-1 text-sm">Output Authenticity Auditor</strong>
+                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Node Operators must submit the proxy's Ed25519 signatures alongside the final execution result. Our Sui Smart Contract strictly verifies these signatures on-chain, making it mathematically impossible for operators to forge or tamper with the web2 data.</p>
                             </div>
                           </div>
                         </div>
