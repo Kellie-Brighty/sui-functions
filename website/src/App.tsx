@@ -461,7 +461,7 @@ const App: React.FC = () => {
                         </div>
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6 font-outfit leading-tight">
                           Unstoppable Compute with <br />
-                          <span className="text-emerald-400">Three Pillars of Privacy.</span>
+                          <span className="text-emerald-400">Four Pillars of Zero-Trust.</span>
                         </h2>
                         <div className="space-y-4 mb-8">
                           <div className="flex gap-3">
@@ -483,6 +483,13 @@ const App: React.FC = () => {
                             <div>
                               <strong className="text-white block mb-1 text-sm">Trusted Web2 Proxy</strong>
                               <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">Route external API requests (Stripe, OpenAI) through our managed proxy. This keeps your sensitive plaintext API keys entirely out of the decentralized node memory.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <span className="text-emerald-400 mt-0.5 font-mono font-bold">4.</span>
+                            <div>
+                              <strong className="text-white block mb-1 text-sm">Cryptographic Data Attestations</strong>
+                              <p className="text-emerald-100/70 text-xs leading-relaxed max-w-sm">The Proxy Server cryptographically signs all API responses (Ed25519). Smart contracts verify these signatures on-chain, making it mathematically impossible for Node Operators to forge or tamper with Web2 data.</p>
                             </div>
                           </div>
                         </div>
