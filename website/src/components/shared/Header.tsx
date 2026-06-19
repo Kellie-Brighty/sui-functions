@@ -6,9 +6,10 @@ import { Button } from './Button';
 interface HeaderProps {
   onSectionClick?: (sectionId: string) => void;
   onConnectClick?: () => void;
-  viewMode?: 'landing' | 'docs';
+  viewMode?: 'landing' | 'docs' | 'blueprint';
   onDocsClick?: () => void;
   onHomeClick?: () => void;
+  onBlueprintClick?: () => void;
 }
 
 const navLinks = [
@@ -23,7 +24,8 @@ export const Header: React.FC<HeaderProps> = ({
   onConnectClick,
   viewMode = 'landing',
   onDocsClick,
-  onHomeClick
+  onHomeClick,
+  onBlueprintClick
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -65,13 +67,15 @@ export const Header: React.FC<HeaderProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [viewMode]);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, target: 'home' | 'docs') => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, target: 'home' | 'docs' | 'blueprint') => {
     e.preventDefault();
     if (target === 'home') {
       onHomeClick?.();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (target === 'docs') {
       onDocsClick?.();
+    } else if (target === 'blueprint') {
+      onBlueprintClick?.();
     }
   };
 
@@ -124,6 +128,17 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Action Buttons (Desktop) */}
         <div className="hidden md:flex items-center gap-4">
           <a 
+            href="#blueprint" 
+            onClick={(e) => handleNavClick(e, 'blueprint')}
+            className={`text-sm font-bold transition-all duration-200 px-4 py-2 rounded-lg ${
+              viewMode === 'blueprint' 
+                ? 'text-[#00FFAA] bg-[#0B2027] border border-[#14304A]' 
+                : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
+            }`}
+          >
+            Blueprint
+          </a>
+          <a 
             href="#docs" 
             onClick={(e) => handleNavClick(e, 'docs')}
             className={`text-sm font-bold transition-all duration-200 px-4 py-2 rounded-lg ${
@@ -174,6 +189,13 @@ export const Header: React.FC<HeaderProps> = ({
               {link.label}
             </a>
           ))}
+          <a 
+            href="#blueprint" 
+            onClick={(e) => { setMobileMenuOpen(false); handleNavClick(e, 'blueprint'); }}
+            className={`text-sm font-semibold py-1 ${viewMode === 'blueprint' ? 'text-[#00FFAA]' : 'text-slate-200 hover:text-brand-sui'}`}
+          >
+            Blueprint
+          </a>
           <a 
             href="#docs" 
             onClick={(e) => { setMobileMenuOpen(false); handleNavClick(e, 'docs'); }}

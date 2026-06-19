@@ -5,12 +5,13 @@ import { Play, CheckCircle2, Zap, Shield, Clock, Server, Code, Globe, HelpCircle
 import Dashboard from './Dashboard';
 import { Header, Footer, Button, Card, CodeWindow } from './components/shared';
 import { DocsView } from './components/DocsView';
+import { BlueprintView } from './components/BlueprintView';
 import { LATEST_RUNNER_BLOB_ID } from './constants';
 
 const App: React.FC = () => {
   const account = useCurrentAccount();
   const [showConnectModal, setShowConnectModal] = useState(false);
-  const [viewMode, setViewMode] = useState<'landing' | 'docs'>('landing');
+  const [viewMode, setViewMode] = useState<'landing' | 'docs' | 'blueprint'>('landing');
   const [activePillar, setActivePillar] = useState<'trigger' | 'logic' | 'worker'>('trigger');
 
   const [isSimulating, setIsSimulating] = useState(false);
@@ -153,6 +154,7 @@ const App: React.FC = () => {
           onConnectClick={() => setShowConnectModal(true)}
           viewMode={viewMode}
           onDocsClick={() => setViewMode('docs')}
+          onBlueprintClick={() => setViewMode('blueprint')}
           onHomeClick={() => setViewMode('landing')}
         />
 
@@ -162,6 +164,8 @@ const App: React.FC = () => {
 
             {viewMode === 'docs' ? (
               <DocsView onBackToLanding={() => setViewMode('landing')} />
+            ) : viewMode === 'blueprint' ? (
+              <BlueprintView onBackToLanding={() => setViewMode('landing')} />
             ) : (
               <>
                 <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 lg:py-24">
