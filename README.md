@@ -36,26 +36,33 @@ Sui-Functions decouples state coordination, logic immutability, and execution en
 ```mermaid
 graph TD
     subgraph Client App
-        A[Autonomous DeFi Agent Showcase]
+        A[Autonomous Agent]
     end
     subgraph Sui Ledger [Pillar 1: Trigger Event Bus]
         B[Move Registry Contract]
         C[Call Event Triggered]
     end
-    subgraph Walrus Storage [Pillar 2: Logic & Memory Registry]
-        D[Immutable V8 Javascript Blob]
+    subgraph Walrus Protocol [Pillar 2: Logic & Memory Registry]
+        D[Immutable Javascript Blob]
     end
     subgraph Runner Daemon [Pillar 3: Isolated Worker]
         E[V8 Sandbox Isolate]
         F[Result Receipt Committed]
+    end
+    subgraph External Network
+        P[Seal Proxy Interceptor]
+        W[Web2 APIs]
     end
 
     A -->|1. Triggers Action| B
     B -->|2. Emits Event| C
     C -->|3. Listeners Polled| E
     D -->|4. Downloads Script| E
-    E -->|5. Executes Logic| F
-    F -->|6. Logs Status & Results| A
+    E -->|5. Secure Request| P
+    P <-->|6. Fetch| W
+    P -->|7. Returns Signed Payload| E
+    E -->|8. Executes Logic| F
+    F -->|9. Logs Status & Results| A
 ```
 
 1. **Pillar 1: The Trigger Event Bus (Sui Ledger)**
