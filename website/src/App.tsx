@@ -128,22 +128,20 @@ const App: React.FC = () => {
         {/* Subtle noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`, backgroundRepeat: 'repeat', backgroundSize: '128px 128px' }} />
 
-        {/* Subtle Edge Data Flow Animation (Left) */}
-        <div className="absolute top-0 bottom-0 left-0 w-32 md:w-64 overflow-hidden pointer-events-none opacity-80" style={{ maskImage: 'linear-gradient(to right, black, transparent)', WebkitMaskImage: 'linear-gradient(to right, black, transparent)' }}>
-          <div className="absolute top-0 bottom-0 left-4 w-[2px] bg-gradient-to-b from-transparent via-[#3898FF] to-transparent h-[200px] shadow-[0_0_20px_rgba(56,152,255,1)]" style={{ animation: 'flowVertical 6s linear infinite' }} />
-          <div className="absolute top-0 bottom-0 left-12 w-[3px] bg-gradient-to-b from-transparent via-[#3898FF] to-transparent h-[150px] shadow-[0_0_25px_rgba(56,152,255,1)]" style={{ animation: 'flowVertical 10s linear infinite 2s' }} />
-          <div className="absolute top-0 bottom-0 left-24 w-[2px] bg-gradient-to-b from-transparent via-[#3898FF] to-transparent h-[300px] shadow-[0_0_20px_rgba(56,152,255,1)]" style={{ animation: 'flowVertical 8s linear infinite 5s' }} />
-          <div className="absolute top-0 bottom-0 left-36 w-[4px] bg-gradient-to-b from-transparent via-[#3898FF] to-transparent h-[250px] shadow-[0_0_30px_rgba(56,152,255,1)]" style={{ animation: 'flowVertical 12s linear infinite 1s' }} />
-          <div className="absolute top-0 bottom-0 left-48 w-[2px] bg-gradient-to-b from-transparent via-[#3898FF] to-transparent h-[180px] shadow-[0_0_15px_rgba(56,152,255,1)]" style={{ animation: 'flowVertical 7s linear infinite 7s' }} />
+        {/* Modern Hex Network Sweep (Left) */}
+        <div className="absolute top-0 bottom-0 left-0 w-[300px] lg:w-[500px] overflow-hidden pointer-events-none opacity-40 mix-blend-screen" style={{ maskImage: 'linear-gradient(to right, black, transparent)', WebkitMaskImage: 'linear-gradient(to right, black, transparent)' }}>
+          {/* Rotating Base hex grid */}
+          <div className="absolute inset-[-50%] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTIwIDBMMzcuMzIgMTBWMzBMMjAgNDBMMi42OCAzMFYxMEwyMCAweiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDU2LDE1MiwyNTUsMC4yKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+')] bg-[length:60px_60px] animate-spin-slow" style={{ animationDuration: '120s' }} />
+          {/* Vertical sweep light revealing the grid */}
+          <div className="absolute left-0 w-[400px] h-[100vh] bg-gradient-to-b from-transparent via-[#3898FF]/30 to-transparent animate-flow-vertical blur-[60px]" style={{ animationDuration: '10s' }} />
         </div>
 
-        {/* Subtle Edge Data Flow Animation (Right) */}
-        <div className="absolute top-0 bottom-0 right-0 w-32 md:w-64 overflow-hidden pointer-events-none opacity-80" style={{ maskImage: 'linear-gradient(to left, black, transparent)', WebkitMaskImage: 'linear-gradient(to left, black, transparent)' }}>
-          <div className="absolute top-0 bottom-0 right-4 w-[3px] bg-gradient-to-b from-transparent via-[#00FFAA] to-transparent h-[250px] shadow-[0_0_25px_rgba(0,255,170,1)]" style={{ animation: 'flowVerticalReverse 8s linear infinite' }} />
-          <div className="absolute top-0 bottom-0 right-16 w-[2px] bg-gradient-to-b from-transparent via-[#00FFAA] to-transparent h-[180px] shadow-[0_0_15px_rgba(0,255,170,1)]" style={{ animation: 'flowVerticalReverse 12s linear infinite 3s' }} />
-          <div className="absolute top-0 bottom-0 right-28 w-[4px] bg-gradient-to-b from-transparent via-[#00FFAA] to-transparent h-[220px] shadow-[0_0_30px_rgba(0,255,170,1)]" style={{ animation: 'flowVerticalReverse 7s linear infinite 1.5s' }} />
-          <div className="absolute top-0 bottom-0 right-40 w-[2px] bg-gradient-to-b from-transparent via-[#00FFAA] to-transparent h-[190px] shadow-[0_0_20px_rgba(0,255,170,1)]" style={{ animation: 'flowVerticalReverse 10s linear infinite 6s' }} />
-          <div className="absolute top-0 bottom-0 right-52 w-[2px] bg-gradient-to-b from-transparent via-[#00FFAA] to-transparent h-[300px] shadow-[0_0_20px_rgba(0,255,170,1)]" style={{ animation: 'flowVerticalReverse 9s linear infinite 4s' }} />
+        {/* Modern Hex Network Sweep (Right) */}
+        <div className="absolute top-0 bottom-0 right-0 w-[300px] lg:w-[500px] overflow-hidden pointer-events-none opacity-40 mix-blend-screen" style={{ maskImage: 'linear-gradient(to left, black, transparent)', WebkitMaskImage: 'linear-gradient(to left, black, transparent)' }}>
+          {/* Rotating Base hex grid */}
+          <div className="absolute inset-[-50%] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTIwIDBMMzcuMzIgMTBWMzBMMjAgNDBMMi42OCAzMFYxMEwyMCAweiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDAsMjU1LDE3MCwwLjIpIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=')] bg-[length:60px_60px] animate-spin-slow" style={{ animationDuration: '180s', animationDirection: 'reverse' }} />
+          {/* Vertical sweep light revealing the grid */}
+          <div className="absolute right-0 w-[400px] h-[100vh] bg-gradient-to-b from-transparent via-[#00FFAA]/30 to-transparent animate-flow-vertical-reverse blur-[60px]" style={{ animationDuration: '14s' }} />
         </div>
       </div>
 
@@ -365,8 +363,8 @@ const App: React.FC = () => {
                       <div className="flex flex-col justify-between p-8 bg-[#090C15] border border-[#14304A] rounded-xl text-left relative z-10 shadow-[0_0_30px_rgba(56,152,255,0.05)] hover:shadow-[0_0_40px_rgba(56,152,255,0.1)] transition-shadow">
                         <div>
                           <div className="flex items-start justify-between mb-8">
-                            <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608]">
-                              <ShieldCheck size={20} className="text-[#3898FF] opacity-90" />
+                            <div className="w-10 h-10 border border-[#14304A] rounded-lg flex items-center justify-center bg-[#050608] overflow-hidden">
+                              <img src="/seal.svg" alt="Seal Logo" className="w-6 h-6 object-contain opacity-90 drop-shadow-[0_0_10px_rgba(56,152,255,0.4)]" />
                             </div>
                             <span className="px-2 py-1 rounded border border-[#14304A] text-[8px] font-mono font-bold text-[#3898FF] uppercase tracking-widest bg-[#3898FF]/10">Proxy Layer</span>
                           </div>
